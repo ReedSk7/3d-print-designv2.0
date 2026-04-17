@@ -1,0 +1,33 @@
+# Paid or restricted references
+references/paid/*
+!references/paid/.gitkeep
+
+# Temporary meshes and scratch geometry
+*_temp.stl
+*_scratch.stl
+*_healed.stl
+*_decimated.stl
+*_repair.stl
+*_repair.obj
+*_repair.glb
+*.tmp.stl
+*.tmp.obj
+*.tmp.glb
+
+# Slicer temp and export junk
+*.3mf.cache
+*.gcode
+*.bgcode
+*.sl1
+*.photon
+*.ctb
+
+# Python
+__pycache__/
+.venv/
+
+# Editors and OS files
+.idea/
+.vscode/
+Thumbs.db
+.DS_Store
