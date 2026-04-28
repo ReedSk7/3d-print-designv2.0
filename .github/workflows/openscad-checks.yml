@@ -1,0 +1,35 @@
+name: OpenSCAD Repo Checks
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  repo-checks:
+    name: Validate OpenSCAD workflow
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Python syntax check
+        run: |
+          python -m py_compile scripts/*.py
+
+      - name: Validate example SCAD
+        run: |
+          python scripts/validate_scad.py projects/simple_wall_bracket_example/source/simple_wall_bracket_example_v01.scad
+
+      - name: Check example project outputs
+        run: |
+          python scripts/check_project_outputs.py --project projects/simple_wall_bracket_example --task-mode original_product_design --version v01
