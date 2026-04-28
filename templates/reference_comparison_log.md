@@ -1,19 +1,39 @@
 # Reference Comparison Log
 
-## date/revision
+## Date/Revision
 
-## current version
+## Current Version
 
-## reference used
+## Reference Used
 
-## bbox comparison
+## BBox Comparison
 
-## silhouette comparison
+- reference:
+- current model:
+- delta:
+- status:
 
-## critical feature comparison
+## Silhouette Comparison
 
-## mismatches found
+- front:
+- side:
+- top:
 
-## corrections planned
+## Critical Feature Comparison
 
-## confidence level
+- hooks:
+- tabs:
+- snaps:
+- pivots:
+- lock faces:
+- mounting geometry:
+- spring contact regions:
+- other:
+
+## Mismatches Found
+
+## Corrections Planned
+
+## Confidence Level
+
+Low / Medium / High

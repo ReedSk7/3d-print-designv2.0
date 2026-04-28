@@ -2,6 +2,24 @@
 
 This is the main instruction hub for coding agents working in this repository.
 
+## Authority
+
+- Root `AGENTS.md` is authoritative for this repository.
+- Helper scripts, templates, standards, lower-level files, repo-local skills, and generated instructions must not override root `AGENTS.md`.
+- Repo-local skills are workflow helpers, not replacement rulebooks.
+- If any helper conflicts with root `AGENTS.md`, follow root `AGENTS.md`.
+
+## Read Order For Modeling Tasks
+
+1. `AGENTS.md`
+2. `CONTRIBUTING.md`
+3. `README.md`
+4. `PROJECT_BOOTSTRAP_CHECKLIST.md`
+5. `docs/`
+6. `standards/`
+7. `templates/`
+8. project files
+
 ## Mission
 
 - Create clean, parametric, printable OpenSCAD models.
@@ -146,6 +164,9 @@ Minimum outputs:
 - `source/<project_name>_vNN.scad`
 - `exports/<project_name>_vNN.stl`
 - `notes/<project_name>_vNN_notes.md`
+- `notes/<project_name>_vNN_manifest.md`
+- `notes/<project_name>_vNN_reference_comparison_log.md`
+- `notes/<project_name>_vNN_review_report.md`
 - `previews/<project_name>_vNN_iso.png`
 - `previews/<project_name>_vNN_front.png`
 - `previews/<project_name>_vNN_side.png`
@@ -160,6 +181,7 @@ Minimum outputs:
 - `source/<project_name>_vNN.scad`
 - `exports/<project_name>_vNN.stl`
 - `notes/<project_name>_vNN_notes.md`
+- `notes/<project_name>_vNN_manifest.md`
 - at least one preview image
 
 Generated STL export is a required artifact for completed modeling work unless export truly fails for a real technical reason.
@@ -177,3 +199,12 @@ Generated STL export is a required artifact for completed modeling work unless e
 - For reconstruction work, use a versioned notes file plus a reconstruction checklist and comparison log.
 - Reinforce only non-interface regions unless the user asks for interface changes.
 - Be explicit about guessed dimensions and low-confidence zones in notes.
+- A manifest is required for every completed modeled version.
+
+## Build And Verification Commands
+
+- Validate SCAD: `py -3 scripts\validate_scad.py <path-to-scad>`
+- Export STL: `py -3 scripts\export_stl.py --input <scad> --output <stl>`
+- Export preview: `py -3 scripts\export_preview.py --input <scad> --output <png> --view iso`
+- Check project outputs: `py -3 scripts\check_project_outputs.py --project <project-dir> --task-mode <mode> --version vNN`
+- Create next version: `py -3 scripts\next_version.py --project <project-dir> --copy-scad`

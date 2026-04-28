@@ -1,43 +1,68 @@
 # Reconstruction Notes
 
-## task mode
+## Task Mode
 
-## target part
+`reference_based_reconstruction`
 
-## what is reused
+## Target Part
 
-## what is not modeled
+## What Is Reused
 
-## authoritative references
+## What Is Not Modeled
 
-## supporting references
+## Authoritative References
 
-## reference trust order used
+## Supporting References
 
-## anchor dimensions
+## Reference Trust Order Used
 
-## authoritative dimensions used
+1. measured dimensions from the real part
+2. trusted or purchased reference STL/STEP/CAD
+3. official OEM drawings, service docs, or diagrams
+4. official product photos
+5. user photos of intact or broken part
+6. AI-generated meshes or photo-to-3D outputs
 
-## protected interfaces
+## Anchor Dimensions
 
-## reinforced zones
+## Authoritative Dimensions Used
 
-## low-confidence zones
+## Protected Interfaces
 
-## comparison status
+## Reinforced Zones
 
-## pass/fail on critical features
+## Low-Confidence Zones
 
-## print orientation
+## Comparison Status
 
-## support plan
+- bbox:
+- front silhouette:
+- side silhouette:
+- top silhouette:
+- critical local features:
 
-## next revision actions
+## Pass/Fail On Critical Features
 
-## exported STL filename
+## Print Orientation
 
-## STL export status
+## Support Plan
 
-## future 3MF status
+## Next Revision Actions
 
-## remaining mismatch notes
+## Exported STL Filename
+
+`NOT VERIFIED`
+
+## STL Export Status
+
+`NOT VERIFIED`
+
+## Preview Export Status
+
+`NOT VERIFIED`
+
+## Future 3MF Status
+
+`not created`
+
+## Remaining Mismatch Notes

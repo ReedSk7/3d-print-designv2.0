@@ -1,95 +1,110 @@
 # Reference Reconstruction Workflow
 
-Use reconstruction workflow when the job is about recreating, repairing, or refining an existing part instead of inventing a new one.
+Use `reference_based_reconstruction` when the job is about recreating, repairing, replacing, or refining a known part. Use `mesh_cleanup_and_remodel` when a rough mesh exists but should be rebuilt as clean OpenSCAD.
 
 Default output is one corrected model unless the user explicitly asks for multiple variants.
 
-## Classify the Task
+## Classification Triggers
 
-Treat the task as reconstruction when you have any of these:
+Treat the task as reconstruction when the user provides any of these:
 
-- measurements from the real part
+- measured dimensions or caliper notes
+- sketches
 - part number or OEM identifier
-- OEM or product photos
-- broken-part photos
-- public or purchased reference STL/CAD
-- rough STL, GLB, OBJ, or scan output
+- OEM drawings, service docs, or diagrams
+- OEM, product, intact-part, or broken-part photos
+- product link or known replacement part target
+- reference STL, STEP, or CAD
+- purchased STL/CAD
 
-## Rank References
+Use `mesh_cleanup_and_remodel` when the input is a rough STL, GLB, OBJ, scan output, Meshy output, Trellis output, AI-generated mesh, or photo-to-3D output that should not be trusted as final geometry.
 
-Use this order unless the user says otherwise:
+## Reference Trust Hierarchy
+
+Use this order unless the user overrides it:
 
 1. measured dimensions from the real part
 2. trusted or purchased reference STL/STEP/CAD
-3. official OEM drawings / service docs / diagrams
+3. official OEM drawings, service docs, or diagrams
 4. official product photos
 5. user photos of intact or broken part
 6. AI-generated meshes or photo-to-3D outputs
 
-## Define Protected Interfaces
+Record authoritative references and supporting references separately. Paid references stay local-only unless redistribution rights are clear.
 
-Identify the geometry that must stay faithful before any reinforcement or cleanup. Protected interfaces must be defined before reinforcement:
+## Protected Interfaces
 
-- hole spacing and mounting geometry
-- hook tips and latch faces
-- pivots, shafts, rods, and bearing seats
-- slots, tabs, snaps, and clip faces
-- spring contact regions
+Protected interfaces are fit-critical or function-critical surfaces and dimensions. Define them before final geometry and before reinforcement.
 
-## What Not to Change
+Common protected interfaces:
 
-Do not change these by default unless the user explicitly requests it:
-
+- mounting hole spacing
+- mounting faces
 - latch faces
 - hook tips
-- slots
-- pivot fits
-- mounting faces
+- snap faces
+- clip faces
+- slot widths
+- tabs
+- pivots
+- shaft, rod, bearing, and insert fits
 - spring contact regions
+- locking tabs
+- curved mating surfaces
 
-## Use Rough Meshes Carefully
+Compare protected interfaces directly against authoritative references. Do not redesign them for looks. Do not thicken, chamfer, or reshape them unless the user explicitly requests an interface change.
 
-Use rough STL, GLB, or OBJ files only as seed geometry unless they are explicitly trusted.
+## Rough Mesh Handling
 
-- inspect them for overall form, missing regions, and feature placement clues
-- measure them if useful for rough sizing or feature spacing
-- do not copy their topology into final CAD
-- remodel critical interfaces cleanly in OpenSCAD
+Rough meshes are supporting references only unless the user explicitly says they are trusted.
 
-## Reference Conflicts
+- Inspect rough meshes for overall form, missing regions, and feature placement clues.
+- Measure rough meshes when useful, but label the measurements as supporting unless the source is trusted.
+- Do not copy rough mesh topology into final CAD.
+- Remodel critical interfaces cleanly in OpenSCAD.
 
-- If measurements conflict with photos, measurements win unless they are clearly wrong.
-- If paid or trusted reference CAD conflicts with an AI-generated mesh, the paid or trusted reference CAD wins.
+## Conflict Handling
 
-## Compare and Revise
+- If measurements conflict with photos, measurements win unless clearly wrong.
+- If trusted CAD conflicts with an AI-generated mesh, trusted CAD wins.
+- If authoritative references conflict, document the conflict before export.
 
-After rebuilding the part, compare the current CAD against the best reference using:
+## Compare And Revise
+
+After rebuilding the part, compare the current model against the best reference using:
 
 - bounding box
 - front silhouette
 - side silhouette
 - top silhouette when useful
-- critical local features
+- critical local features such as hooks, pivots, slots, latch faces, spring contacts, locking tabs, and mounting geometry
 
-If the overall size matches but a hook, tab, slot, latch, or mount still does not, the model is not done.
-
-Use `templates/reconstruction_checklist.md` to track completion and `templates/reference_comparison_log.md` to record revision-by-revision comparisons.
+Overall dimensions alone are never enough. If the bbox matches but a hook, tab, slot, latch face, pivot, screw hole, or mounting interface does not match, the model is not done.
 
 ## Reinforcement Rules
 
-Reinforce only non-interface regions by default. Preserve protected interfaces unless the user explicitly requests a changed fit or a durability-driven interface change.
+Reinforce non-interface regions first. Preserve protected interfaces unless the user explicitly requests a changed fit or a durability-driven interface change.
 
 ## Low-Confidence Zones
 
-Be honest about low-confidence areas. Note guessed geometry, missing measurements, and places where the current model is a test-fit or best-faith estimate rather than a verified match.
+Document guessed geometry, missing measurements, inferred radii, weak reference coverage, and any test-fit-only assumptions in notes, manifest, comparison logs, and review reports.
 
 ## Reconstruction Completion Checklist
 
 - exact target part defined
 - reused surrounding parts defined
+- not-modeled items defined
+- reference hierarchy recorded
+- authoritative references identified
 - anchor dimensions recorded
 - protected interfaces recorded
-- bbox and required silhouettes compared
-- critical local features checked
+- bbox compared
+- front and side silhouettes compared
+- top silhouette compared when useful
+- critical local features compared
+- reinforcement limited to non-interface zones
 - low-confidence zones documented
-- STL exported, or export failure documented for a real technical reason
+- FDM printability reviewed
+- STL exported or export failure documented
+- required previews rendered or render failure documented
+- manifest, notes, comparison log, and review report updated

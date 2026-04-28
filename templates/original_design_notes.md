@@ -1,23 +1,50 @@
 # Original Design Notes
 
-## task mode
+## Task Mode
 
-## goal
+`original_product_design`
 
-## constraints
+## Goal
 
-## chosen concept
+Describe the intended use and user-facing purpose.
 
-## key parameters
+## Constraints
 
-## print orientation
+- printer:
+- material:
+- bed size:
+- strength needs:
+- heat exposure:
+- outdoor exposure:
 
-## support plan
+## Chosen Concept
 
-## known risks
+Record the selected concept only if multiple directions were explored.
 
-## exported STL filename
+## Key Parameters
 
-## STL export status
+- overall dimensions:
+- wall thickness:
+- screw or hardware sizes:
+- tolerance profile:
+- split_part mode:
 
-## next actions
+## Print Orientation
+
+## Support Plan
+
+## Known Risks
+
+## Exported STL Filename
+
+`NOT VERIFIED`
+
+## STL Export Status
+
+`NOT VERIFIED`
+
+## Preview Export Status
+
+`NOT VERIFIED`
+
+## Next Actions

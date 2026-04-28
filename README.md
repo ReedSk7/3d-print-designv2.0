@@ -1,81 +1,82 @@
 # Reconstruction-First OpenSCAD Repo
 
-This repository is for practical OpenSCAD modeling with two primary use cases:
+This is a reconstruction-first OpenSCAD 3D printing workspace for replacement parts, functional parts, mesh cleanup and remodel, and original product design when the job is truly greenfield.
 
-- original product design
-- reference-based reconstruction and replacement-part remodeling
+OpenSCAD is the editable source of truth. STL is an export artifact, not the design authority. Root `AGENTS.md` is authoritative for agent behavior in this repo.
 
-The editable source of truth is OpenSCAD. STL files are export artifacts and the current required export for completed modeling work.
+## Codex OpenSCAD Agent Workflow
+
+The value of this repo is a disciplined pipeline:
+
+request -> classify task mode -> bootstrap project -> record references -> protect interfaces -> generate clean OpenSCAD -> validate -> export STL -> render previews -> check outputs -> record notes and manifests -> create the next version when needed.
+
+Use root scripts for bootstrap, validation, STL export, preview export, output verification, and versioning. Skill files are workflow helpers. If a skill conflicts with root `AGENTS.md`, follow root `AGENTS.md`.
+
+## Task Modes
+
+Agents must choose exactly one task mode before modeling:
+
+- `original_product_design`: truly new parts.
+- `reference_based_reconstruction`: known parts from measurements, photos, part numbers, product links, reference STL/CAD, or other references.
+- `mesh_cleanup_and_remodel`: rough STL, GLB, OBJ, scan output, AI mesh, or photo-to-3D output that must be rebuilt as clean OpenSCAD.
+
+Reconstruction defaults to one corrected model unless the user asks for variants. Concept scoring is not required for reconstruction jobs.
 
 ## Quick Start
 
-1. Choose the task mode before modeling.
-2. Create a new project folder by copying `projects/_template/` to `projects/<project_stem>/`.
-3. Place references into `references/measured/`, `references/public/`, or `references/paid/`.
-4. Fill in `templates/reconstruction_notes.md` or `templates/original_design_notes.md`.
-5. Build the OpenSCAD source in `projects/<project_stem>/source/`.
-6. Export the STL and required preview images.
-7. If the job is reconstruction, use `templates/reconstruction_checklist.md` and `templates/reference_comparison_log.md` during compare-and-revise.
-8. Record comparison or mismatch notes for the current version.
+```powershell
+# Create a project
+py -3 scripts\new_project.py --name "simple wall bracket example" --task-mode original_product_design --printer "Bambu Lab P2S" --material PETG
 
-## How Task Modes Work
+# Validate SCAD
+py -3 scripts\validate_scad.py projects\simple_wall_bracket_example\source\simple_wall_bracket_example_v01.scad
 
-Agents must choose a task mode before modeling:
+# Export STL
+py -3 scripts\export_stl.py --input projects\simple_wall_bracket_example\source\simple_wall_bracket_example_v01.scad --output projects\simple_wall_bracket_example\exports\simple_wall_bracket_example_v01.stl
 
-- `original_product_design`: use for truly new parts.
-- `reference_based_reconstruction`: use when measurements, photos, part numbers, reference STLs, purchased STLs, or other known-part references exist.
-- `mesh_cleanup_and_remodel`: use when a rough STL, GLB, or OBJ exists but should be treated as seed geometry only.
+# Export previews
+py -3 scripts\export_preview.py --input projects\simple_wall_bracket_example\source\simple_wall_bracket_example_v01.scad --output projects\simple_wall_bracket_example\previews\simple_wall_bracket_example_v01_iso.png --view iso
+py -3 scripts\export_preview.py --input projects\simple_wall_bracket_example\source\simple_wall_bracket_example_v01.scad --output projects\simple_wall_bracket_example\previews\simple_wall_bracket_example_v01_front.png --view front
+py -3 scripts\export_preview.py --input projects\simple_wall_bracket_example\source\simple_wall_bracket_example_v01.scad --output projects\simple_wall_bracket_example\previews\simple_wall_bracket_example_v01_side.png --view side
 
-Reconstruction mode does not require concept matrices or concept scoring by default. Its default path is compare-and-revise until the geometry is acceptable, usually as one corrected model unless the user asks for variants.
-Concept generation is usually skipped when the job is reference-based and the target geometry already exists.
+# Check outputs
+py -3 scripts\check_project_outputs.py --project projects\simple_wall_bracket_example --task-mode original_product_design --version v01
 
-## Protected Interfaces
-
-Protected interfaces are the geometry that must stay faithful for fit and function, such as latch faces, hook tips, slots, pivots, mounting faces, bearing seats, and spring contact regions. Define these before reinforcement or cosmetic cleanup.
+# Create next version
+py -3 scripts\next_version.py --project projects\simple_wall_bracket_example --copy-scad
+```
 
 ## References
 
 - `references/measured/`: caliper notes, sketches, dimension tables, marked-up photos.
 - `references/public/`: redistributable or openly usable references.
-- `references/paid/`: purchased or license-restricted references. Keep these local-only by default and do not commit them unless redistribution is clearly allowed.
-
-Reconstruction notes may mention a paid reference without redistributing it.
+- `references/paid/`: purchased or license-restricted references. Keep these local-only by default unless redistribution is clearly allowed.
 
 ## Minimum Deliverables
 
-For completed reconstruction jobs:
+Completed reconstruction jobs require:
 
-- `source/<project_name>_vNN.scad`
-- `exports/<project_name>_vNN.stl`
-- `notes/<project_name>_vNN_notes.md`
-- `previews/<project_name>_vNN_iso.png`
-- `previews/<project_name>_vNN_front.png`
-- `previews/<project_name>_vNN_side.png`
+- `source/<project_stem>_vNN.scad`
+- `exports/<project_stem>_vNN.stl`
+- `notes/<project_stem>_vNN_notes.md`
+- `notes/<project_stem>_vNN_manifest.md`
+- `notes/<project_stem>_vNN_reference_comparison_log.md`
+- `notes/<project_stem>_vNN_review_report.md`
+- `previews/<project_stem>_vNN_iso.png`
+- `previews/<project_stem>_vNN_front.png`
+- `previews/<project_stem>_vNN_side.png`
 
-For completed original design jobs:
+Completed original design jobs require source, STL, notes, manifest, and at least one preview image.
 
-- `source/<project_name>_vNN.scad`
-- `exports/<project_name>_vNN.stl`
-- `notes/<project_name>_vNN_notes.md`
-- at least one preview image
-
-STL is not optional for completed modeling work. If export fails for a real technical reason, document the failure clearly in notes or the manifest.
-
-## Naming and Versioning
-
-Use lowercase snake_case project stems and match version suffixes across source, STL, previews, notes, and manifest where applicable. Example: `hinge_clip_v02.scad`, `hinge_clip_v02.stl`, `hinge_clip_v02_iso.png`.
-
-## Future Packaging
-
-3MF or Bambu Studio-ready packaging may be added later. It is a future enhancement target, not a current required artifact.
+Missing outputs must be reported as `NOT VERIFIED`. Do not claim STL export or preview render success unless the files exist and were generated.
 
 ## Project Structure
 
-Each project should live under `projects/<project_stem>/` with:
+Each project lives under `projects/<project_stem>/`:
 
 - `source/`: editable `.scad` files
 - `exports/`: generated STL artifacts
-- `notes/`: notes, assumptions, and comparison records
+- `notes/`: notes, manifests, review reports, and comparison records
 - `previews/`: render views used for review
 
-Use the starter tree in `projects/_template/` when beginning a new job.
+Use `projects/_template/` or `scripts/new_project.py` when beginning a new job.
