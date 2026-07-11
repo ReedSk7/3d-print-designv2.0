@@ -1,0 +1,3 @@
+Place local reference images for this project here if you want the project folder to carry visual references.
+
+The images supplied with the modeling request were treated as visual reference only. They were not copied into the repo by default, and the design is not an exact logo/trademark reconstruction.

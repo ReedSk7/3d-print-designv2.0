@@ -8,6 +8,8 @@
 // support_notes: designed for no supports in default orientation
 // brim_notes: brim optional for PETG if bed adhesion is marginal
 
+use <../../../standards/hardware_library.scad>;
+
 $fn = 72;
 
 // -------------------------
@@ -17,6 +19,8 @@ project_stem = "simple_wall_bracket_example";
 version = "v01";
 printer_name = "Bambu Lab P2S";
 material = "PETG";
+material_profile = "petg";
+nozzle_diameter = 0.40;
 
 clearance_profile = "normal_slip";
 loose_clearance = 0.5;
@@ -29,11 +33,12 @@ bracket_height = 64;
 bracket_depth = 58;
 wall_thickness = 4.0;
 
+hardware_size = "number_8_wood";
+hardware_fit_class = "normal";
 screw_size_label = "#8 wood screw";
-screw_diameter = 4.4;
-screw_clearance_diameter = screw_diameter + fit_clearance;
-screw_head_diameter = 9.0;
-screw_head_depth = 2.8;
+screw_clearance_diameter = clearance_hole_d(hardware_size, hardware_fit_class, material_profile, nozzle_diameter);
+screw_head_pocket_diameter = counterbore_d(hardware_size, hardware_fit_class, material_profile, nozzle_diameter);
+screw_head_depth = counterbore_depth(hardware_size, 0.40);
 use_countersink = false;
 use_counterbore = true;
 
@@ -71,21 +76,21 @@ module wall_head_pocket(x_pos, z_pos) {
     if (use_counterbore) {
         translate([x_pos, wall_thickness - screw_head_depth, z_pos])
             rotate([90, 0, 0])
-                cylinder(h = screw_head_depth + 1, d = screw_head_diameter + fit_clearance);
+                cylinder(h = screw_head_depth + 1, d = screw_head_pocket_diameter);
     } else if (use_countersink) {
         translate([x_pos, wall_thickness - screw_head_depth, z_pos])
             rotate([90, 0, 0])
-                cylinder(h = screw_head_depth + 1, d1 = screw_head_diameter + fit_clearance, d2 = screw_clearance_diameter);
+                cylinder(h = screw_head_depth + 1, d1 = screw_head_pocket_diameter, d2 = screw_clearance_diameter);
     }
 }
 
 module shelf_head_pocket(x_pos, y_pos) {
     if (use_counterbore) {
         translate([x_pos, y_pos, wall_thickness - screw_head_depth])
-            cylinder(h = screw_head_depth + 1, d = screw_head_diameter + fit_clearance);
+            cylinder(h = screw_head_depth + 1, d = screw_head_pocket_diameter);
     } else if (use_countersink) {
         translate([x_pos, y_pos, wall_thickness - screw_head_depth])
-            cylinder(h = screw_head_depth + 1, d1 = screw_clearance_diameter, d2 = screw_head_diameter + fit_clearance);
+            cylinder(h = screw_head_depth + 1, d1 = screw_clearance_diameter, d2 = screw_head_pocket_diameter);
     }
 }
 

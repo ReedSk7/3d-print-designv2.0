@@ -80,3 +80,51 @@ Each project lives under `projects/<project_stem>/`:
 - `previews/`: render views used for review
 
 Use `projects/_template/` or `scripts/new_project.py` when beginning a new job.
+
+## Local Dashboard App
+
+`app/` contains the local-only **3D Print Design Studio Dashboard**. It wraps the existing reconstruction-first OpenSCAD workflow without replacing it. Root `AGENTS.md` remains authoritative, OpenSCAD remains the editable source of truth, and STL files remain export artifacts.
+
+What it does:
+
+- tracks project intake records in `app/data/projects.json`
+- lists existing `projects/` folders and detects source, STL, notes, manifests, review reports, and previews
+- generates Codex/OpenSCAD prompts for original design, reconstruction, and mesh cleanup jobs
+- calls the repo scripts for bootstrap, validation, STL export, preview export, output checks, and next-version creation
+- provides printability, quote-note, release-checklist, and customer-request organization
+
+Install and run:
+
+```powershell
+cd app
+npm install
+npm run dev
+```
+
+Open the dashboard at `http://127.0.0.1:5173`. The local API runs at `http://127.0.0.1:4177`.
+
+Required local commands:
+
+- `npm install`
+- `npm run dev`
+- `npm run build`
+
+Windows notes:
+
+- The backend calls repo scripts with `py -3`.
+- OpenSCAD export and preview buttons require OpenSCAD to be installed locally and discoverable by the repo scripts.
+- The app is local-only and does not use cloud login, paid services, or external API keys.
+
+Files it creates:
+
+- `app/data/projects.json`
+- `app/data/settings.json`
+- project records and bootstrap output under `projects/<project_stem>/` only when requested
+
+Current limitations:
+
+- no database in v01
+- no payment processing
+- no direct STL viewer
+- no automatic upload or customer portal
+- missing outputs are shown as `NOT VERIFIED` until file detection confirms them

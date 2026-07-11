@@ -1,0 +1,82 @@
+{
+  "project_stem": "washer_inner_latch_w11457841",
+  "human_name": "Whirlpool W11457841 Inner Latch Insert",
+  "status": "implementation",
+  "version": "v01",
+  "request": {
+    "product_type": "replacement latch insert",
+    "primary_job": "Replace the broken inner spring-loaded latch insert while reusing the intact round carrier",
+    "environment": "washer lid interlock",
+    "mounting_method": "carrier reuse with pivot/capture bar",
+    "material_targets": [
+      "PETG",
+      "ABS",
+      "ASA",
+      "Nylon"
+    ],
+    "printer_target": "Bambu Lab P2S",
+    "support_policy": "prefer_minimal"
+  },
+  "concepts": [
+    {
+      "name": "Near-OEM insert",
+      "weighted_total": 365
+    },
+    {
+      "name": "Simplified strengthened insert",
+      "weighted_total": 450
+    },
+    {
+      "name": "Carrier-fit gauge",
+      "weighted_total": 325
+    }
+  ],
+  "selected_concept": {
+    "name": "Simplified strengthened insert",
+    "justification": "Best balance of first-print success, carrier-fit realism, durability, and lock engagement preservation."
+  },
+  "parameter_plan": {
+    "latch_body_width": 19.3,
+    "carrier_reference_width": 28.1,
+    "pivot_or_capture_diameter": 3.1,
+    "critical_clearances": [
+      "carrier guide pads",
+      "pivot/capture bar",
+      "spring contact tab"
+    ],
+    "mass_reduction_strategy": "Use root relief pockets, tip relief pockets, and optional reinforcement only at the break-prone neck."
+  },
+  "reviews": {
+    "geometry": {
+      "status": "pass after corrective pass"
+    },
+    "printability": {
+      "status": "pass with PETG or stronger"
+    },
+    "design_quality": {
+      "status": "pass for a functional hidden repair insert"
+    }
+  },
+  "artifacts": {
+    "readme": "README.md",
+    "notes": "DESIGN_NOTES.md",
+    "feature_map": "references/photo_feature_map.md",
+    "sketches": "references/dimensional_sketches.md",
+    "grid_notes": "references/grid_photo_notes.md",
+    "stl": [
+      "stl/inner_latch_full_fidelity.stl",
+      "stl/inner_latch_full_fidelity_test_fit.stl",
+      "stl/inner_latch_simplified.stl",
+      "stl/inner_latch_simplified_test_fit.stl",
+      "stl/inner_latch_reinforced_simplified.stl",
+      "stl/carrier_fit_gauge.stl"
+    ],
+    "renders": [
+      "renders/top_view.png",
+      "renders/side_view.png",
+      "renders/underside_view.png",
+      "renders/installed_mockup.png",
+      "renders/exploded_view.png"
+    ]
+  }
+}

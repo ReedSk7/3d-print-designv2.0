@@ -15,6 +15,26 @@ MODULE_RE = re.compile(r"module\s+([A-Za-z_][A-Za-z0-9_]*)\s*\([^)]*\)\s*\{\s*\}
 MAGIC_NUMBER_RE = re.compile(
     r"\b(?:cube|translate|rotate|scale|cylinder|sphere)\s*\(\s*(?:\[)?\s*-?\d+(?:\.\d+)?"
 )
+DIRECT_CYLINDER_RE = re.compile(r"\bcylinder\s*\((?P<args>[^;{}]*?)\)", re.DOTALL)
+DIRECT_NUMERIC_DIAMETER_RE = re.compile(r"\b(?:d|d1|d2|r|r1|r2)\s*=\s*-?\d+(?:\.\d+)?\b")
+SCREW_FEATURE_RE = re.compile(
+    r"\b(?:screw|bolt|fastener|counterbore|countersink|washer|insert|thread)\b",
+    re.IGNORECASE,
+)
+REQUIRED_PROJECT_PARAMETERS = ("wall_thickness", "fit_clearance", "nozzle_diameter", "material")
+HARDWARE_LIBRARY_MARKERS = (
+    "hardware_library.scad",
+    "clearance_hole_d(",
+    "clearance_hole(",
+    "pilot_hole_d(",
+    "pilot_hole(",
+    "counterbore_d(",
+    "counterbore_pocket(",
+    "countersink_head_d(",
+    "countersink_pocket(",
+    "heat_set_insert_bore_d(",
+    "heat_set_insert_pocket(",
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -126,12 +146,76 @@ def missing_semicolon_issues(text: str) -> list[str]:
     return issues
 
 
-def structural_checks(original: str, stripped: str) -> tuple[list[str], list[str]]:
+def is_shared_hardware_library(input_path: Path) -> bool:
+    return input_path.name == "hardware_library.scad" and input_path.parent.name == "standards"
+
+
+def top_level_assignment_exists(text: str, name: str) -> bool:
+    return re.search(rf"(?m)^\s*{re.escape(name)}\s*=", text) is not None
+
+
+def hardware_library_used(original: str, stripped: str) -> bool:
+    combined = f"{original}\n{stripped}"
+    return any(marker in combined for marker in HARDWARE_LIBRARY_MARKERS)
+
+
+def project_parameter_issues(stripped: str, input_path: Path) -> list[str]:
+    if is_shared_hardware_library(input_path):
+        return []
+
+    issues: list[str] = []
+    for parameter in REQUIRED_PROJECT_PARAMETERS:
+        if not top_level_assignment_exists(stripped, parameter):
+            issues.append(
+                f"Missing required global parameter '{parameter}'. "
+                "Declare it as a named project parameter or derive it from a profile before geometry."
+            )
+    return issues
+
+
+def hardware_lint_issues(original: str, stripped: str, input_path: Path) -> list[str]:
+    if is_shared_hardware_library(input_path):
+        return []
+
+    issues: list[str] = []
+    uses_hardware = hardware_library_used(original, stripped)
+
+    if SCREW_FEATURE_RE.search(stripped) and not uses_hardware:
+        issues.append(
+            "Screw/fastener feature names found, but standards/hardware_library.scad "
+            "or its clearance/counterbore/countersink functions are not used."
+        )
+
+    for match in DIRECT_CYLINDER_RE.finditer(stripped):
+        call_args = match.group("args")
+        if DIRECT_NUMERIC_DIAMETER_RE.search(call_args):
+            issues.append(
+                "Direct numeric cylinder diameter/radius found. "
+                "Use named parameters; for screw, bolt, insert, or clearance features use standards/hardware_library.scad."
+            )
+            break
+
+    numeric_hardware_assignment = re.search(
+        r"(?m)^\s*(?:screw|bolt|fastener|counterbore|countersink|insert|washer)[a-z0-9_]*"
+        r"(?:diameter|depth|d|r)?\s*=\s*-?\d+(?:\.\d+)?\s*;",
+        stripped,
+    )
+    if numeric_hardware_assignment and not uses_hardware:
+        issues.append(
+            "Numeric screw/fastener hardware assignment found without using standards/hardware_library.scad."
+        )
+
+    return issues
+
+
+def structural_checks(original: str, stripped: str, input_path: Path) -> tuple[list[str], list[str]]:
     errors: list[str] = []
     warnings: list[str] = []
 
     errors.extend(balance_issues(stripped))
     errors.extend(missing_semicolon_issues(stripped))
+    errors.extend(project_parameter_issues(stripped, input_path))
+    errors.extend(hardware_lint_issues(original, stripped, input_path))
 
     for match in MODULE_RE.finditer(stripped):
         errors.append(f"Empty module detected: {match.group(1)}")
@@ -155,8 +239,8 @@ def structural_checks(original: str, stripped: str) -> tuple[list[str], list[str
     if len(magic_hits) >= 8:
         warnings.append("Many direct numeric geometry calls found; prefer named parameters for critical dimensions.")
 
-    if re.search(r"d\s*=\s*\d+(?:\.\d+)?", stripped) and "screw_diameter" not in stripped:
-        warnings.append("Direct hole diameter values found; consider named screw or clearance variables.")
+    if re.search(r"d\s*=\s*\d+(?:\.\d+)?", stripped):
+        warnings.append("Direct hole diameter values found; use named variables or hardware library functions.")
 
     return errors, warnings
 
@@ -182,7 +266,7 @@ def main() -> int:
 
     text = input_path.read_text(encoding="utf-8-sig")
     stripped = strip_comments_and_strings(text)
-    errors, warnings = structural_checks(text, stripped)
+    errors, warnings = structural_checks(text, stripped, input_path)
 
     if not args.no_openscad:
         try:

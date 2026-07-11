@@ -1,0 +1,24 @@
+{
+  "statuses": [
+    "intake",
+    "measuring",
+    "modeling",
+    "review",
+    "exported",
+    "printed",
+    "delivered",
+    "archived"
+  ],
+  "taskModes": [
+    "original_product_design",
+    "reference_based_reconstruction",
+    "mesh_cleanup_and_remodel"
+  ],
+  "printers": {
+    "Bambu Lab P2S": [256, 256, 256],
+    "Qidi XPlus 3": [280, 280, 270],
+    "Qidi XPlus 3 Pro": [280, 280, 270],
+    "Ender 3 Pro": [220, 220, 250]
+  },
+  "materials": ["PLA", "PETG", "PETG HF", "TPU", "ABS", "ASA", "Other"]
+}
