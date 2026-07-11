@@ -3,7 +3,7 @@
 // Units: millimeters.
 //
 // Measured hardware and supplier drawings override these starter values.
-// Use lowercase bolt names: "m3", "m4", "m5", "quarter_20".
+// Use lowercase hardware names: "m3", "m4", "m5", "number_8_wood", "quarter_20".
 // Use fit classes: "close", "normal", "loose".
 
 function material_hole_offset(material) =
@@ -23,10 +23,13 @@ function hardware_nominal_d(bolt_size) =
     (bolt_size == "m3") ? 3.00 :
     (bolt_size == "m4") ? 4.00 :
     (bolt_size == "m5") ? 5.00 :
+    (bolt_size == "number_8_wood") ? 4.40 :
     (bolt_size == "quarter_20") ? 6.35 :
     undef;
 
 function clearance_base_d(bolt_size, fit_class="normal") =
+    (bolt_size == "number_8_wood") ?
+        (fit_class == "normal" ? 4.65 : undef) :
     (bolt_size == "m3") ?
         (fit_class == "close" ? 3.20 : fit_class == "loose" ? 3.60 : 3.40) :
     (bolt_size == "m4") ?
@@ -51,6 +54,7 @@ function pilot_hole_d(bolt_size, material="petg") =
     undef;
 
 function counterbore_d(bolt_size, fit_class="normal", material="petg", nozzle_diameter=0.40) =
+    (bolt_size == "number_8_wood") ? 9.25 + material_hole_offset(material) + nozzle_hole_offset(nozzle_diameter) :
     (bolt_size == "m3") ? 6.20 + material_hole_offset(material) + nozzle_hole_offset(nozzle_diameter) :
     (bolt_size == "m4") ? 8.20 + material_hole_offset(material) + nozzle_hole_offset(nozzle_diameter) :
     (bolt_size == "m5") ? 10.20 + material_hole_offset(material) + nozzle_hole_offset(nozzle_diameter) :
@@ -58,6 +62,7 @@ function counterbore_d(bolt_size, fit_class="normal", material="petg", nozzle_di
     undef;
 
 function counterbore_depth(bolt_size, head_clearance=0.40) =
+    (bolt_size == "number_8_wood") ? 2.40 + head_clearance :
     (bolt_size == "m3") ? 3.00 + head_clearance :
     (bolt_size == "m4") ? 4.00 + head_clearance :
     (bolt_size == "m5") ? 5.00 + head_clearance :
@@ -65,6 +70,7 @@ function counterbore_depth(bolt_size, head_clearance=0.40) =
     undef;
 
 function countersink_head_d(bolt_size, fit_class="normal", material="petg", nozzle_diameter=0.40) =
+    (bolt_size == "number_8_wood") ? 9.25 + material_hole_offset(material) + nozzle_hole_offset(nozzle_diameter) :
     (bolt_size == "m3") ? 6.30 + material_hole_offset(material) + nozzle_hole_offset(nozzle_diameter) :
     (bolt_size == "m4") ? 8.40 + material_hole_offset(material) + nozzle_hole_offset(nozzle_diameter) :
     (bolt_size == "m5") ? 10.50 + material_hole_offset(material) + nozzle_hole_offset(nozzle_diameter) :
@@ -73,6 +79,7 @@ function countersink_head_d(bolt_size, fit_class="normal", material="petg", nozz
 
 function countersink_angle(bolt_size) =
     (bolt_size == "quarter_20") ? 82 :
+    (bolt_size == "number_8_wood") ? 82 :
     (bolt_size == "m3" || bolt_size == "m4" || bolt_size == "m5") ? 90 :
     undef;
 
