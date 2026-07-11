@@ -4,6 +4,8 @@ Protected interfaces are fit-critical or function-critical surfaces and dimensio
 
 Define protected interfaces before remodeling, reinforcement, chamfering, thickening, or cosmetic cleanup.
 
+Protected interfaces must be included in the project Geometry Contract before final OpenSCAD geometry begins.
+
 ## Common Examples
 
 - mounting hole spacing
@@ -27,6 +29,7 @@ Define protected interfaces before remodeling, reinforcement, chamfering, thicke
 
 - Compare protected interfaces directly against authoritative references.
 - Document protected interfaces in notes, manifest, comparison logs, and review reports.
+- If a protected interface lacks authoritative dimensions, block final model generation and produce a measurement checklist or minimal fit-test scaffold.
 - Do not modify protected interfaces without explicit instruction.
 - Do not redesign protected interfaces for looks.
 - Reinforce non-interface regions first.

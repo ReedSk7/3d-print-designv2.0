@@ -1,0 +1,27 @@
+{
+  "source_file": "references/MP25.stl (local-only; not committed)",
+  "output_stl": "exports/peg_hook_6p8mm_fit_petg.stl",
+  "output_3mf": "exports/peg_hook_6p8mm_fit_petg.3mf",
+  "editable_source": "source/peg_hook_6p8mm_fit_petg_edit.py",
+  "edit_method": "local_x_axis_scaling_on_lower_clip_region_only",
+  "dimension_changed": "lower peg/tab effective clip width",
+  "target_fit_dimension_mm": 6.8,
+  "measured_original_fit_width_mm": 6.44,
+  "measured_final_fit_width_mm": 6.8,
+  "overall_extents_mm": [
+    36.421,
+    43.715,
+    5.0
+  ],
+  "mesh_validation": {
+    "is_watertight": true,
+    "is_winding_consistent": true,
+    "euler_number": 2
+  },
+  "outside_edit_region_max_delta_mm": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "physical_fit_status": "not verified"
+}

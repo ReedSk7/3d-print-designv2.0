@@ -1,0 +1,121 @@
+# Kobalt 81798 Socket Organizer v04 Reference Diameter Log
+
+## Reference STL Circular Candidate Summary
+
+- 1-2 Imp 12 pt - 1-2 Imp 12 pt (1).stl.stl: 16 circular candidates; unique diameters [22.5, 26.5, 30.5, 34.5, 38.5]
+- 1-2 Metric 12 pt - 1-4- Drive - Metric - Deep - 12pt.stl.stl: 14 circular candidates; unique diameters [22.5, 24.5, 26.5, 28.5, 30.5, 32.5, 34.5]
+- 1-4 Imp 6 pt - 1-4- Imperial 6pt.stl.stl: 11 circular candidates; unique diameters [12.5, 13.5, 14.5, 16.5, 18.5, 20.5]
+- 1-4 Imp 12 pt - 1-4- Drive - Imperial - Deep - 6pt.stl.stl: 9 circular candidates; unique diameters [12.5, 14.0, 15.0, 16.5, 18.5]
+- 1-4 Imp Deep - Vertical - 1-4- Drive - Imperial - Deep - 6pt.stl.stl: 9 circular candidates; unique diameters [12.5, 14.0, 15.0, 16.5, 18.5]
+- 1-4 Metric Deep - Vertical - 1-4- Drive - Metric - Deep - 6pt (5).stl.stl: 10 circular candidates; unique diameters [12.5, 13.5, 14.0, 16.5, 17.5, 18.5, 20.5]
+- 1-4 Metric Short - Vertical - 1-4- Drive - Metric - Short - 6 Pt.stl.stl: 12 circular candidates; unique diameters [12.5, 13.5, 14.5, 16.5, 17.5, 18.5, 20.5]
+- 3-8 Imp Deep - Tray (1).stl.stl: 6 circular candidates; unique diameters [17.5, 18.5, 20.5, 22.75, 24.5, 26.75]
+- 3-8 Imperial 12 pt - Tray.stl(1).stl: 20 circular candidates; unique diameters [17.75, 18.5, 20.5, 21.75, 22.5, 24.5, 26.5, 28.5, 30.5, 32.5, 34.5]
+- 3-8 Imperial 12 pt - Tray.stl.stl: 20 circular candidates; unique diameters [17.75, 18.5, 20.5, 21.75, 22.5, 24.5, 26.5, 28.5, 30.5, 32.5, 34.5]
+- 3-8 Metric 6pt - Plate (1).stl.stl: 7 circular candidates; unique diameters [17.5, 18.5, 20.5, 22.5]
+- 3-8 Metric 12 pt - Tray (1).stl.stl: 22 circular candidates; unique diameters [17.5, 17.75, 18.5, 20.5, 21.5, 21.75, 22.5, 24.5, 25.25, 26.5, 28.5, 29.25, 30.5]
+- 3-8 Metric Deep - Plate (1).stl.stl: 16 circular candidates; unique diameters [17.5, 18.5, 20.5, 21.5, 22.5, 24.5, 25.0, 25.5, 26.5, 28.5, 29.0]
+- Printable Kobalt Sockets Gridfinity.stl: 44 circular candidates; unique diameters [13.01, 16.38, 16.39, 17.18, 17.22, 17.25, 17.26, 17.28, 17.29, 17.3, 17.32, 17.45, 18.16, 18.21, 18.22, 18.25, 18.28, 18.36, 20.19, 20.23, 20.35, 20.44, 22.16, 22.17, 22.24, 22.26, 22.29, 22.53, 24.14, 24.2, 24.26, 24.31, 25.27, 26.24, 26.32, 26.33, 26.34, 28.16]
+
+## Diameter Values Changed From v03
+
+- left_top lt_01 11_16: 23.30 -> 24.50 mm
+- left_top lt_01 3_4: 24.00 -> 26.50 mm
+- left_top lt_01 13_16: 24.80 -> 30.50 mm
+- left_top lt_01 7_8: 25.50 -> 32.50 mm
+- left_top lt_02 E18: 21.20 -> 22.50 mm
+- left_top lt_02 E20: 22.00 -> 23.50 mm
+- left_top lt_02 E22: 22.80 -> 24.50 mm
+- left_top lt_02 E24: 23.60 -> 25.00 mm
+- left_top lt_02 T55: 22.80 -> 24.50 mm
+- left_top lt_02 T60: 23.80 -> 25.00 mm
+- left_top lt_02 T70: 24.80 -> 25.50 mm
+- left_top lt_03 3_8: 21.20 -> 21.00 mm
+- left_top lt_03 7_16: 21.80 -> 21.20 mm
+- left_top lt_03 1_2: 22.30 -> 21.40 mm
+- left_top lt_03 9_16: 22.80 -> 21.60 mm
+- left_top lt_03 5_8: 23.20 -> 21.80 mm
+- left_top lt_03 11_16: 23.60 -> 22.00 mm
+- left_top lt_03 3_4: 24.00 -> 22.00 mm
+- left_top lt_04 6M: 20.80 -> 22.50 mm
+- left_top lt_04 7M: 21.20 -> 22.80 mm
+- left_top lt_04 8M: 21.60 -> 23.20 mm
+- left_top lt_04 9M: 22.00 -> 23.60 mm
+- left_top lt_04 10M: 22.50 -> 24.00 mm
+- left_top lt_04 11M: 23.00 -> 24.50 mm
+- left_top lt_04 12M: 23.50 -> 25.00 mm
+- left_top lt_05 13M: 22.80 -> 23.00 mm
+- left_top lt_05 14M: 23.20 -> 23.50 mm
+- left_top lt_05 15M: 23.60 -> 24.00 mm
+- left_top lt_05 16M: 24.00 -> 24.50 mm
+- left_top lt_05 17M: 24.40 -> 25.00 mm
+- left_top lt_05 18M: 24.80 -> 25.30 mm
+- left_top lt_05 19M: 25.20 -> 25.50 mm
+- left_bottom lb_01 1_4: 16.00 -> 17.50 mm
+- left_bottom lb_01 5_16: 16.80 -> 18.50 mm
+- left_bottom lb_01 3_8: 17.60 -> 20.50 mm
+- left_bottom lb_01 7_16: 18.40 -> 22.50 mm
+- left_bottom lb_01 1_2: 19.20 -> 24.50 mm
+- left_bottom lb_01 9_16: 20.00 -> 26.50 mm
+- left_bottom lb_02 E10: 15.80 -> 17.50 mm
+- left_bottom lb_02 E12: 17.00 -> 18.50 mm
+- left_bottom lb_02 E14: 18.20 -> 20.50 mm
+- left_bottom lb_02 E16: 19.40 -> 22.50 mm
+- left_bottom lb_03 1_8: 15.50 -> 17.50 mm
+- left_bottom lb_03 5_32: 16.00 -> 17.80 mm
+- left_bottom lb_03 3_16: 16.60 -> 18.50 mm
+- left_bottom lb_03 7_32: 17.20 -> 20.50 mm
+- left_bottom lb_03 1_4: 18.00 -> 21.50 mm
+- left_bottom lb_03 5_16: 18.80 -> 22.50 mm
+- left_bottom lb_03 3_8: 19.60 -> 24.50 mm
+- left_bottom lb_04 3M: 14.80 -> 15.20 mm
+- left_bottom lb_04 4M: 15.20 -> 15.40 mm
+- left_bottom lb_04 6M: 16.00 -> 15.80 mm
+- left_bottom lb_04 7M: 16.40 -> 16.00 mm
+- left_bottom lb_04 8M: 16.80 -> 16.20 mm
+- left_bottom lb_04 9M: 17.20 -> 16.40 mm
+- left_bottom lb_04 10M: 17.50 -> 16.60 mm
+- left_bottom lb_04 11M: 17.80 -> 16.80 mm
+- left_bottom lb_04 12M: 18.00 -> 17.00 mm
+- right_top rt_01 1_4: 13.20 -> 12.50 mm
+- right_top rt_01 5_16: 14.30 -> 14.50 mm
+- right_top rt_01 3_8: 15.40 -> 16.50 mm
+- right_top rt_02 E4: 11.60 -> 12.50 mm
+- right_top rt_02 E5: 12.20 -> 12.50 mm
+- right_top rt_02 E6: 12.80 -> 13.00 mm
+- right_top rt_02 E7: 13.40 -> 13.50 mm
+- right_top rt_02 E8: 14.00 -> 14.50 mm
+- right_top rt_03 1_16: 10.80 -> 12.50 mm
+- right_top rt_03 5_64: 11.20 -> 12.50 mm
+- right_top rt_03 3_32: 11.80 -> 12.50 mm
+- right_top rt_03 7_64: 12.40 -> 13.00 mm
+- right_top rt_03 1_8: 13.00 -> 13.50 mm
+- right_top rt_04 9_64: 13.20 -> 13.50 mm
+- right_top rt_04 5_32: 13.60 -> 14.00 mm
+- right_top rt_04 3_16: 14.00 -> 14.50 mm
+- right_top rt_04 7_32: 14.50 -> 15.00 mm
+- right_top rt_04 1_4: 15.00 -> 15.50 mm
+- right_top rt_05 2M: 11.00 -> 12.50 mm
+- right_top rt_05 2_5M: 11.60 -> 12.50 mm
+- right_top rt_05 3M: 12.20 -> 13.00 mm
+- right_top rt_05 4M: 13.00 -> 13.50 mm
+- right_top rt_05 5M: 13.80 -> 14.50 mm
+- right_top rt_05 6M: 14.60 -> 15.50 mm
+- right_top rt_06 7_32: 13.80 -> 14.00 mm
+- right_top rt_06 1_4: 14.60 -> 15.00 mm
+- right_top rt_06 PH3: 14.20 -> 14.50 mm
+- right_top rt_06 S1: 12.80 -> 13.00 mm
+- right_top rt_06 S2: 13.40 -> 13.50 mm
+- right_top rt_06 PZ1: 13.80 -> 14.00 mm
+- right_top rt_07 T8: 11.20 -> 12.50 mm
+- right_top rt_07 T9: 11.60 -> 12.50 mm
+- right_top rt_07 T10: 12.00 -> 12.50 mm
+- right_top rt_07 T15: 12.60 -> 13.00 mm
+- right_top rt_07 T20: 13.20 -> 13.30 mm
+- right_top rt_07 T25: 13.80 -> 13.60 mm
+- right_top rt_07 T27: 14.10 -> 13.80 mm
+- right_top rt_07 T30: 14.40 -> 14.00 mm
+
+## Interpretation
+
+The extracted diameters are reference tray pocket wall candidates. Many source STLs contain stepped holes, so v04 uses them as fit bands rather than copying the source tray geometry.

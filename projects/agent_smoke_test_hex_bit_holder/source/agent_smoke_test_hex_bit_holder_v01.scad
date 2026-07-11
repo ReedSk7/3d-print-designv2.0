@@ -1,3 +1,5 @@
+use <../../../standards/hardware_library.scad>
+
 // project_stem: agent_smoke_test_hex_bit_holder
 // version: v01
 // task_mode: original_product_design
@@ -16,12 +18,14 @@ $fn = 72;
 project_stem = "agent_smoke_test_hex_bit_holder";
 version = "v01";
 printer_name = "Bambu Lab P2S";
-material = "PETG";
+material = "petg";
+nozzle_diameter = 0.4;
 
 // Bit pocket controls. The hex pocket uses across-flats sizing.
 bit_count = 6;
 bit_nominal_size = 6.35;
 pocket_clearance = 0.35;
+fit_clearance = pocket_clearance;
 pocket_across_flats = bit_nominal_size + pocket_clearance;
 pocket_corner_diameter = pocket_across_flats / cos(30);
 pocket_depth = 18;
@@ -37,13 +41,15 @@ wall_thickness = 3;
 edge_chamfer = 0.8;
 
 // Screw mounting controls.
-screw_diameter = 4.5;
+bolt_size = "m4";
+screw_fit_class = "normal";
+screw_diameter = clearance_base_d(bolt_size, screw_fit_class);
 screw_spacing = 65;
 screw_z = 12;
 screw_boss_diameter = 15;
 screw_boss_depth = 2.4;
 countersink_enable = true;
-countersink_diameter = 9.5;
+countersink_diameter = countersink_head_d(bolt_size, screw_fit_class, material, nozzle_diameter) + 1.05;
 countersink_depth = 2.6;
 
 // Label controls.

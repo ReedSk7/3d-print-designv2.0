@@ -2,6 +2,13 @@
 
 FDM is the default process assumption unless the user explicitly requests another process.
 
+## Geometry Contract Gate
+
+- Before final OpenSCAD modeling, record critical dimensions, protected interfaces, confidence level, target tolerances, and FDM clearance gaps.
+- If a protected interface does not have authoritative dimensions, do not generate a complete final part. Create a measurement checklist or a minimal fit-test scaffold instead.
+- Bounding box agreement is not a pass condition by itself. Functional features must be checked directly.
+- A part is not physically verified by SCAD validation, STL export, or preview rendering. Physical verification requires a confirmed fit-test or one-to-one match to authoritative reference measurements.
+
 ## Geometry Checks
 
 - Keep walls at least two nozzle widths.
@@ -30,6 +37,7 @@ If a part exceeds the intended printer volume:
 - loose fit: 0.4 to 0.6 mm clearance
 - normal slip fit: 0.2 to 0.35 mm clearance
 - tight fit: 0.1 to 0.2 mm clearance
+- press-fit targets require measured mating dimensions, material, orientation, and a fit-test scaffold before final geometry
 - screw holes should be adjustable by variable
 - measured test-fit results override defaults
 - hardware library values are starters, not final authority

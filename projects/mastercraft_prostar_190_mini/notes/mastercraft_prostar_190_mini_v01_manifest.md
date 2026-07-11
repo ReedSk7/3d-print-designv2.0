@@ -1,0 +1,22 @@
+# Project Manifest
+
+- project stem: `mastercraft_prostar_190_mini`
+- task mode: `original_product_design`
+- current version: `v01`
+- status: `modeled`
+- source file: `source/mastercraft_prostar_190_mini_v01.scad`
+- export file: `exports/mastercraft_prostar_190_mini_v01.stl`
+- preview files:
+  - `previews/mastercraft_prostar_190_mini_v01_iso.png`
+  - `previews/mastercraft_prostar_190_mini_v01_front.png`
+  - `previews/mastercraft_prostar_190_mini_v01_side.png`
+  - `previews/mastercraft_prostar_190_mini_v01_top.png`
+- authoritative references:
+  - published ProStar 190 dimensions used as scale anchors: 19'6" length and 85" beam
+- supporting references:
+  - public listings and photos for overall closed-bow ski boat silhouette
+- notes file: `notes/mastercraft_prostar_190_mini_v01_notes.md`
+- next actions:
+- optional refinement of hull flare or deck transitions in a later revision
+- STL export status: exported and mesh-verified
+- future 3MF: not required for this repo version

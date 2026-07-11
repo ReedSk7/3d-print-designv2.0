@@ -1,0 +1,27 @@
+# Reconstruction Checklist
+
+- [ ] exact target part defined
+- [ ] reused surrounding parts defined
+- [ ] not-modeled items defined
+- [ ] reference hierarchy recorded
+- [ ] authoritative references recorded
+- [ ] supporting references recorded
+- [ ] anchor dimensions recorded
+- [ ] measured dimensions separated from inferred dimensions
+- [ ] protected interfaces recorded
+- [ ] rough mesh inspected if present
+- [ ] rough mesh treated as supporting only unless explicitly trusted
+- [ ] measurement checklist created if critical data is missing
+- [ ] bbox compared
+- [ ] side silhouette compared
+- [ ] front silhouette compared
+- [ ] top silhouette compared when needed
+- [ ] critical local features compared
+- [ ] reinforcement limited to non-interface zones
+- [ ] print orientation chosen
+- [ ] support plan chosen
+- [ ] low-confidence zones documented
+- [ ] FDM printability reviewed
+- [ ] STL exported successfully or export failure documented
+- [ ] required previews rendered or render failure documented
+- [ ] versioned files named correctly

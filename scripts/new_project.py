@@ -87,6 +87,7 @@ def replace_common_tokens(text: str, stem: str, version: str, task_mode: str, pr
         'version = "v01";': f'version = "{version}";',
         'printer_name = "Bambu Lab P2S";': f'printer_name = "{printer}";',
         'material = "PETG";': f'material = "{material}";',
+        'material = "petg";': f'material = "{material.lower()}";',
         "// project_stem: example_project": f"// project_stem: {stem}",
         "// project_stem: example_multi_part": f"// project_stem: {stem}",
         "// version: v01": f"// version: {version}",

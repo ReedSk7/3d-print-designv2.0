@@ -1,0 +1,866 @@
+[
+  {
+    "sort_order": 2,
+    "module_name": "left_top",
+    "row_id": "lt_01",
+    "display_label": "11_16",
+    "old_diameter": 23.3,
+    "new_diameter": 24.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 3,
+    "module_name": "left_top",
+    "row_id": "lt_01",
+    "display_label": "3_4",
+    "old_diameter": 24.0,
+    "new_diameter": 26.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 4,
+    "module_name": "left_top",
+    "row_id": "lt_01",
+    "display_label": "13_16",
+    "old_diameter": 24.8,
+    "new_diameter": 30.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 5,
+    "module_name": "left_top",
+    "row_id": "lt_01",
+    "display_label": "7_8",
+    "old_diameter": 25.5,
+    "new_diameter": 32.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 6,
+    "module_name": "left_top",
+    "row_id": "lt_02",
+    "display_label": "E18",
+    "old_diameter": 21.2,
+    "new_diameter": 22.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 7,
+    "module_name": "left_top",
+    "row_id": "lt_02",
+    "display_label": "E20",
+    "old_diameter": 22.0,
+    "new_diameter": 23.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 8,
+    "module_name": "left_top",
+    "row_id": "lt_02",
+    "display_label": "E22",
+    "old_diameter": 22.8,
+    "new_diameter": 24.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 9,
+    "module_name": "left_top",
+    "row_id": "lt_02",
+    "display_label": "E24",
+    "old_diameter": 23.6,
+    "new_diameter": 25.0,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 10,
+    "module_name": "left_top",
+    "row_id": "lt_02",
+    "display_label": "T55",
+    "old_diameter": 22.8,
+    "new_diameter": 24.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 11,
+    "module_name": "left_top",
+    "row_id": "lt_02",
+    "display_label": "T60",
+    "old_diameter": 23.8,
+    "new_diameter": 25.0,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 12,
+    "module_name": "left_top",
+    "row_id": "lt_02",
+    "display_label": "T70",
+    "old_diameter": 24.8,
+    "new_diameter": 25.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 14,
+    "module_name": "left_top",
+    "row_id": "lt_03",
+    "display_label": "3_8",
+    "old_diameter": 21.2,
+    "new_diameter": 21.0,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 15,
+    "module_name": "left_top",
+    "row_id": "lt_03",
+    "display_label": "7_16",
+    "old_diameter": 21.8,
+    "new_diameter": 21.2,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 16,
+    "module_name": "left_top",
+    "row_id": "lt_03",
+    "display_label": "1_2",
+    "old_diameter": 22.3,
+    "new_diameter": 21.4,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 17,
+    "module_name": "left_top",
+    "row_id": "lt_03",
+    "display_label": "9_16",
+    "old_diameter": 22.8,
+    "new_diameter": 21.6,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 18,
+    "module_name": "left_top",
+    "row_id": "lt_03",
+    "display_label": "5_8",
+    "old_diameter": 23.2,
+    "new_diameter": 21.8,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 19,
+    "module_name": "left_top",
+    "row_id": "lt_03",
+    "display_label": "11_16",
+    "old_diameter": 23.6,
+    "new_diameter": 22.0,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 20,
+    "module_name": "left_top",
+    "row_id": "lt_03",
+    "display_label": "3_4",
+    "old_diameter": 24.0,
+    "new_diameter": 22.0,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 21,
+    "module_name": "left_top",
+    "row_id": "lt_04",
+    "display_label": "6M",
+    "old_diameter": 20.8,
+    "new_diameter": 22.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 22,
+    "module_name": "left_top",
+    "row_id": "lt_04",
+    "display_label": "7M",
+    "old_diameter": 21.2,
+    "new_diameter": 22.8,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 23,
+    "module_name": "left_top",
+    "row_id": "lt_04",
+    "display_label": "8M",
+    "old_diameter": 21.6,
+    "new_diameter": 23.2,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 24,
+    "module_name": "left_top",
+    "row_id": "lt_04",
+    "display_label": "9M",
+    "old_diameter": 22.0,
+    "new_diameter": 23.6,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 25,
+    "module_name": "left_top",
+    "row_id": "lt_04",
+    "display_label": "10M",
+    "old_diameter": 22.5,
+    "new_diameter": 24.0,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 26,
+    "module_name": "left_top",
+    "row_id": "lt_04",
+    "display_label": "11M",
+    "old_diameter": 23.0,
+    "new_diameter": 24.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 27,
+    "module_name": "left_top",
+    "row_id": "lt_04",
+    "display_label": "12M",
+    "old_diameter": 23.5,
+    "new_diameter": 25.0,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 28,
+    "module_name": "left_top",
+    "row_id": "lt_05",
+    "display_label": "13M",
+    "old_diameter": 22.8,
+    "new_diameter": 23.0,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 29,
+    "module_name": "left_top",
+    "row_id": "lt_05",
+    "display_label": "14M",
+    "old_diameter": 23.2,
+    "new_diameter": 23.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 30,
+    "module_name": "left_top",
+    "row_id": "lt_05",
+    "display_label": "15M",
+    "old_diameter": 23.6,
+    "new_diameter": 24.0,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 31,
+    "module_name": "left_top",
+    "row_id": "lt_05",
+    "display_label": "16M",
+    "old_diameter": 24.0,
+    "new_diameter": 24.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 32,
+    "module_name": "left_top",
+    "row_id": "lt_05",
+    "display_label": "17M",
+    "old_diameter": 24.4,
+    "new_diameter": 25.0,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 33,
+    "module_name": "left_top",
+    "row_id": "lt_05",
+    "display_label": "18M",
+    "old_diameter": 24.8,
+    "new_diameter": 25.3,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 34,
+    "module_name": "left_top",
+    "row_id": "lt_05",
+    "display_label": "19M",
+    "old_diameter": 25.2,
+    "new_diameter": 25.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 35,
+    "module_name": "left_bottom",
+    "row_id": "lb_01",
+    "display_label": "1_4",
+    "old_diameter": 16.0,
+    "new_diameter": 17.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 36,
+    "module_name": "left_bottom",
+    "row_id": "lb_01",
+    "display_label": "5_16",
+    "old_diameter": 16.8,
+    "new_diameter": 18.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 37,
+    "module_name": "left_bottom",
+    "row_id": "lb_01",
+    "display_label": "3_8",
+    "old_diameter": 17.6,
+    "new_diameter": 20.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 38,
+    "module_name": "left_bottom",
+    "row_id": "lb_01",
+    "display_label": "7_16",
+    "old_diameter": 18.4,
+    "new_diameter": 22.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 39,
+    "module_name": "left_bottom",
+    "row_id": "lb_01",
+    "display_label": "1_2",
+    "old_diameter": 19.2,
+    "new_diameter": 24.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 40,
+    "module_name": "left_bottom",
+    "row_id": "lb_01",
+    "display_label": "9_16",
+    "old_diameter": 20.0,
+    "new_diameter": 26.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 41,
+    "module_name": "left_bottom",
+    "row_id": "lb_02",
+    "display_label": "E10",
+    "old_diameter": 15.8,
+    "new_diameter": 17.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 42,
+    "module_name": "left_bottom",
+    "row_id": "lb_02",
+    "display_label": "E12",
+    "old_diameter": 17.0,
+    "new_diameter": 18.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 43,
+    "module_name": "left_bottom",
+    "row_id": "lb_02",
+    "display_label": "E14",
+    "old_diameter": 18.2,
+    "new_diameter": 20.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 44,
+    "module_name": "left_bottom",
+    "row_id": "lb_02",
+    "display_label": "E16",
+    "old_diameter": 19.4,
+    "new_diameter": 22.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 45,
+    "module_name": "left_bottom",
+    "row_id": "lb_03",
+    "display_label": "1_8",
+    "old_diameter": 15.5,
+    "new_diameter": 17.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 46,
+    "module_name": "left_bottom",
+    "row_id": "lb_03",
+    "display_label": "5_32",
+    "old_diameter": 16.0,
+    "new_diameter": 17.8,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 47,
+    "module_name": "left_bottom",
+    "row_id": "lb_03",
+    "display_label": "3_16",
+    "old_diameter": 16.6,
+    "new_diameter": 18.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 48,
+    "module_name": "left_bottom",
+    "row_id": "lb_03",
+    "display_label": "7_32",
+    "old_diameter": 17.2,
+    "new_diameter": 20.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 49,
+    "module_name": "left_bottom",
+    "row_id": "lb_03",
+    "display_label": "1_4",
+    "old_diameter": 18.0,
+    "new_diameter": 21.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 50,
+    "module_name": "left_bottom",
+    "row_id": "lb_03",
+    "display_label": "5_16",
+    "old_diameter": 18.8,
+    "new_diameter": 22.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 51,
+    "module_name": "left_bottom",
+    "row_id": "lb_03",
+    "display_label": "3_8",
+    "old_diameter": 19.6,
+    "new_diameter": 24.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 52,
+    "module_name": "left_bottom",
+    "row_id": "lb_04",
+    "display_label": "3M",
+    "old_diameter": 14.8,
+    "new_diameter": 15.2,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 53,
+    "module_name": "left_bottom",
+    "row_id": "lb_04",
+    "display_label": "4M",
+    "old_diameter": 15.2,
+    "new_diameter": 15.4,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 55,
+    "module_name": "left_bottom",
+    "row_id": "lb_04",
+    "display_label": "6M",
+    "old_diameter": 16.0,
+    "new_diameter": 15.8,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 56,
+    "module_name": "left_bottom",
+    "row_id": "lb_04",
+    "display_label": "7M",
+    "old_diameter": 16.4,
+    "new_diameter": 16.0,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 57,
+    "module_name": "left_bottom",
+    "row_id": "lb_04",
+    "display_label": "8M",
+    "old_diameter": 16.8,
+    "new_diameter": 16.2,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 58,
+    "module_name": "left_bottom",
+    "row_id": "lb_04",
+    "display_label": "9M",
+    "old_diameter": 17.2,
+    "new_diameter": 16.4,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 59,
+    "module_name": "left_bottom",
+    "row_id": "lb_04",
+    "display_label": "10M",
+    "old_diameter": 17.5,
+    "new_diameter": 16.6,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 60,
+    "module_name": "left_bottom",
+    "row_id": "lb_04",
+    "display_label": "11M",
+    "old_diameter": 17.8,
+    "new_diameter": 16.8,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 61,
+    "module_name": "left_bottom",
+    "row_id": "lb_04",
+    "display_label": "12M",
+    "old_diameter": 18.0,
+    "new_diameter": 17.0,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 62,
+    "module_name": "right_top",
+    "row_id": "rt_01",
+    "display_label": "1_4",
+    "old_diameter": 13.2,
+    "new_diameter": 12.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 63,
+    "module_name": "right_top",
+    "row_id": "rt_01",
+    "display_label": "5_16",
+    "old_diameter": 14.3,
+    "new_diameter": 14.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 64,
+    "module_name": "right_top",
+    "row_id": "rt_01",
+    "display_label": "3_8",
+    "old_diameter": 15.4,
+    "new_diameter": 16.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 65,
+    "module_name": "right_top",
+    "row_id": "rt_02",
+    "display_label": "E4",
+    "old_diameter": 11.6,
+    "new_diameter": 12.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 66,
+    "module_name": "right_top",
+    "row_id": "rt_02",
+    "display_label": "E5",
+    "old_diameter": 12.2,
+    "new_diameter": 12.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 67,
+    "module_name": "right_top",
+    "row_id": "rt_02",
+    "display_label": "E6",
+    "old_diameter": 12.8,
+    "new_diameter": 13.0,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 68,
+    "module_name": "right_top",
+    "row_id": "rt_02",
+    "display_label": "E7",
+    "old_diameter": 13.4,
+    "new_diameter": 13.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 69,
+    "module_name": "right_top",
+    "row_id": "rt_02",
+    "display_label": "E8",
+    "old_diameter": 14.0,
+    "new_diameter": 14.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 70,
+    "module_name": "right_top",
+    "row_id": "rt_03",
+    "display_label": "1_16",
+    "old_diameter": 10.8,
+    "new_diameter": 12.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 71,
+    "module_name": "right_top",
+    "row_id": "rt_03",
+    "display_label": "5_64",
+    "old_diameter": 11.2,
+    "new_diameter": 12.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 72,
+    "module_name": "right_top",
+    "row_id": "rt_03",
+    "display_label": "3_32",
+    "old_diameter": 11.8,
+    "new_diameter": 12.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 73,
+    "module_name": "right_top",
+    "row_id": "rt_03",
+    "display_label": "7_64",
+    "old_diameter": 12.4,
+    "new_diameter": 13.0,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 74,
+    "module_name": "right_top",
+    "row_id": "rt_03",
+    "display_label": "1_8",
+    "old_diameter": 13.0,
+    "new_diameter": 13.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 75,
+    "module_name": "right_top",
+    "row_id": "rt_04",
+    "display_label": "9_64",
+    "old_diameter": 13.2,
+    "new_diameter": 13.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 76,
+    "module_name": "right_top",
+    "row_id": "rt_04",
+    "display_label": "5_32",
+    "old_diameter": 13.6,
+    "new_diameter": 14.0,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 77,
+    "module_name": "right_top",
+    "row_id": "rt_04",
+    "display_label": "3_16",
+    "old_diameter": 14.0,
+    "new_diameter": 14.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 78,
+    "module_name": "right_top",
+    "row_id": "rt_04",
+    "display_label": "7_32",
+    "old_diameter": 14.5,
+    "new_diameter": 15.0,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 79,
+    "module_name": "right_top",
+    "row_id": "rt_04",
+    "display_label": "1_4",
+    "old_diameter": 15.0,
+    "new_diameter": 15.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 80,
+    "module_name": "right_top",
+    "row_id": "rt_05",
+    "display_label": "2M",
+    "old_diameter": 11.0,
+    "new_diameter": 12.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 81,
+    "module_name": "right_top",
+    "row_id": "rt_05",
+    "display_label": "2_5M",
+    "old_diameter": 11.6,
+    "new_diameter": 12.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 82,
+    "module_name": "right_top",
+    "row_id": "rt_05",
+    "display_label": "3M",
+    "old_diameter": 12.2,
+    "new_diameter": 13.0,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 83,
+    "module_name": "right_top",
+    "row_id": "rt_05",
+    "display_label": "4M",
+    "old_diameter": 13.0,
+    "new_diameter": 13.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 84,
+    "module_name": "right_top",
+    "row_id": "rt_05",
+    "display_label": "5M",
+    "old_diameter": 13.8,
+    "new_diameter": 14.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 85,
+    "module_name": "right_top",
+    "row_id": "rt_05",
+    "display_label": "6M",
+    "old_diameter": 14.6,
+    "new_diameter": 15.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 86,
+    "module_name": "right_top",
+    "row_id": "rt_06",
+    "display_label": "7_32",
+    "old_diameter": 13.8,
+    "new_diameter": 14.0,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 87,
+    "module_name": "right_top",
+    "row_id": "rt_06",
+    "display_label": "1_4",
+    "old_diameter": 14.6,
+    "new_diameter": 15.0,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 88,
+    "module_name": "right_top",
+    "row_id": "rt_06",
+    "display_label": "PH3",
+    "old_diameter": 14.2,
+    "new_diameter": 14.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 89,
+    "module_name": "right_top",
+    "row_id": "rt_06",
+    "display_label": "S1",
+    "old_diameter": 12.8,
+    "new_diameter": 13.0,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 90,
+    "module_name": "right_top",
+    "row_id": "rt_06",
+    "display_label": "S2",
+    "old_diameter": 13.4,
+    "new_diameter": 13.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 91,
+    "module_name": "right_top",
+    "row_id": "rt_06",
+    "display_label": "PZ1",
+    "old_diameter": 13.8,
+    "new_diameter": 14.0,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 92,
+    "module_name": "right_top",
+    "row_id": "rt_07",
+    "display_label": "T8",
+    "old_diameter": 11.2,
+    "new_diameter": 12.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 93,
+    "module_name": "right_top",
+    "row_id": "rt_07",
+    "display_label": "T9",
+    "old_diameter": 11.6,
+    "new_diameter": 12.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 94,
+    "module_name": "right_top",
+    "row_id": "rt_07",
+    "display_label": "T10",
+    "old_diameter": 12.0,
+    "new_diameter": 12.5,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 95,
+    "module_name": "right_top",
+    "row_id": "rt_07",
+    "display_label": "T15",
+    "old_diameter": 12.6,
+    "new_diameter": 13.0,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 96,
+    "module_name": "right_top",
+    "row_id": "rt_07",
+    "display_label": "T20",
+    "old_diameter": 13.2,
+    "new_diameter": 13.3,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 97,
+    "module_name": "right_top",
+    "row_id": "rt_07",
+    "display_label": "T25",
+    "old_diameter": 13.8,
+    "new_diameter": 13.6,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 98,
+    "module_name": "right_top",
+    "row_id": "rt_07",
+    "display_label": "T27",
+    "old_diameter": 14.1,
+    "new_diameter": 13.8,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  },
+  {
+    "sort_order": 99,
+    "module_name": "right_top",
+    "row_id": "rt_07",
+    "display_label": "T30",
+    "old_diameter": 14.4,
+    "new_diameter": 14.0,
+    "basis": "free STL reference diameter band constrained to v04 layout"
+  }
+]

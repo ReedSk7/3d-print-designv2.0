@@ -1,4 +1,6 @@
-// project_stem: example_project
+use <../../../standards/hardware_library.scad>
+
+// project_stem: <project_stem>
 // version: v01
 // units: millimeters
 // orientation: Z+ is up
@@ -13,31 +15,46 @@ $fn = 64;
 // -------------------------
 // Parameters
 // -------------------------
-project_stem = "example_project";
+project_stem = "<project_stem>";
 version = "v01";
 printer_name = "Bambu Lab P2S";
-material = "PETG";
+material = "petg";
+nozzle_diameter = 0.4;
 
 clearance_profile = "normal_slip";
 loose_clearance = 0.5;
 normal_clearance = 0.3;
 tight_clearance = 0.15;
-fit_clearance = normal_clearance;
+fit_clearance = normal_clearance + material_hole_offset(material) + nozzle_hole_offset(nozzle_diameter);
 
 part_width = 60;
 part_depth = 30;
 part_height = 12;
 wall_thickness = 3.2;
 
-screw_diameter = 4.5;
-screw_head_diameter = 8.5;
-screw_head_depth = 3;
+bolt_size = "m4";
+screw_fit_class = "normal";
+screw_diameter = clearance_hole_d(bolt_size, screw_fit_class, material, nozzle_diameter);
+screw_head_diameter = counterbore_d(bolt_size, screw_fit_class, material, nozzle_diameter);
+screw_head_depth = counterbore_depth(bolt_size);
 use_countersink = false;
 use_counterbore = true;
 
 rib_thickness = 2.4;
 rib_height = 10;
 edge_chamfer = 0.8;
+
+cutter_overlap_z = 1;
+cutter_extra_z = cutter_overlap_z * 2;
+left_hole_x_ratio = 0.3;
+right_hole_x_ratio = 0.7;
+hole_center_y = part_depth / 2;
+left_hole_x = part_width * left_hole_x_ratio;
+right_hole_x = part_width * right_hole_x_ratio;
+screw_head_pocket_z = part_height - screw_head_depth;
+rib_offset_x = 8;
+rib_length = 18;
+rib_center_y = part_depth / 2 - rib_thickness / 2;
 
 export_part = "main";
 split_part = "none"; // none, left, right
@@ -51,14 +68,14 @@ module rounded_box(size_vec, radius = 1) {
 }
 
 module screw_clearance_hole(height) {
-    cylinder(h = height, d = screw_diameter + fit_clearance);
+    clearance_hole(bolt_size, height, screw_fit_class, material, nozzle_diameter);
 }
 
 module screw_head_pocket(depth) {
     if (use_counterbore) {
-        cylinder(h = depth, d = screw_head_diameter + fit_clearance);
+        counterbore_pocket(bolt_size, depth, screw_fit_class, material, nozzle_diameter);
     } else if (use_countersink) {
-        cylinder(h = depth, d1 = screw_head_diameter + fit_clearance, d2 = screw_diameter + fit_clearance);
+        countersink_pocket(bolt_size, screw_fit_class, material, nozzle_diameter);
     }
 }
 
@@ -73,22 +90,22 @@ module reinforcement_rib(length) {
 module main_body() {
     difference() {
         rounded_box([part_width, part_depth, part_height], edge_chamfer);
-        translate([part_width * 0.3, part_depth / 2, -1])
-            screw_clearance_hole(part_height + 2);
-        translate([part_width * 0.7, part_depth / 2, -1])
-            screw_clearance_hole(part_height + 2);
-        translate([part_width * 0.3, part_depth / 2, part_height - screw_head_depth])
-            screw_head_pocket(screw_head_depth + 1);
-        translate([part_width * 0.7, part_depth / 2, part_height - screw_head_depth])
-            screw_head_pocket(screw_head_depth + 1);
+        translate([left_hole_x, hole_center_y, -cutter_overlap_z])
+            screw_clearance_hole(part_height + cutter_extra_z);
+        translate([right_hole_x, hole_center_y, -cutter_overlap_z])
+            screw_clearance_hole(part_height + cutter_extra_z);
+        translate([left_hole_x, hole_center_y, screw_head_pocket_z])
+            screw_head_pocket(screw_head_depth + cutter_overlap_z);
+        translate([right_hole_x, hole_center_y, screw_head_pocket_z])
+            screw_head_pocket(screw_head_depth + cutter_overlap_z);
     }
 }
 
 module reinforced_part() {
     union() {
         main_body();
-        translate([8, part_depth / 2 - rib_thickness / 2, part_height])
-            reinforcement_rib(18);
+        translate([rib_offset_x, rib_center_y, part_height])
+            reinforcement_rib(rib_length);
     }
 }
 

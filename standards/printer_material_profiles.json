@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "units": "millimeters",
+  "default_printer_profile": "high_performance_corexy_300",
+  "default_material": "petg",
+  "default_nozzle_diameter": 0.4,
+  "fit_classes": {
+    "close": {
+      "description": "Close clearance for accurately tuned printers; test-fit required for protected interfaces.",
+      "base_clearance_mm": 0.15
+    },
+    "normal": {
+      "description": "General FDM slip fit starting point.",
+      "base_clearance_mm": 0.3
+    },
+    "loose": {
+      "description": "Easy assembly or rougher printer starting point.",
+      "base_clearance_mm": 0.5
+    }
+  },
+  "printers": {
+    "high_performance_corexy_300": {
+      "display_name": "High Performance CoreXY 300",
+      "build_volume_mm": [300, 300, 300],
+      "motion_system": "corexy",
+      "default_nozzle_diameter": 0.4,
+      "nozzle_configurations": {
+        "0.4": {
+          "nozzle_diameter_mm": 0.4,
+          "default_line_width_mm": 0.45,
+          "minimum_line_width_mm": 0.4,
+          "recommended_wall_count": 3,
+          "minimum_wall_thickness_mm": 0.8,
+          "durable_wall_thickness_mm": 1.2,
+          "hole_xy_compensation_mm": 0.0
+        },
+        "0.6": {
+          "nozzle_diameter_mm": 0.6,
+          "default_line_width_mm": 0.66,
+          "minimum_line_width_mm": 0.6,
+          "recommended_wall_count": 3,
+          "minimum_wall_thickness_mm": 1.2,
+          "durable_wall_thickness_mm": 1.8,
+          "hole_xy_compensation_mm": 0.1
+        }
+      },
+      "printer_profile_offset_mm": {
+        "hole_clearance": 0.0,
+        "external_fit": 0.0
+      }
+    }
+  },
+  "materials": {
+    "pla": {
+      "display_name": "PLA",
+      "typical_linear_shrinkage_fraction": 0.002,
+      "hole_clearance_offset_mm": 0.0,
+      "external_fit_offset_mm": 0.0,
+      "minimum_wall_multiplier": 2.0,
+      "bridge_risk": "low",
+      "notes": "Good dimensional baseline for indoor parts; poor heat resistance."
+    },
+    "petg": {
+      "display_name": "PETG",
+      "typical_linear_shrinkage_fraction": 0.004,
+      "hole_clearance_offset_mm": 0.05,
+      "external_fit_offset_mm": 0.05,
+      "calibrated_hole_compensation_by_nozzle_mm": {
+        "0.6": {
+          "offset_mm": 0.15,
+          "source_project": "battery_strap_holder",
+          "calibration_date": "2026-05-29",
+          "nominal_cad_dim_mm": 4.0,
+          "printed_actual_dim_mm": 3.85,
+          "delta_mm": -0.15,
+          "measurement_type": "hole_diameter"
+        }
+      },
+      "minimum_wall_multiplier": 2.4,
+      "bridge_risk": "medium",
+      "notes": "Good default for functional parts; tends to need more clearance than PLA."
+    }
+  },
+  "computed_clearance_formula": {
+    "hole_clearance_mm": "fit_classes[fit_class].base_clearance_mm + calibrated_hole_compensation_by_nozzle_mm[material][nozzle].offset_mm when present, otherwise materials[material].hole_clearance_offset_mm + printers[printer].nozzle_configurations[nozzle].hole_xy_compensation_mm + printers[printer].printer_profile_offset_mm.hole_clearance",
+    "external_fit_clearance_mm": "fit_classes[fit_class].base_clearance_mm + materials[material].external_fit_offset_mm + printers[printer].printer_profile_offset_mm.external_fit",
+    "minimum_wall_thickness_mm": "max(printer_nozzle.minimum_wall_thickness_mm, nozzle_diameter_mm * material.minimum_wall_multiplier)"
+  }
+}

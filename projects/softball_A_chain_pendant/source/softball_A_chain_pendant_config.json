@@ -1,0 +1,54 @@
+{
+  "project_stem": "softball_A_chain_pendant",
+  "version": "v01",
+  "task_mode": "mesh_cleanup_and_remodel",
+  "printer": "Bambu Lab P2S with AMS",
+  "units": "mm",
+  "orientation": "Z+ up, flat back on bed",
+  "visual_reference_only": true,
+  "size_variants": {
+    "large": {
+      "target_height_mm": 104,
+      "max_width_mm": 90,
+      "bail_opening_standard_mm": [15, 8.5],
+      "bail_opening_oversized_mm": [22, 12]
+    },
+    "small": {
+      "target_height_mm": 75,
+      "max_width_mm": 65,
+      "minimum_bail_opening_standard_mm": [10, 6]
+    }
+  },
+  "minimum_features_mm": {
+    "stitch_width": 1.2,
+    "stitch_clear_spacing": 0.9,
+    "letter_feature_width": 7.0,
+    "bail_wall": 3.2,
+    "raised_layer_height_difference": 0.85
+  },
+  "export_defines": {
+    "part_index_override": {
+      "0": "full_multicolor_assembly",
+      "1": "full_single_color",
+      "2": "black_base_outline",
+      "3": "yellow_softball_face",
+      "4": "red_A_and_stitches",
+      "5": "white_highlight_optional"
+    },
+    "size_index_override": {
+      "0": "large",
+      "1": "small"
+    },
+    "bail_index_override": {
+      "0": "standard",
+      "1": "oversized"
+    },
+    "include_optional_highlights_override": [false, true],
+    "use_font_A_override": [false, true]
+  },
+  "notes": [
+    "Default source uses the geometric fallback A for reliable OpenSCAD export.",
+    "Images and AI mesh outputs are supporting references only; this is not an exact logo reconstruction.",
+    "Multicolor STL parts are intended to be imported as parts of the same object in Bambu Studio."
+  ]
+}

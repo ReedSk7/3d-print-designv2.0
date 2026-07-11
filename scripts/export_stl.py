@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from mesh_quality_check import run_mesh_quality_check
 from _openscad_cli import (
     OpenSCADNotFound,
     define_args,
@@ -24,6 +25,11 @@ def parse_args() -> argparse.Namespace:
         default=[],
         metavar="KEY=VALUE",
         help="OpenSCAD -D override. Repeat for multiple values.",
+    )
+    parser.add_argument(
+        "--allow-multiple-bodies",
+        action="store_true",
+        help="Allow disconnected mesh bodies after STL export. Strict single-body checks remain the default.",
     )
     return parser.parse_args()
 
@@ -75,8 +81,22 @@ def main() -> int:
             print(result.stderr.rstrip())
         return 1
 
+    mesh_exit_code = run_mesh_quality_check(
+        output_path,
+        allow_multiple_bodies=args.allow_multiple_bodies,
+    )
+    if mesh_exit_code != 0:
+        try:
+            output_path.unlink()
+            print(f"Deleted failed STL: {output_path}")
+        except OSError as exc:
+            print(f"WARNING: Could not delete failed STL: {exc}")
+        print("FAIL")
+        print("STL export failed mesh quality checks.")
+        return mesh_exit_code or 1
+
     print("PASS")
-    print(f"STL exported: {output_path}")
+    print(f"STL exported and mesh-checked: {output_path}")
     return 0
 
 

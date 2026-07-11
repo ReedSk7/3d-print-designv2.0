@@ -1,4 +1,6 @@
-// project_stem: example_multi_part
+use <../../../standards/hardware_library.scad>
+
+// project_stem: <project_stem>
 // version: v01
 // units: millimeters
 // orientation: Z+ is up
@@ -13,30 +15,50 @@ $fn = 64;
 // -------------------------
 // Parameters
 // -------------------------
-project_stem = "example_multi_part";
+project_stem = "<project_stem>";
 version = "v01";
 printer_name = "Bambu Lab P2S";
-material = "PETG";
+material = "petg";
+nozzle_diameter = 0.4;
 
 clearance_profile = "normal_slip";
 loose_clearance = 0.5;
 normal_clearance = 0.3;
 tight_clearance = 0.15;
-fit_clearance = normal_clearance;
+fit_clearance = normal_clearance + material_hole_offset(material) + nozzle_hole_offset(nozzle_diameter);
 
 overall_width = 180;
 overall_depth = 80;
 overall_height = 16;
 wall_thickness = 3.2;
 
-screw_diameter = 4.5;
-screw_head_diameter = 8.5;
-screw_head_depth = 3;
+bolt_size = "m4";
+screw_fit_class = "normal";
+screw_diameter = clearance_hole_d(bolt_size, screw_fit_class, material, nozzle_diameter);
+screw_head_diameter = counterbore_d(bolt_size, screw_fit_class, material, nozzle_diameter);
+screw_head_depth = counterbore_depth(bolt_size);
 use_countersink = false;
 use_counterbore = true;
 
 rib_thickness = 2.4;
 rib_height = 12;
+
+cutter_overlap_z = 1;
+cutter_extra_z = cutter_overlap_z * 2;
+hole_offset_x = 25;
+hole_center_y = overall_depth / 2;
+split_overlap = 1;
+split_plane_x = overall_width / 2;
+alignment_offset_x = 10;
+alignment_y_ratio_a = 0.3;
+alignment_y_ratio_b = 0.7;
+alignment_x = split_plane_x - alignment_offset_x;
+alignment_y_a = overall_depth * alignment_y_ratio_a;
+alignment_y_b = overall_depth * alignment_y_ratio_b;
+alignment_socket_z = overall_height - cutter_overlap_z;
+alignment_pin_diameter = 5;
+alignment_pin_height = 8;
+alignment_socket_height = 9;
 
 export_part = "all"; // all, left, right
 split_part = "left_right";
@@ -45,20 +67,20 @@ split_part = "left_right";
 // Helper Modules
 // -------------------------
 module screw_clearance_hole(height) {
-    cylinder(h = height, d = screw_diameter + fit_clearance);
+    clearance_hole(bolt_size, height, screw_fit_class, material, nozzle_diameter);
 }
 
 module counterbore(depth) {
     if (use_counterbore)
-        cylinder(h = depth, d = screw_head_diameter + fit_clearance);
+        counterbore_pocket(bolt_size, depth, screw_fit_class, material, nozzle_diameter);
 }
 
 module alignment_pin() {
-    cylinder(h = 8, d = 5 - tight_clearance);
+    cylinder(h = alignment_pin_height, d = alignment_pin_diameter - tight_clearance);
 }
 
 module alignment_socket() {
-    cylinder(h = 9, d = 5 + normal_clearance);
+    cylinder(h = alignment_socket_height, d = alignment_pin_diameter + normal_clearance);
 }
 
 module reinforcement_rib(length) {
@@ -72,11 +94,11 @@ module reinforcement_rib(length) {
 module base_body() {
     difference() {
         cube([overall_width, overall_depth, overall_height]);
-        for (x_pos = [25, overall_width - 25]) {
-            translate([x_pos, overall_depth / 2, -1])
-                screw_clearance_hole(overall_height + 2);
-            translate([x_pos, overall_depth / 2, overall_height - screw_head_depth])
-                counterbore(screw_head_depth + 1);
+        for (x_pos = [hole_offset_x, overall_width - hole_offset_x]) {
+            translate([x_pos, hole_center_y, -cutter_overlap_z])
+                screw_clearance_hole(overall_height + cutter_extra_z);
+            translate([x_pos, hole_center_y, overall_height - screw_head_depth])
+                counterbore(screw_head_depth + cutter_overlap_z);
         }
     }
 }
@@ -84,25 +106,25 @@ module base_body() {
 module split_volume_left() {
     intersection() {
         base_body();
-        translate([-1, -1, -1])
-            cube([overall_width / 2 + 1, overall_depth + 2, overall_height + 2]);
+        translate([-split_overlap, -split_overlap, -split_overlap])
+            cube([split_plane_x + split_overlap, overall_depth + cutter_extra_z, overall_height + cutter_extra_z]);
     }
 }
 
 module split_volume_right() {
     intersection() {
         base_body();
-        translate([overall_width / 2, -1, -1])
-            cube([overall_width / 2 + 1, overall_depth + 2, overall_height + 2]);
+        translate([split_plane_x, -split_overlap, -split_overlap])
+            cube([split_plane_x + split_overlap, overall_depth + cutter_extra_z, overall_height + cutter_extra_z]);
     }
 }
 
 module left_part() {
     union() {
         split_volume_left();
-        translate([overall_width / 2 - 10, overall_depth * 0.3, overall_height])
+        translate([alignment_x, alignment_y_a, overall_height])
             alignment_pin();
-        translate([overall_width / 2 - 10, overall_depth * 0.7, overall_height])
+        translate([alignment_x, alignment_y_b, overall_height])
             alignment_pin();
     }
 }
@@ -110,9 +132,9 @@ module left_part() {
 module right_part() {
     difference() {
         split_volume_right();
-        translate([overall_width / 2 - 10, overall_depth * 0.3, overall_height - 1])
+        translate([alignment_x, alignment_y_a, alignment_socket_z])
             alignment_socket();
-        translate([overall_width / 2 - 10, overall_depth * 0.7, overall_height - 1])
+        translate([alignment_x, alignment_y_b, alignment_socket_z])
             alignment_socket();
     }
 }
