@@ -6,7 +6,9 @@ from .artifacts import (
     ArtifactRecord,
     ArtifactRole,
     artifact_record_from_path,
+    read_and_verify_artifact,
     resolve_and_verify_artifact,
+    sha256_bytes,
     sha256_file,
 )
 from .measurements import (
@@ -54,8 +56,10 @@ __all__ = [
     "SpecificationTimestamps",
     "VerificationPolicy",
     "artifact_record_from_path",
-    "resolve_and_verify_artifact",
     "measurement_contract_issues",
+    "read_and_verify_artifact",
+    "resolve_and_verify_artifact",
+    "sha256_bytes",
     "sha256_file",
     "validate_measurement_contract",
 ]

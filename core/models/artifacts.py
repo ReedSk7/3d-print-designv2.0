@@ -34,6 +34,12 @@ def sha256_file(path: Path, *, chunk_size: int = 1024 * 1024) -> str:
     return digest.hexdigest()
 
 
+def sha256_bytes(data: bytes) -> str:
+    """Return the lowercase SHA-256 digest for one immutable byte buffer."""
+
+    return hashlib.sha256(data).hexdigest()
+
+
 @dataclass(frozen=True, slots=True)
 class ArtifactRecord:
     role: ArtifactRole
@@ -113,6 +119,46 @@ def resolve_and_verify_artifact(
 ) -> Path:
     """Resolve one recorded artifact and verify containment, byte size, and SHA-256."""
 
+    resolved = _resolve_artifact_path(artifact, workspace_root=workspace_root)
+    if resolved.stat().st_size != artifact.size_bytes:
+        raise ArtifactIntegrityError(
+            f"Artifact size does not match the manifest: {artifact.path}"
+        )
+    if sha256_file(resolved) != artifact.sha256:
+        raise ArtifactIntegrityError(
+            f"Artifact SHA-256 does not match the manifest: {artifact.path}"
+        )
+    return resolved
+
+
+def read_and_verify_artifact(
+    artifact: ArtifactRecord,
+    *,
+    workspace_root: Path,
+) -> tuple[Path, bytes]:
+    """Read an artifact once, then verify and return that exact byte buffer."""
+
+    resolved = _resolve_artifact_path(artifact, workspace_root=workspace_root)
+    try:
+        data = resolved.read_bytes()
+    except OSError as exc:
+        raise ArtifactIntegrityError(f"Artifact could not be read: {artifact.path}") from exc
+    if len(data) != artifact.size_bytes:
+        raise ArtifactIntegrityError(
+            f"Artifact size does not match the manifest: {artifact.path}"
+        )
+    if sha256_bytes(data) != artifact.sha256:
+        raise ArtifactIntegrityError(
+            f"Artifact SHA-256 does not match the manifest: {artifact.path}"
+        )
+    return resolved, data
+
+
+def _resolve_artifact_path(
+    artifact: ArtifactRecord,
+    *,
+    workspace_root: Path,
+) -> Path:
     root = workspace_root.resolve(strict=True)
     try:
         resolved = (root / artifact.path).resolve(strict=True)
@@ -123,14 +169,6 @@ def resolve_and_verify_artifact(
         ) from exc
     if not resolved.is_file():
         raise ArtifactIntegrityError(f"Artifact is not a file: {artifact.path}")
-    if resolved.stat().st_size != artifact.size_bytes:
-        raise ArtifactIntegrityError(
-            f"Artifact size does not match the manifest: {artifact.path}"
-        )
-    if sha256_file(resolved) != artifact.sha256:
-        raise ArtifactIntegrityError(
-            f"Artifact SHA-256 does not match the manifest: {artifact.path}"
-        )
     return resolved
 
 

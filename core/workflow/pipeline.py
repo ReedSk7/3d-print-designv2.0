@@ -17,7 +17,9 @@ from core.models.artifacts import (
     ArtifactManifest,
     ArtifactRecord,
     ArtifactRole,
+    read_and_verify_artifact,
     resolve_and_verify_artifact,
+    sha256_bytes,
     sha256_file,
 )
 from core.models.spec import GenerationMode, ProjectSpec
@@ -27,6 +29,7 @@ from core.validation.mesh import MeshReport, require_valid_mesh
 from core.validation.specification import (
     SpecificationError,
     load_project_spec,
+    load_project_spec_bytes,
     validate_parameter_document,
 )
 from generators.base import GenerationContext, GenerationResult, PartGenerator
@@ -177,16 +180,16 @@ def _verify_fit_coupon_evidence(
             f"Referenced fit-coupon manifest was not found: {manifest_path}"
         )
     try:
-        manifest_sha256 = sha256_file(manifest_path)
+        manifest_bytes = manifest_path.read_bytes()
     except OSError as exc:
-        raise SpecificationError(f"Could not hash fit-coupon manifest: {exc}") from exc
-    if manifest_sha256 != evidence.coupon_manifest_sha256:
+        raise SpecificationError(f"Could not read fit-coupon manifest: {exc}") from exc
+    if sha256_bytes(manifest_bytes) != evidence.coupon_manifest_sha256:
         raise SpecificationError(
             "Fit-coupon evidence manifest SHA-256 does not match the cited manifest."
         )
     try:
-        manifest_document = json.loads(manifest_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        manifest_document = json.loads(manifest_bytes)
+    except json.JSONDecodeError as exc:
         raise SpecificationError(f"Could not read fit-coupon manifest: {exc}") from exc
     if not isinstance(manifest_document, dict):
         raise SpecificationError("Fit-coupon manifest root must be an object.")
@@ -260,7 +263,9 @@ def _verify_fit_coupon_evidence(
         manifest_document, {ArtifactRole.SPEC_SNAPSHOT}
     )
     try:
-        coupon_spec_path = resolve_and_verify_artifact(spec_record, workspace_root=root)
+        coupon_spec_path, coupon_spec_bytes = read_and_verify_artifact(
+            spec_record, workspace_root=root
+        )
     except ValueError as exc:
         raise SpecificationError(
             f"Referenced fit-coupon specification failed integrity checks: {exc}"
@@ -269,7 +274,10 @@ def _verify_fit_coupon_evidence(
         raise SpecificationError(
             "Referenced fit-coupon specification is not in the cited coupon version directory."
         )
-    coupon_spec = load_project_spec(coupon_spec_path)
+    coupon_spec = load_project_spec_bytes(
+        coupon_spec_bytes,
+        source=f"fit-coupon specification {coupon_spec_path}",
+    )
     if coupon_spec.generation_mode is not GenerationMode.FIT_COUPON or coupon_spec.fit_coupon is None:
         raise SpecificationError("Referenced coupon specification is not a fit-coupon request.")
     if coupon_spec.project.id != evidence.coupon_project_id or coupon_spec.project.version != evidence.coupon_project_version:

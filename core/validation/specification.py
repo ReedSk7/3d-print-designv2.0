@@ -138,6 +138,28 @@ def load_project_spec(path: str | Path) -> ProjectSpec:
 
     spec_path = Path(path)
     document = load_decimal_json(spec_path)
+    return project_spec_from_document(document)
+
+
+def load_project_spec_bytes(
+    data: bytes,
+    *,
+    source: str = "project specification bytes",
+) -> ProjectSpec:
+    """Parse and validate the exact bytes already verified by an artifact digest."""
+
+    try:
+        document = json.loads(data.decode("utf-8"), parse_float=Decimal)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise SpecificationError(f"Invalid JSON in {source}: {exc}") from exc
+    if not isinstance(document, dict):
+        raise SpecificationError(f"{source} root must be a JSON object.")
+    return project_spec_from_document(document)
+
+
+def project_spec_from_document(document: Mapping[str, object]) -> ProjectSpec:
+    """Validate and freeze an already parsed project-specification document."""
+
     validate_project_document(document)
     try:
         return ProjectSpec.from_dict(document)

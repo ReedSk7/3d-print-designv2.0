@@ -6,6 +6,7 @@ from core.models.artifacts import (
     ArtifactManifest,
     ArtifactRole,
     artifact_record_from_path,
+    read_and_verify_artifact,
 )
 
 
@@ -47,3 +48,22 @@ def test_manifest_rejects_premature_physical_confirmation() -> None:
             artifacts=(),
             physical_fit_confirmed=True,
         )
+
+
+def test_verified_artifact_bytes_remain_bound_after_path_changes(tmp_path: Path) -> None:
+    artifact = tmp_path / "spec.snapshot.json"
+    original = b'{"schema_version":"1.0"}\n'
+    artifact.write_bytes(original)
+    record = artifact_record_from_path(
+        artifact,
+        role=ArtifactRole.SPEC_SNAPSHOT,
+        workspace_root=tmp_path,
+        created_at="2026-08-10T00:00:00Z",
+    )
+
+    resolved, verified_bytes = read_and_verify_artifact(
+        record, workspace_root=tmp_path
+    )
+    resolved.write_bytes(b'{"schema_version":"changed"}\n')
+
+    assert verified_bytes == original

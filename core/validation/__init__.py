@@ -5,7 +5,9 @@ from .specification import (
     SpecificationError,
     load_decimal_json,
     load_project_spec,
+    load_project_spec_bytes,
     load_project_spec_schema,
+    project_spec_from_document,
     validate_parameter_document,
     validate_project_document,
 )
@@ -15,7 +17,9 @@ __all__ = [
     "SpecificationError",
     "load_decimal_json",
     "load_project_spec",
+    "load_project_spec_bytes",
     "load_project_spec_schema",
+    "project_spec_from_document",
     "validate_parameter_document",
     "validate_project_document",
 ]
