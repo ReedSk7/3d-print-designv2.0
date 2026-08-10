@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0",
+  "profile_id": "neutral_unverified_starter",
+  "version": "1.0.0",
+  "printer_profile": "*",
+  "material": "*",
+  "nozzle_diameter_mm": null,
+  "corrections": {
+    "hole_offset_mm": {
+      "value": 0,
+      "status": "unverified_starter",
+      "evidence": [],
+      "notes": "Neutral zero offset. This is not a proven printer correction."
+    },
+    "shaft_offset_mm": {
+      "value": 0,
+      "status": "unverified_starter",
+      "evidence": [],
+      "notes": "Neutral zero offset. This is not a proven printer correction."
+    },
+    "press_fit_offset_mm": {
+      "value": 0,
+      "status": "unverified_starter",
+      "evidence": [],
+      "notes": "Neutral zero offset. Generate a fit coupon before relying on a press fit."
+    },
+    "slip_fit_offset_mm": {
+      "value": 0,
+      "status": "unverified_starter",
+      "evidence": [],
+      "notes": "Neutral zero offset. Generate a fit coupon before relying on a slip fit."
+    }
+  },
+  "scale_corrections": {
+    "x": {
+      "value": 1,
+      "status": "unverified_starter",
+      "evidence": [],
+      "notes": "Neutral unit scale. This is not a measured scale correction."
+    },
+    "y": {
+      "value": 1,
+      "status": "unverified_starter",
+      "evidence": [],
+      "notes": "Neutral unit scale. This is not a measured scale correction."
+    },
+    "z": {
+      "value": 1,
+      "status": "unverified_starter",
+      "evidence": [],
+      "notes": "Neutral unit scale. This is not a measured scale correction."
+    }
+  },
+  "notes": "Unverified neutral starter only. It must never be represented as proven calibration."
+}

@@ -1,0 +1,57 @@
+{
+  "$schema": "../../schemas/project-spec-v1.schema.json",
+  "schema_version": "1.0",
+  "project": {
+    "id": "bushing_example",
+    "name": "Bushing Example",
+    "version": "v01",
+    "intent": "original"
+  },
+  "generator": {
+    "id": "bushing",
+    "version": "1.0.0",
+    "parameters": {
+      "inside_diameter": 20,
+      "outside_diameter": 30,
+      "length": 25,
+      "chamfer": 1,
+      "fit_class": "nominal",
+      "split": false,
+      "minimum_wall_thickness": 1.2
+    }
+  },
+  "input_units": "mm",
+  "printer_profile": "generic_fdm",
+  "material": "PETG",
+  "nozzle_diameter": 0.4,
+  "fit_profile": "neutral_unverified_starter",
+  "generation_mode": "full_part",
+  "fit_coupon": null,
+  "fit_coupon_evidence": null,
+  "measurement_contract": [],
+  "verification_policy": {
+    "require_authoritative_protected_interfaces": true,
+    "require_proven_calibration_for_full_part": false,
+    "mesh_bounds_tolerance_mm": 0.05,
+    "physical_fit_required_for_verified_claim": true
+  },
+  "workflow_state": "draft",
+  "physical_verification": {
+    "status": "not_confirmed",
+    "confirmed_at": null,
+    "confirmed_by": null,
+    "evidence": [],
+    "notes": "No printed fit test has been performed."
+  },
+  "timestamps": {
+    "created_at": "2026-08-10T00:00:00Z",
+    "updated_at": "2026-08-10T00:00:00Z"
+  },
+  "generated_artifacts": [],
+  "warnings": [
+    "The neutral calibration profile is an unverified starter."
+  ],
+  "unresolved_assumptions": [
+    "The example dimensions are illustrative and are not measured from a replacement part."
+  ]
+}

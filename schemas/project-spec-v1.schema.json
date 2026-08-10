@@ -1,0 +1,366 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://reedsk7.github.io/parametric-part-workbench/schemas/project-spec-v1.schema.json",
+  "title": "Parametric Part Workbench Project Specification v1",
+  "description": "Source specification for deterministic, dimension-driven part generation. Artifact checks do not imply physical fit.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "project",
+    "generator",
+    "input_units",
+    "printer_profile",
+    "material",
+    "nozzle_diameter",
+    "fit_profile",
+    "generation_mode",
+    "fit_coupon",
+    "fit_coupon_evidence",
+    "measurement_contract",
+    "verification_policy",
+    "workflow_state",
+    "physical_verification",
+    "timestamps",
+    "generated_artifacts",
+    "warnings",
+    "unresolved_assumptions"
+  ],
+  "properties": {
+    "$schema": { "type": "string", "minLength": 1 },
+    "schema_version": { "const": "1.0" },
+    "project": { "$ref": "#/$defs/project" },
+    "generator": { "$ref": "#/$defs/generator" },
+    "input_units": { "enum": ["mm", "inch"] },
+    "printer_profile": { "$ref": "#/$defs/identifier" },
+    "material": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "nozzle_diameter": { "type": "number", "exclusiveMinimum": 0 },
+    "fit_profile": { "$ref": "#/$defs/identifier" },
+    "generation_mode": { "enum": ["full_part", "fit_coupon"] },
+    "fit_coupon": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/fit_coupon" }
+      ]
+    },
+    "fit_coupon_evidence": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/fit_coupon_evidence" }
+      ]
+    },
+    "measurement_contract": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/measurement" }
+    },
+    "verification_policy": { "$ref": "#/$defs/verification_policy" },
+    "workflow_state": { "$ref": "#/$defs/workflow_state" },
+    "physical_verification": { "$ref": "#/$defs/physical_verification" },
+    "timestamps": { "$ref": "#/$defs/timestamps" },
+    "generated_artifacts": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifact" }
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "unresolved_assumptions": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "generation_mode": { "const": "fit_coupon" } },
+        "required": ["generation_mode"]
+      },
+      "then": { "properties": { "fit_coupon": { "$ref": "#/$defs/fit_coupon" } } },
+      "else": { "properties": { "fit_coupon": { "type": "null" } } }
+    },
+    {
+      "if": {
+        "properties": {
+          "workflow_state": { "const": "physical_fit_confirmed" }
+        },
+        "required": ["workflow_state"]
+      },
+      "then": {
+        "properties": {
+          "generation_mode": { "const": "full_part" },
+          "physical_verification": {
+            "properties": { "status": { "const": "confirmed" } }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "physical_verification": {
+            "properties": { "status": { "const": "confirmed" } },
+            "required": ["status"]
+          }
+        },
+        "required": ["physical_verification"]
+      },
+      "then": {
+        "properties": {
+          "workflow_state": { "const": "physical_fit_confirmed" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "workflow_state": { "const": "fit_coupon_passed" } },
+        "required": ["workflow_state"]
+      },
+      "then": {
+        "properties": {
+          "generation_mode": { "const": "fit_coupon" },
+          "fit_coupon_evidence": { "$ref": "#/$defs/fit_coupon_evidence" }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]*$",
+      "minLength": 2,
+      "maxLength": 64
+    },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "version", "intent"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "version": { "type": "string", "pattern": "^v[0-9]{2,}$" },
+        "intent": { "enum": ["original", "replacement"] }
+      }
+    },
+    "generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "parameters"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+        },
+        "parameters": { "type": "object" }
+      }
+    },
+    "fit_coupon": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["interface_parameter", "candidate_offsets", "notes"],
+      "properties": {
+        "interface_parameter": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)*$"
+        },
+        "candidate_offsets": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": { "type": "number" }
+        },
+        "notes": { "type": "string" }
+      }
+    },
+    "fit_coupon_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "coupon_project_id",
+        "coupon_project_version",
+        "coupon_artifact_sha256",
+        "interface_parameter",
+        "candidate_offset_mm",
+        "tested_at",
+        "tested_by",
+        "printer_profile",
+        "material",
+        "nozzle_diameter_mm",
+        "calibration_profile_id",
+        "calibration_profile_version",
+        "acceptance_criterion",
+        "measured_result",
+        "passed",
+        "notes"
+      ],
+      "properties": {
+        "coupon_project_id": { "$ref": "#/$defs/identifier" },
+        "coupon_project_version": { "type": "string", "pattern": "^v[0-9]{2,}$" },
+        "coupon_artifact_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "interface_parameter": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)*$"
+        },
+        "candidate_offset_mm": { "type": "number" },
+        "tested_at": { "type": "string", "format": "date-time" },
+        "tested_by": { "type": "string", "minLength": 1 },
+        "printer_profile": { "$ref": "#/$defs/identifier" },
+        "material": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "nozzle_diameter_mm": { "type": "number", "exclusiveMinimum": 0 },
+        "calibration_profile_id": { "$ref": "#/$defs/identifier" },
+        "calibration_profile_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+        },
+        "acceptance_criterion": { "type": "string", "minLength": 1 },
+        "measured_result": { "type": "string", "minLength": 1 },
+        "passed": { "const": true },
+        "notes": { "type": "string" }
+      }
+    },
+    "measurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "parameter_name",
+        "measured_value",
+        "units",
+        "measurement_source",
+        "authority",
+        "confidence_level",
+        "tolerance",
+        "protected_interface",
+        "verification_notes"
+      ],
+      "properties": {
+        "parameter_name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)*$"
+        },
+        "measured_value": { "type": "number" },
+        "units": { "enum": ["mm", "inch"] },
+        "measurement_source": { "type": "string", "minLength": 1 },
+        "authority": { "enum": ["authoritative", "supporting", "inferred"] },
+        "confidence_level": { "enum": ["low", "medium", "high"] },
+        "tolerance": { "type": "number", "minimum": 0 },
+        "protected_interface": { "type": "boolean" },
+        "verification_notes": { "type": "string" }
+      }
+    },
+    "verification_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "require_authoritative_protected_interfaces",
+        "require_proven_calibration_for_full_part",
+        "mesh_bounds_tolerance_mm",
+        "physical_fit_required_for_verified_claim"
+      ],
+      "properties": {
+        "require_authoritative_protected_interfaces": { "const": true },
+        "require_proven_calibration_for_full_part": { "type": "boolean" },
+        "mesh_bounds_tolerance_mm": { "type": "number", "minimum": 0 },
+        "physical_fit_required_for_verified_claim": { "const": true }
+      }
+    },
+    "workflow_state": {
+      "enum": [
+        "draft",
+        "measurement_contract_complete",
+        "generated",
+        "scad_compiled",
+        "mesh_valid",
+        "dimensions_reviewed",
+        "fit_coupon_generated",
+        "fit_coupon_passed",
+        "full_part_exported",
+        "physical_fit_confirmed"
+      ]
+    },
+    "physical_verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "confirmed_at", "confirmed_by", "evidence", "notes"],
+      "properties": {
+        "status": { "enum": ["not_confirmed", "confirmed"] },
+        "confirmed_at": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string", "format": "date-time" }
+          ]
+        },
+        "confirmed_by": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string", "minLength": 1 }
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "notes": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "status": { "const": "confirmed" } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "confirmed_at": { "type": "string", "format": "date-time" },
+              "confirmed_by": { "type": "string", "minLength": 1 },
+              "evidence": { "minItems": 1 }
+            }
+          },
+          "else": {
+            "properties": {
+              "confirmed_at": { "type": "null" },
+              "confirmed_by": { "type": "null" }
+            }
+          }
+        }
+      ]
+    },
+    "timestamps": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["created_at", "updated_at"],
+      "properties": {
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "path", "sha256", "size_bytes", "created_at"],
+      "properties": {
+        "role": {
+          "enum": [
+            "spec_snapshot",
+            "scad_source",
+            "stl_mesh",
+            "fit_coupon_scad",
+            "fit_coupon_stl",
+            "artifact_manifest"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?![A-Za-z]:)(?!\\.\\.(?:/|$))(?!.*?/\\.\\.(?:/|$)).+"
+        },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "size_bytes": { "type": "integer", "minimum": 0 },
+        "created_at": { "type": "string", "format": "date-time" },
+        "media_type": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

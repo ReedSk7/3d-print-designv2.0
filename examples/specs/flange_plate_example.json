@@ -1,0 +1,70 @@
+{
+  "$schema": "../../schemas/project-spec-v1.schema.json",
+  "schema_version": "1.0",
+  "project": {
+    "id": "flange_plate_example",
+    "name": "Flange Plate Example",
+    "version": "v01",
+    "intent": "original"
+  },
+  "generator": {
+    "id": "flange_plate",
+    "version": "1.0.0",
+    "parameters": {
+      "outer_width": 100,
+      "outer_height": 80,
+      "plate_thickness": 5,
+      "center_opening": {
+        "type": "circle",
+        "diameter": 50
+      },
+      "corner_radius": 8,
+      "mounting_hole_pattern": {
+        "type": "rectangular",
+        "x_spacing": 80,
+        "y_spacing": 60
+      },
+      "mounting_hole_diameter": 4.5,
+      "fit_class": "nominal",
+      "hole_finish": {
+        "type": "counterbore",
+        "diameter": 8.5,
+        "depth": 3
+      }
+    }
+  },
+  "input_units": "mm",
+  "printer_profile": "generic_fdm",
+  "material": "PLA",
+  "nozzle_diameter": 0.4,
+  "fit_profile": "neutral_unverified_starter",
+  "generation_mode": "full_part",
+  "fit_coupon": null,
+  "fit_coupon_evidence": null,
+  "measurement_contract": [],
+  "verification_policy": {
+    "require_authoritative_protected_interfaces": true,
+    "require_proven_calibration_for_full_part": false,
+    "mesh_bounds_tolerance_mm": 0.05,
+    "physical_fit_required_for_verified_claim": true
+  },
+  "workflow_state": "draft",
+  "physical_verification": {
+    "status": "not_confirmed",
+    "confirmed_at": null,
+    "confirmed_by": null,
+    "evidence": [],
+    "notes": "No fastener, opening, or mounting-pattern fit test has been performed."
+  },
+  "timestamps": {
+    "created_at": "2026-08-10T00:00:00Z",
+    "updated_at": "2026-08-10T00:00:00Z"
+  },
+  "generated_artifacts": [],
+  "warnings": [
+    "The neutral calibration profile is an unverified starter."
+  ],
+  "unresolved_assumptions": [
+    "The example opening and mounting dimensions are illustrative rather than measured interfaces."
+  ]
+}
