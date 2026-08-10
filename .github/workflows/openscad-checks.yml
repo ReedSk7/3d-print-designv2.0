@@ -1,17 +1,29 @@
-name: OpenSCAD Repo Checks
+name: Parametric Part Workbench CI
 
 on:
   push:
     branches:
       - main
+      - "rebuild/**"
   pull_request:
     branches:
       - main
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ppw-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   repo-checks:
-    name: Validate OpenSCAD workflow
-    runs-on: ubuntu-latest
+    name: Validate deterministic generators
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONUNBUFFERED: "1"
+      QT_QPA_PLATFORM: offscreen
 
     steps:
       - name: Checkout repo
@@ -20,16 +32,43 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.x"
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+
+      - name: Install OpenSCAD
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends openscad
+          command -v openscad
+          openscad --version
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
 
       - name: Python syntax check
         run: |
-          python -m py_compile scripts/*.py
+          python -m compileall -q core generators scripts tests
 
-      - name: Validate example SCAD
-        run: |
-          python scripts/validate_scad.py projects/simple_wall_bracket_example/source/simple_wall_bracket_example_v01.scad
+      - name: Run unit tests
+        run: python -m pytest tests/unit -q
 
-      - name: Check example project outputs
+      - name: Run generator integration tests
+        run: python -m pytest tests/integration -q
+
+      - name: Run documented CLI vertical slices
         run: |
-          python scripts/check_project_outputs.py --project projects/simple_wall_bracket_example --task-mode original_product_design --version v01
+          python scripts/generate_part.py --spec examples/specs/bushing_example.json
+          python scripts/generate_part.py --spec examples/specs/round_adapter_example.json
+          python scripts/generate_part.py --spec examples/specs/flange_plate_example.json
+
+      - name: Enforce generated-output policy
+        run: |
+          python scripts/check_output_policy.py --require-workspace-artifacts
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=all)"

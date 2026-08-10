@@ -14,6 +14,25 @@ references/paid/*
 *.tmp.obj
 *.tmp.glb
 
+# Phase 1 generated artifacts. Small, intentional test fixtures require
+# an explicit force-add and are checked by scripts/check_output_policy.py.
+*.stl
+*.STL
+*.3mf
+*.3MF
+*.png
+*.PNG
+*.obj
+*.OBJ
+*.glb
+*.GLB
+*.log
+*.log.*
+
+# Local-first generated project workspaces
+/workspace/**
+!/workspace/.gitkeep
+
 # Slicer temp and export junk
 *.3mf.cache
 *.gcode
@@ -25,6 +44,9 @@ references/paid/*
 # Python
 __pycache__/
 .venv/
+.pytest_cache/
+.coverage
+htmlcov/
 
 # Editors and OS files
 .idea/
