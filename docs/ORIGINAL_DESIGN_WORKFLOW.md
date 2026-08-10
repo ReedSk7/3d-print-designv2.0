@@ -1,5 +1,8 @@
 # Original Design Workflow
 
+> Legacy pre-v3 workflow. The active Phase 1 specification and generation path
+> is documented in `docs/rebuild/TARGET_ARCHITECTURE.md` and `README.md`.
+
 Use `original_product_design` only for true greenfield parts that are not defined by an existing reference part, product, broken component, OEM identifier, measured sample, or rough mesh.
 
 ## Steps

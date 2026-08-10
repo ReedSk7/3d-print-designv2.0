@@ -1,50 +1,42 @@
 ---
 name: openscad-3d-print-agent
-description: OpenSCAD reconstruction, replacement-part remodeling, project bootstrap, validation, STL export, preview rendering, and printability review for this repo. Use for 3D-print modeling tasks.
+description: Deterministic Parametric Part Workbench v3 specification, generation, fit-coupon, and computational verification workflow.
 ---
 
-# OpenSCAD 3D Print Agent
+# Parametric Part Workbench v3 Helper
 
-Follow root `AGENTS.md` first. This skill is a workflow helper, not a replacement rulebook.
+Read and follow root `AGENTS.md` first. This helper does not override the root
+rules or authorize legacy project workflows.
 
 ## Required Workflow
 
-1. Read root `AGENTS.md`.
-2. Select exactly one task mode before modeling:
-   - `original_product_design`
-   - `reference_based_reconstruction`
-   - `mesh_cleanup_and_remodel`
-3. Use root docs, standards, templates, and scripts.
-4. Use reconstruction workflow when references exist.
-5. Treat OpenSCAD as the source of truth.
-6. Treat STL as an export artifact.
-7. Ask for missing critical measurements only when required.
-8. Make safe assumptions only when reasonable.
-9. List assumptions.
-10. Prioritize functional fit over looks.
-11. Protect interfaces.
-12. Use compare-and-revise loops for reconstruction.
-13. Avoid unsupported overhangs where practical.
-14. Add chamfers and fillets where useful while keeping OpenSCAD editable.
-15. For replacement parts, create a measurement checklist before final geometry if critical dimensions are missing.
-16. For curved mating surfaces, approximate parametrically and mark assumed radius.
-17. Never invent exact fit dimensions.
-18. Never claim STL export succeeded unless `scripts/export_stl.py` actually created the STL.
-19. Never claim previews rendered unless PNG files exist.
-20. Mark uncertain outputs as `NOT VERIFIED`.
-21. Record measured versus inferred dimensions.
-22. Record low-confidence zones.
-23. Record failed checks honestly.
+1. Identify the supported generator: `bushing`, `round_adapter`, or
+   `flange_plate`.
+2. Record explicit dimensions and units in a v1 project specification.
+3. For replacement work, complete authoritative Measurement Contract entries
+   for every generator-declared protected interface. Never infer a missing
+   protected dimension from a photo or generic default.
+4. Select a printer/material/nozzle calibration profile. Treat the bundled
+   neutral profile as an unverified starter.
+5. If nominal geometry is known but fit clearance is uncertain, generate a
+   candidate fit coupon and record its printed result before relying on the
+   full part.
+6. Validate the specification, generate deterministic OpenSCAD, compile with
+   mandatory OpenSCAD, run mesh QA, and compare expected and actual bounds.
+7. Keep routine SCAD/STL/manifests under
+   `workspace/<project_id>/<version>/`; do not commit them.
+8. Report the exact workflow state, assumptions, unresolved interfaces, and
+   failed checks. Computational success never confirms physical fit.
 
-## Script Pattern
-
-Use the root scripts:
+## Commands
 
 ```powershell
-py -3 scripts\new_project.py --name "<name>" --task-mode <mode> --printer "<printer>" --material <material>
-py -3 scripts\validate_scad.py <path-to-scad>
-py -3 scripts\export_stl.py --input <scad> --output <stl>
-py -3 scripts\export_preview.py --input <scad> --output <png> --view iso
-py -3 scripts\check_project_outputs.py --project <project-dir> --task-mode <mode> --version vNN
-py -3 scripts\next_version.py --project <project-dir> --copy-scad
+python scripts\validate_spec.py --spec <spec.json>
+python scripts\generate_part.py --spec <spec.json>
+python scripts\verify_mesh.py --manifest <artifact-manifest.json>
+python -m pytest
 ```
+
+Do not route new work through `new_project.py`, `next_version.py`, legacy
+templates, preview requirements, or legacy file-presence checks. Those remain
+historical compatibility tools only.

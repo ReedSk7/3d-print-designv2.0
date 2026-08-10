@@ -1,210 +1,106 @@
 # AGENTS.md
 
-This is the main instruction hub for coding agents working in this repository.
+This file is authoritative for work in this repository. Supporting skills,
+templates, scripts, and legacy notes must not override it.
 
-## Authority
+## Mission and Phase 1 Scope
 
-- Root `AGENTS.md` is authoritative for this repository.
-- Helper scripts, templates, standards, lower-level files, repo-local skills, and generated instructions must not override root `AGENTS.md`.
-- Repo-local skills are workflow helpers, not replacement rulebooks.
-- If any helper conflicts with root `AGENTS.md`, follow root `AGENTS.md`.
+Build Parametric Part Workbench v3 as a reliable, local-first system for
+deterministic, dimension-driven OpenSCAD generators.
 
-## Read Order For Modeling Tasks
+Phase 1 supports `bushing`, `round_adapter`, and `flange_plate` through the
+Python CLI. Do not add freeform LLM geometry, general photo-to-3D, arbitrary CAD
+automation, the React dashboard, customer/quote/payment features, cloud login,
+marketplaces, deployment, or a customer portal.
 
-1. `AGENTS.md`
-2. `CONTRIBUTING.md`
-3. `README.md`
-4. `PROJECT_BOOTSTRAP_CHECKLIST.md`
-5. `docs/`
-6. `standards/`
-7. `templates/`
-8. project files
+## Modeling Contract
 
-## Mission
+- All internal geometry calculations use millimeters; accept only explicit
+  supported input units and preserve useful precision.
+- Resolve generators through the registry by ID and version. Do not scatter
+  generator-specific conditionals through the application.
+- Keep generator metadata, parameter schema, defaults, validation, deterministic
+  SCAD rendering, expected bounds, example spec, and tests together.
+- OpenSCAD is the editable/generated geometry source. STL is an artifact.
+- Never use freeform model-generated geometry for supported part families.
 
-- Create clean, parametric, printable OpenSCAD models.
-- Support both original product design and reference-driven reconstruction.
-- Keep OpenSCAD as the editable source of truth.
-- Treat STL as an export artifact, not the design authority.
+## Measurement Before Reconstruction
 
-## Global Defaults
+- Record every fit-relevant value in the Measurement Contract with value,
+  units, source, confidence, tolerance, protected-interface flag, and notes.
+- Never invent, conceal, or upgrade a guessed dimension into a measurement.
+- Measured real-part dimensions and trusted drawings/CAD outrank photos and
+  rough meshes. Record conflicts and unresolved assumptions.
+- Block full replacement-part generation when a required protected interface
+  lacks an authoritative dimension.
+- If nominal geometry is authoritative and only clearance is uncertain,
+  generate and test a small fit coupon before the full print.
+- Calibration defaults are unverified starters. Label a value proven only when
+  a printer/material/nozzle-specific test record supports it.
 
-- Units are millimeters.
-- `Z+` is up.
-- FDM-first by default unless the user explicitly requests another process.
-- Prefer readable parametric CAD over messy geometry.
-- Keep critical geometry in named modules and parameters when practical.
-- For new empty repos or requested scaffolds, create the repository structure before attempting any modeling.
-- Do not overwrite versioned outputs.
-- Do not claim files were created unless they actually were.
+## Verification Language
 
-## Task Modes
+Use the exact staged model in `docs/rebuild/VERIFICATION_MODEL.md`:
 
-Use exactly one task mode before modeling begins.
+Every artifact version follows the shared prefix:
 
-### `original_product_design`
+`draft` -> `measurement_contract_complete` -> `generated` ->
+`scad_compiled` -> `mesh_valid` -> `dimensions_reviewed`.
 
-Use for truly greenfield work where the part is not defined by an existing object or reference part.
+A coupon version then ends at `fit_coupon_generated` or
+`fit_coupon_passed`. A full-part version ends at `full_part_exported` and may
+later reach `physical_fit_confirmed`. A full-part version that relies on a
+coupon starts again at `draft` and hash-links the prior passed-coupon evidence.
 
-### `reference_based_reconstruction`
+- Enforce only documented legal transitions.
+- File existence, SCAD compilation, STL export, watertightness, expected bounds,
+  previews, and manifests are computational evidence only.
+- Only `physical_fit_confirmed` may be described as physically verified.
+- Report the exact state reached, failed checks, assumptions, and unresolved
+  interfaces. Never use bare `VERIFIED` for generated artifacts.
 
-Use when the user wants a known part recreated, repaired, replaced, or refined from references.
+## Files and Privacy
 
-Default to one corrected model unless the user explicitly asks for multiple variants.
+- Write routine generated SCAD, STL, PNG, 3MF, temporary meshes, logs, and local
+  project data under `workspace/<project_id>/<version>/`.
+- Do not commit routine generated artifacts or ASCII STL.
+- Track versioned source specs, generator code/templates, tests, documentation,
+  and small intentional fixtures only.
+- Never commit paid, private, customer, or ambiguously licensed references.
+- Do not copy PR #1's generated-output or reference-photo collections.
 
-Before modeling, define:
+## Engineering Workflow
 
-- the exact target part
-- what surrounding parts are reused
-- what is not being modeled
+1. Inspect the authoritative branch, repository status, relevant docs, and
+   existing implementation before editing.
+2. Make the smallest change that preserves responsibility boundaries in
+   `docs/rebuild/TARGET_ARCHITECTURE.md`.
+3. Add or update unit tests and OpenSCAD-backed integration tests.
+4. Run the most relevant local checks. OpenSCAD absence is a failure, not a
+   warning-only success.
+5. Review the diff for generated artifacts, restricted data, unrelated edits,
+   and misleading verification language.
+6. Report exact commands, results, reached states, and remaining physical/manual
+   work.
 
-### `mesh_cleanup_and_remodel`
+Primary commands:
 
-Use when a rough mesh exists but should not be trusted as final geometry. The mesh is supporting input, not final truth.
+```powershell
+python scripts/validate_spec.py --spec <spec.json>
+python scripts/generate_part.py --spec <spec.json>
+python scripts/verify_mesh.py --manifest <manifest.json>
+python -m pytest
+```
 
-## Mode Selection Rules
+## Git and Legacy Boundaries
 
-- If a user provides a part number, measurements, OEM photos, broken-part photos, reference STL, purchased STL, or rough mesh, default to `reference_based_reconstruction`.
-- Only use `original_product_design` when the request is truly greenfield.
-- If a rough mesh exists but should not be trusted, use `mesh_cleanup_and_remodel`.
-
-## Reference Trust Hierarchy
-
-Unless the user overrides it, use this exact priority:
-
-1. measured dimensions from the real part
-2. trusted or purchased reference STL/STEP/CAD
-3. official OEM drawings / service docs / diagrams
-4. official product photos
-5. user photos of intact or broken part
-6. AI-generated meshes or photo-to-3D outputs
-
-Rules:
-
-- Record which references are authoritative and which are supporting only.
-- If authoritative references conflict, note the conflict before export.
-- Rough meshes may be measured and inspected, but they are seed geometry only unless the user explicitly says they are trusted.
-- Paid references should remain local-only unless redistribution rights are clear.
-
-## Reconstruction Workflow
-
-For `reference_based_reconstruction` and `mesh_cleanup_and_remodel`, follow this workflow:
-
-1. define exact scope
-   - exact target part
-   - reused surrounding parts
-   - what is not being modeled
-2. inventory references
-3. identify authoritative references
-4. record anchor dimensions and protected interfaces
-5. inspect rough meshes if present, but treat them as supporting geometry only
-6. rebuild clean parametric CAD in OpenSCAD
-7. compare bbox + silhouettes + critical local features
-8. revise until acceptable
-9. run printability check
-10. export final artifacts
-
-Comparison in step 7 must include:
-
-- bounding box
-- front silhouette
-- side silhouette
-- top silhouette when useful
-- critical local features such as hooks, pivots, slots, latch faces, spring contact regions, locking tabs, and mounting geometry
-
-Overall dimensions alone are never enough when critical local geometry matters.
-
-Protected interface examples:
-
-- mounting hole spacing
-- shaft or rod fits
-- snap and latch faces
-- bearing or insert seats
-- clip tips
-- slot widths
-- hinge pivots
-
-## Original Design Workflow
-
-For `original_product_design`, this workflow is allowed:
-
-1. requirements summary
-2. concept generation if useful
-3. concept selection if multiple directions are explored
-4. parameter planning
-5. OpenSCAD generation
-6. printability review
-7. export
-
-## Guardrails
-
-- Do not force concept scoring on reconstruction jobs.
-- Do not blindly trust AI-generated meshes.
-- Do not redesign authoritative interfaces just for aesthetics.
-- Do not commit paid reference meshes by default.
-- Do not create multiple speculative variants unless asked.
-- Do not turn reconstruction jobs into creative redesign jobs unless requested.
-- Do not confuse a full assembly with the broken subcomponent that actually needs replacement.
-- Do not accept overall size matching as sufficient when hook, tip, slot, latch, or mounting geometry is still wrong.
-- Do not treat rough meshes as authoritative just because they look complete.
-
-## Failure Mode Prevention
-
-- Confirm whether the task is the full assembly or only the broken subcomponent before modeling.
-- Do not over-trust AI-generated meshes over measured geometry, trusted CAD, or paid references.
-- Do not stop at bbox matching when hooks, tabs, slots, latch faces, pivots, spring contact regions, or mounting interfaces still mismatch.
-- Do not produce extra speculative variants when one corrected part is wanted.
-
-## Required Outputs
-
-### Reconstruction Jobs
-
-Minimum outputs:
-
-- `source/<project_name>_vNN.scad`
-- `exports/<project_name>_vNN.stl`
-- `notes/<project_name>_vNN_notes.md`
-- `notes/<project_name>_vNN_manifest.md`
-- `notes/<project_name>_vNN_reference_comparison_log.md`
-- `notes/<project_name>_vNN_review_report.md`
-- `previews/<project_name>_vNN_iso.png`
-- `previews/<project_name>_vNN_front.png`
-- `previews/<project_name>_vNN_side.png`
-
-Add a top preview when footprint or asymmetry matters. Add detail previews when critical features need verification.
-Generated STL export is a required artifact for completed modeling work unless export truly fails for a real technical reason.
-
-### Original Design Jobs
-
-Minimum outputs:
-
-- `source/<project_name>_vNN.scad`
-- `exports/<project_name>_vNN.stl`
-- `notes/<project_name>_vNN_notes.md`
-- `notes/<project_name>_vNN_manifest.md`
-- at least one preview image
-
-Generated STL export is a required artifact for completed modeling work unless export truly fails for a real technical reason.
-
-## Export Note
-
-- STL is the required export artifact for this repo version.
-- 3MF or Bambu Studio project generation is preferred in the future, but it is not a current requirement.
-
-## Working Rules
-
-- Start by selecting task mode, not by brainstorming geometry.
-- For reconstruction work, prefer one corrected model by default over multiple variants.
-- Use compare-and-revise loops for reference-driven work, not one-shot geometry invention.
-- For reconstruction work, use a versioned notes file plus a reconstruction checklist and comparison log.
-- Reinforce only non-interface regions unless the user asks for interface changes.
-- Be explicit about guessed dimensions and low-confidence zones in notes.
-- A manifest is required for every completed modeled version.
-
-## Build And Verification Commands
-
-- Validate SCAD: `py -3 scripts\validate_scad.py <path-to-scad>`
-- Export STL: `py -3 scripts\export_stl.py --input <scad> --output <stl>`
-- Export preview: `py -3 scripts\export_preview.py --input <scad> --output <png> --view iso`
-- Check project outputs: `py -3 scripts\check_project_outputs.py --project <project-dir> --task-mode <mode> --version vNN`
-- Create next version: `py -3 scripts\next_version.py --project <project-dir> --copy-scad`
+- The rebuild branch starts from verified `main`; PR #1 is read-only salvage
+  material and must not be merged or copied wholesale.
+- Do not normalize every legacy project in Phase 1. Follow
+  `docs/rebuild/MIGRATION_MAP.md` and salvage individual files only with a
+  documented reason.
+- Do not merge to `main`, deploy, publish releases, delete history, rewrite
+  commits, force-push, or modify restricted references as part of ordinary
+  implementation.
+- Preserve unrelated work and never claim a test, artifact, CI result, physical
+  print, or deployment succeeded unless it actually did.

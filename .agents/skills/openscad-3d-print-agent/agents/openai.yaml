@@ -1,7 +1,7 @@
 interface:
-  display_name: "OpenSCAD Reconstruction Agent"
-  short_description: "Reconstruction-first OpenSCAD workflow for verified 3D-print projects"
-  default_prompt: "Create or update an OpenSCAD 3D-print project using this repo's reconstruction-first workflow."
+  display_name: "Parametric Part Workbench v3"
+  short_description: "Deterministic, dimension-driven OpenSCAD generation with truthful verification states"
+  default_prompt: "Create or validate a supported part from a v1 specification using the repository's deterministic v3 CLI workflow."
 
 policy:
   allow_implicit_invocation: true
