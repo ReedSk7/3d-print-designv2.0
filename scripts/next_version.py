@@ -92,7 +92,7 @@ def main() -> int:
         print(str(exc))
         return 1
 
-    print("PASS")
+    print("VERSION PLAN COMPLETE")
     print(f"Project: {project_dir}")
     print(f"Highest existing version: {old_version if latest_number else 'none'}")
     print(f"Next version: {new_version}")

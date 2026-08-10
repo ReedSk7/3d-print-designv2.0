@@ -1,4 +1,4 @@
-"""Verify required project outputs for a versioned job."""
+"""Check required legacy project-file presence without making fit claims."""
 
 from __future__ import annotations
 
@@ -59,11 +59,11 @@ def missing_files(paths: list[Path]) -> list[Path]:
     return [path for path in paths if not path.is_file()]
 
 
-def manifest_claims_verified(manifest: dict[str, str]) -> bool:
-    verified_tokens = ("verified", "success", "succeeded", "complete", "completed", "exported", "released")
+def manifest_claims_completion(manifest: dict[str, str]) -> bool:
+    completion_tokens = ("verified", "success", "succeeded", "complete", "completed", "exported", "released")
     for key in ("status", "stl_export_status", "preview_export_status", "verification_status"):
         value = manifest.get(key, "").lower()
-        if any(token in value for token in verified_tokens) and "not verified" not in value:
+        if any(token in value for token in completion_tokens) and "not verified" not in value:
             return True
     return False
 
@@ -109,7 +109,7 @@ def main() -> int:
     errors: list[str] = []
     if missing:
         errors.append("Missing outputs:")
-        errors.extend(f"NOT VERIFIED: {path}" for path in missing)
+        errors.extend(f"MISSING: {path}" for path in missing)
 
     if manifest:
         if manifest.get("project_stem") and manifest["project_stem"] != stem:
@@ -118,12 +118,12 @@ def main() -> int:
             errors.append(f"Manifest version mismatch: {manifest['version']} != {version}")
         if manifest.get("task_mode") and manifest["task_mode"] != args.task_mode:
             errors.append(f"Manifest task_mode mismatch: {manifest['task_mode']} != {args.task_mode}")
-        if manifest_claims_verified(manifest) and missing:
-            errors.append("Manifest claims verified/successful status but required files are missing.")
+        if manifest_claims_completion(manifest) and missing:
+            errors.append("Manifest claims a completion/export status but required files are missing.")
     elif manifest_path.is_file():
         errors.append("Manifest exists but YAML frontmatter was not parsed.")
 
-    print("PASS" if not errors else "FAIL")
+    print("FILE PRESENCE CHECK PASSED" if not errors else "FILE PRESENCE CHECK FAILED")
     print(f"Project: {project_dir}")
     print(f"Task mode: {args.task_mode}")
     print(f"Version: {version}")
@@ -131,7 +131,8 @@ def main() -> int:
         for error in errors:
             print(f"- {error}")
     else:
-        print("- Required outputs verified.")
+        print("- Required legacy output files are present.")
+        print("- Physical fit is not confirmed by file presence.")
     return 0 if not errors else 1
 
 

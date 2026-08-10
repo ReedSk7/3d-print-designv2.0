@@ -104,8 +104,9 @@ def main() -> int:
             print(result.stderr.rstrip())
         return 1
 
-    print("PASS")
+    print("PREVIEW EXPORT COMPLETE")
     print(f"Preview exported: {output_path}")
+    print("Physical fit: NOT CONFIRMED")
     return 0
 
 

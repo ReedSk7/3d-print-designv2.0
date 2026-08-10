@@ -213,7 +213,7 @@ def main() -> int:
         print(str(exc))
         return 1
 
-    print("PASS")
+    print("PROJECT BOOTSTRAP COMPLETE")
     print(f"Project created: {project_dir}")
     print(f"Stem: {stem}")
     print(f"Version: {version}")
