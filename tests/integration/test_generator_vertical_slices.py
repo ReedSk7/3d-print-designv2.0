@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytest
 
+from core.models.artifacts import sha256_file
 from core.validation.specification import SpecificationError
 from core.workflow.pipeline import generate_project
 from core.workflow.states import WorkflowState
@@ -130,6 +131,7 @@ def test_full_part_resolves_and_applies_real_coupon_provenance(
     full_document["fit_coupon_evidence"] = {
         "coupon_project_id": "bushing_coupon_link_test",
         "coupon_project_version": "v01",
+        "coupon_manifest_sha256": sha256_file(coupon_result.manifest_path),
         "coupon_artifact_sha256": coupon_stl["sha256"],
         "interface_parameter": "inside_diameter",
         "candidate_offset_mm": 0.15,
@@ -171,6 +173,37 @@ def test_full_part_resolves_and_applies_real_coupon_provenance(
     )
     with pytest.raises(SpecificationError, match="input units"):
         generate_project(cross_unit_spec_path, workspace_root=workspace)
+
+    coupon_spec_record = next(
+        artifact
+        for artifact in coupon_manifest["artifacts"]
+        if artifact["role"] == "spec_snapshot"
+    )
+    coupon_snapshot_path = workspace / coupon_spec_record["path"]
+    changed_coupon_spec = json.loads(coupon_snapshot_path.read_text(encoding="utf-8"))
+    changed_coupon_spec["generator"]["parameters"]["inside_diameter"] = 30
+    changed_coupon_spec["generator"]["parameters"]["outside_diameter"] = 40
+    coupon_snapshot_path.write_text(
+        json.dumps(changed_coupon_spec, indent=2), encoding="utf-8"
+    )
+    coupon_spec_record["sha256"] = sha256_file(coupon_snapshot_path)
+    coupon_spec_record["size_bytes"] = coupon_snapshot_path.stat().st_size
+    coupon_result.manifest_path.write_text(
+        json.dumps(coupon_manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+    tampered_link_document = json.loads(json.dumps(full_document))
+    tampered_link_document["project"]["id"] = "bushing_tampered_link_test"
+    tampered_link_document["project"]["name"] = "Bushing Tampered Link Test"
+    tampered_link_document["generator"]["parameters"]["inside_diameter"] = 30
+    tampered_link_document["generator"]["parameters"]["outside_diameter"] = 40
+    tampered_spec_path = tmp_path / "tampered_link.json"
+    tampered_spec_path.write_text(
+        json.dumps(tampered_link_document, indent=2), encoding="utf-8"
+    )
+    with pytest.raises(SpecificationError, match="manifest SHA-256"):
+        generate_project(tampered_spec_path, workspace_root=workspace)
 
 
 def test_split_bushing_bounds_and_manifest_integrity(

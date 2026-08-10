@@ -92,10 +92,10 @@ If the nominal interface is known but print clearance is uncertain, request a
 small candidate-based fit coupon instead of the full part.
 
 A passed coupon is recorded as structured `fit_coupon_evidence` containing the
-coupon artifact SHA-256, selected candidate offset, acceptance result, tester,
-and exact printer/material/nozzle/profile. A later full-part specification may
-link that evidence; the generator applies the selected offset only when those
-identities match.
+coupon manifest and STL SHA-256 digests, selected candidate offset, acceptance
+result, tester, and exact printer/material/nozzle/profile. A later full-part
+specification may link that evidence; the generator applies the selected offset
+only when the complete cited evidence package and those identities match.
 
 The bundled `neutral_unverified_starter` profile applies zero offsets and unit
 scale. Those neutral values are explicitly unverified; they are not claimed as

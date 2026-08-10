@@ -85,11 +85,12 @@ the only uncertainty, the workflow may create a small coupon. A coupon must not
 be used to invent the nominal mating dimension.
 
 Advancing a coupon to `fit_coupon_passed` requires structured evidence: coupon
-project/version and STL SHA-256, protected interface, selected offset, tester,
-exact printer/material/nozzle/profile, acceptance criterion, measured result,
-and `passed=true`. A later full-part run begins at `draft` as a new immutable
-version and may carry this evidence; mismatched configuration or unsupported interface
-fails before generation.
+project/version, manifest and STL SHA-256 digests, protected interface, selected
+offset, tester, exact printer/material/nozzle/profile, acceptance criterion,
+measured result, and `passed=true`. A later full-part run begins at `draft` as a
+new immutable version and may carry this evidence; a changed manifest or
+artifact, mismatched configuration, or unsupported interface fails before
+generation.
 
 ## Calibration Evidence
 

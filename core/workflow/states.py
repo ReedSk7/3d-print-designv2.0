@@ -89,6 +89,7 @@ _FIT_COUPON_EVIDENCE_FIELDS = frozenset(
     {
         "coupon_project_id",
         "coupon_project_version",
+        "coupon_manifest_sha256",
         "coupon_artifact_sha256",
         "interface_parameter",
         "tested_by",
@@ -175,13 +176,18 @@ class WorkflowStateMachine:
                 raise WorkflowEvidenceRequired(
                     "Fit-coupon pass evidence text fields cannot be empty."
                 )
-            digest = str(evidence["coupon_artifact_sha256"])
-            if len(digest) != 64 or any(
-                character not in "0123456789abcdef" for character in digest
+            for digest_field in (
+                "coupon_manifest_sha256",
+                "coupon_artifact_sha256",
             ):
-                raise WorkflowEvidenceRequired(
-                    "Fit-coupon evidence requires a lowercase SHA-256 artifact digest."
-                )
+                digest = str(evidence[digest_field])
+                if len(digest) != 64 or any(
+                    character not in "0123456789abcdef" for character in digest
+                ):
+                    raise WorkflowEvidenceRequired(
+                        "Fit-coupon evidence requires lowercase SHA-256 manifest and "
+                        "artifact digests."
+                    )
             try:
                 tested_at = datetime.fromisoformat(
                     str(evidence["tested_at"]).replace("Z", "+00:00")

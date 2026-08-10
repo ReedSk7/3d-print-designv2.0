@@ -114,6 +114,7 @@ class FitCouponRequest:
 class FitCouponEvidence:
     coupon_project_id: str
     coupon_project_version: str
+    coupon_manifest_sha256: str
     coupon_artifact_sha256: str
     interface_parameter: str
     candidate_offset_mm: Decimal
@@ -145,9 +146,14 @@ class FitCouponEvidence:
         for field_name in required_text:
             if not str(getattr(self, field_name)).strip():
                 raise ValueError(f"Fit-coupon evidence {field_name} cannot be empty.")
-        digest = self.coupon_artifact_sha256
-        if len(digest) != 64 or any(character not in "0123456789abcdef" for character in digest):
-            raise ValueError("Fit-coupon evidence requires a lowercase SHA-256 artifact digest.")
+        for digest_name in ("coupon_manifest_sha256", "coupon_artifact_sha256"):
+            digest = str(getattr(self, digest_name))
+            if len(digest) != 64 or any(
+                character not in "0123456789abcdef" for character in digest
+            ):
+                raise ValueError(
+                    "Fit-coupon evidence requires lowercase SHA-256 manifest and artifact digests."
+                )
         object.__setattr__(self, "candidate_offset_mm", as_decimal(self.candidate_offset_mm))
         nozzle = as_decimal(self.nozzle_diameter_mm)
         if nozzle <= 0:
@@ -167,6 +173,7 @@ class FitCouponEvidence:
         return cls(
             coupon_project_id=str(document["coupon_project_id"]),
             coupon_project_version=str(document["coupon_project_version"]),
+            coupon_manifest_sha256=str(document["coupon_manifest_sha256"]),
             coupon_artifact_sha256=str(document["coupon_artifact_sha256"]),
             interface_parameter=str(document["interface_parameter"]),
             candidate_offset_mm=as_decimal(document["candidate_offset_mm"]),  # type: ignore[arg-type]
@@ -187,6 +194,7 @@ class FitCouponEvidence:
         return {
             "coupon_project_id": self.coupon_project_id,
             "coupon_project_version": self.coupon_project_version,
+            "coupon_manifest_sha256": self.coupon_manifest_sha256,
             "coupon_artifact_sha256": self.coupon_artifact_sha256,
             "interface_parameter": self.interface_parameter,
             "candidate_offset_mm": self.candidate_offset_mm,

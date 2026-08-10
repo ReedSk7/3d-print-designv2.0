@@ -172,12 +172,20 @@ def _verify_fit_coupon_evidence(
         raise SpecificationError("A full-part version cannot cite itself as fit-coupon evidence.")
 
     manifest_path = coupon_directory / "artifact-manifest.json"
-    try:
-        manifest_document = json.loads(manifest_path.read_text(encoding="utf-8"))
-    except FileNotFoundError as exc:
+    if not manifest_path.is_file():
         raise SpecificationError(
             f"Referenced fit-coupon manifest was not found: {manifest_path}"
-        ) from exc
+        )
+    try:
+        manifest_sha256 = sha256_file(manifest_path)
+    except OSError as exc:
+        raise SpecificationError(f"Could not hash fit-coupon manifest: {exc}") from exc
+    if manifest_sha256 != evidence.coupon_manifest_sha256:
+        raise SpecificationError(
+            "Fit-coupon evidence manifest SHA-256 does not match the cited manifest."
+        )
+    try:
+        manifest_document = json.loads(manifest_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise SpecificationError(f"Could not read fit-coupon manifest: {exc}") from exc
     if not isinstance(manifest_document, dict):

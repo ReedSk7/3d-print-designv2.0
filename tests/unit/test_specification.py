@@ -143,6 +143,7 @@ def test_full_part_rejects_nonexistent_fit_coupon_evidence(
     document["fit_coupon_evidence"] = {
         "coupon_project_id": "bushing_coupon_test",
         "coupon_project_version": "v01",
+        "coupon_manifest_sha256": "c" * 64,
         "coupon_artifact_sha256": "a" * 64,
         "interface_parameter": "inside_diameter",
         "candidate_offset_mm": 0.1,
@@ -172,6 +173,7 @@ def test_linked_coupon_must_match_printer_material_nozzle_and_profile(
     document["fit_coupon_evidence"] = {
         "coupon_project_id": "bushing_coupon_test",
         "coupon_project_version": "v01",
+        "coupon_manifest_sha256": "d" * 64,
         "coupon_artifact_sha256": "b" * 64,
         "interface_parameter": "inside_diameter",
         "candidate_offset_mm": 0.1,

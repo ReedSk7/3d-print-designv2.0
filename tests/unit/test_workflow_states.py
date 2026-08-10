@@ -44,6 +44,7 @@ def test_fit_coupon_pass_requires_structured_positive_result() -> None:
     evidence = {
         "coupon_project_id": "bushing_coupon_test",
         "coupon_project_version": "v01",
+        "coupon_manifest_sha256": "b" * 64,
         "coupon_artifact_sha256": "a" * 64,
         "interface_parameter": "inside_diameter",
         "tested_at": "2026-08-10T12:00:00Z",
