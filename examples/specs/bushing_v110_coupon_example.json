@@ -1,0 +1,62 @@
+{
+  "$schema": "../../schemas/project-spec-v1.schema.json",
+  "schema_version": "1.0",
+  "project": {
+    "id": "bushing_v110_coupon_example",
+    "name": "Bushing 1.1 Outside-Diameter Coupon Example",
+    "version": "v01",
+    "intent": "original"
+  },
+  "generator": {
+    "id": "bushing",
+    "version": "1.1.0",
+    "parameters": {
+      "inside_diameter": 20,
+      "outside_diameter": 30,
+      "length": 25,
+      "chamfer": 1,
+      "inside_fit": "nominal",
+      "outside_fit": "nominal",
+      "split": false,
+      "minimum_wall_thickness": 1.2
+    }
+  },
+  "input_units": "mm",
+  "printer_profile": "generic_fdm",
+  "material": "PETG",
+  "nozzle_diameter": 0.4,
+  "fit_profile": "neutral_unverified_starter",
+  "generation_mode": "fit_coupon",
+  "fit_coupon": {
+    "interface_parameter": "outside_diameter",
+    "candidate_offsets": [-0.2, -0.1, 0, 0.1, 0.2],
+    "notes": "Synthetic example offsets only; no printed result is claimed. Numbered labels map to the manifest candidate map."
+  },
+  "fit_coupon_evidence": null,
+  "measurement_contract": [],
+  "verification_policy": {
+    "require_authoritative_protected_interfaces": true,
+    "require_proven_calibration_for_full_part": false,
+    "mesh_bounds_tolerance_mm": 0.05,
+    "physical_fit_required_for_verified_claim": true
+  },
+  "workflow_state": "draft",
+  "physical_verification": {
+    "status": "not_confirmed",
+    "confirmed_at": null,
+    "confirmed_by": null,
+    "evidence": [],
+    "notes": "No coupon has been printed or tested."
+  },
+  "timestamps": {
+    "created_at": "2026-08-10T00:00:00Z",
+    "updated_at": "2026-08-10T00:00:00Z"
+  },
+  "generated_artifacts": [],
+  "warnings": [
+    "The neutral calibration profile and candidate offsets are unverified starters."
+  ],
+  "unresolved_assumptions": [
+    "All dimensions and candidate offsets are illustrative synthetic values."
+  ]
+}

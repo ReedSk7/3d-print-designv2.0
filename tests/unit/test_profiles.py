@@ -1,5 +1,7 @@
+import json
 from dataclasses import replace
 from decimal import Decimal
+from pathlib import Path
 
 import pytest
 
@@ -10,7 +12,11 @@ from core.profiles.models import (
     CalibrationTestResult,
     CalibrationValue,
 )
-from core.profiles.repository import load_calibration_profile
+from core.profiles import repository
+from core.profiles.repository import (
+    load_calibration_profile,
+    load_calibration_profile_record,
+)
 
 
 def test_neutral_profile_is_explicitly_unverified() -> None:
@@ -74,3 +80,29 @@ def test_profile_nozzle_match_allows_exact_inch_conversion_residue() -> None:
     assert profile.applies_to(
         "printer_a", "PETG", Decimal("0.3999999999999999968")
     )
+
+
+def test_profile_content_digest_ignores_formatting_but_detects_value_change(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, repo_root: Path
+) -> None:
+    source = repo_root / "core" / "profiles" / "data" / "neutral_unverified_starter.json"
+    document = json.loads(source.read_text(encoding="utf-8"))
+    target = tmp_path / "neutral_unverified_starter.json"
+    monkeypatch.setattr(repository, "_DATA_DIR", tmp_path)
+
+    target.write_text(json.dumps(document, separators=(",", ":")), encoding="utf-8")
+    compact_digest = load_calibration_profile_record(
+        "neutral_unverified_starter"
+    ).content_sha256
+    target.write_text(json.dumps(document, indent=6, sort_keys=True), encoding="utf-8")
+    reformatted_digest = load_calibration_profile_record(
+        "neutral_unverified_starter"
+    ).content_sha256
+    assert reformatted_digest == compact_digest
+
+    document["corrections"]["hole_dimensional_correction_mm"]["value"] = 0.01
+    target.write_text(json.dumps(document, indent=2), encoding="utf-8")
+    changed_digest = load_calibration_profile_record(
+        "neutral_unverified_starter"
+    ).content_sha256
+    assert changed_digest != compact_digest

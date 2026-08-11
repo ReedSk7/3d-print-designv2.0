@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
@@ -12,6 +12,41 @@ from core.units.conversion import as_decimal
 
 
 NOZZLE_MATCH_TOLERANCE_MM = Decimal("0.000001")
+LEGACY_FIT_FIELD_NAMES = (
+    "hole_offset_mm",
+    "shaft_offset_mm",
+    "press_fit_offset_mm",
+    "slip_fit_offset_mm",
+)
+DIRECTIONAL_FIT_FIELD_NAMES = (
+    "hole_dimensional_correction_mm",
+    "shaft_dimensional_correction_mm",
+    "hole_slip_allowance_mm",
+    "shaft_slip_allowance_mm",
+    "hole_press_allowance_mm",
+    "shaft_press_allowance_mm",
+)
+SCALE_FIELD_NAMES = ("scale_x", "scale_y", "scale_z")
+
+
+def calibration_field_names_for_generator_version(
+    generator_version: str,
+) -> tuple[str, ...]:
+    """Select proof fields without changing the v1.0 calibration contract."""
+
+    try:
+        major_text, minor_text, _ = generator_version.split(".", 2)
+        major_minor = (int(major_text), int(minor_text))
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            f"Generator version must be semantic version text: {generator_version!r}."
+        ) from exc
+    fit_fields = (
+        DIRECTIONAL_FIT_FIELD_NAMES
+        if major_minor >= (1, 1)
+        else LEGACY_FIT_FIELD_NAMES
+    )
+    return fit_fields + SCALE_FIELD_NAMES
 
 
 class CalibrationStatus(str, Enum):
@@ -120,6 +155,14 @@ class CalibrationValue:
         return self.status is CalibrationStatus.PROVEN
 
 
+def _neutral_unverified_value() -> CalibrationValue:
+    return CalibrationValue(
+        value=Decimal("0"),
+        status=CalibrationStatus.UNVERIFIED_STARTER,
+        notes="Neutral zero starter; no printer-specific evidence is recorded.",
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class CalibrationProfile:
     schema_version: str
@@ -136,6 +179,24 @@ class CalibrationProfile:
     scale_y: CalibrationValue
     scale_z: CalibrationValue
     notes: str
+    hole_dimensional_correction_mm: CalibrationValue = field(
+        default_factory=_neutral_unverified_value
+    )
+    shaft_dimensional_correction_mm: CalibrationValue = field(
+        default_factory=_neutral_unverified_value
+    )
+    hole_slip_allowance_mm: CalibrationValue = field(
+        default_factory=_neutral_unverified_value
+    )
+    shaft_slip_allowance_mm: CalibrationValue = field(
+        default_factory=_neutral_unverified_value
+    )
+    hole_press_allowance_mm: CalibrationValue = field(
+        default_factory=_neutral_unverified_value
+    )
+    shaft_press_allowance_mm: CalibrationValue = field(
+        default_factory=_neutral_unverified_value
+    )
 
     def __post_init__(self) -> None:
         if self.nozzle_diameter_mm is not None:
@@ -146,6 +207,16 @@ class CalibrationProfile:
         for axis_name in ("scale_x", "scale_y", "scale_z"):
             if getattr(self, axis_name).value <= 0:
                 raise ValueError(f"Calibration {axis_name} must be greater than zero.")
+        for allowance_name in (
+            "hole_slip_allowance_mm",
+            "shaft_slip_allowance_mm",
+            "hole_press_allowance_mm",
+            "shaft_press_allowance_mm",
+        ):
+            if getattr(self, allowance_name).value < 0:
+                raise ValueError(
+                    f"Calibration {allowance_name} must be a non-negative magnitude."
+                )
 
     @classmethod
     def from_dict(cls, document: Mapping[str, object]) -> "CalibrationProfile":
@@ -169,10 +240,76 @@ class CalibrationProfile:
             scale_y=CalibrationValue.from_dict(scales["y"]),  # type: ignore[arg-type]
             scale_z=CalibrationValue.from_dict(scales["z"]),  # type: ignore[arg-type]
             notes=str(document["notes"]),
+            hole_dimensional_correction_mm=CalibrationValue.from_dict(
+                corrections.get(
+                    "hole_dimensional_correction_mm",
+                    {
+                        "value": 0,
+                        "status": "unverified_starter",
+                        "evidence": [],
+                        "notes": "Neutral compatibility default; no evidence recorded.",
+                    },
+                )
+            ),
+            shaft_dimensional_correction_mm=CalibrationValue.from_dict(
+                corrections.get(
+                    "shaft_dimensional_correction_mm",
+                    {
+                        "value": 0,
+                        "status": "unverified_starter",
+                        "evidence": [],
+                        "notes": "Neutral compatibility default; no evidence recorded.",
+                    },
+                )
+            ),
+            hole_slip_allowance_mm=CalibrationValue.from_dict(
+                corrections.get(
+                    "hole_slip_allowance_mm",
+                    {
+                        "value": 0,
+                        "status": "unverified_starter",
+                        "evidence": [],
+                        "notes": "Neutral compatibility default; no evidence recorded.",
+                    },
+                )
+            ),
+            shaft_slip_allowance_mm=CalibrationValue.from_dict(
+                corrections.get(
+                    "shaft_slip_allowance_mm",
+                    {
+                        "value": 0,
+                        "status": "unverified_starter",
+                        "evidence": [],
+                        "notes": "Neutral compatibility default; no evidence recorded.",
+                    },
+                )
+            ),
+            hole_press_allowance_mm=CalibrationValue.from_dict(
+                corrections.get(
+                    "hole_press_allowance_mm",
+                    {
+                        "value": 0,
+                        "status": "unverified_starter",
+                        "evidence": [],
+                        "notes": "Neutral compatibility default; no evidence recorded.",
+                    },
+                )
+            ),
+            shaft_press_allowance_mm=CalibrationValue.from_dict(
+                corrections.get(
+                    "shaft_press_allowance_mm",
+                    {
+                        "value": 0,
+                        "status": "unverified_starter",
+                        "evidence": [],
+                        "notes": "Neutral compatibility default; no evidence recorded.",
+                    },
+                )
+            ),
         )
 
     @property
-    def values(self) -> Mapping[str, CalibrationValue]:
+    def legacy_values(self) -> Mapping[str, CalibrationValue]:
         return {
             "hole_offset_mm": self.hole_offset_mm,
             "shaft_offset_mm": self.shaft_offset_mm,
@@ -184,12 +321,71 @@ class CalibrationProfile:
         }
 
     @property
+    def directional_values(self) -> Mapping[str, CalibrationValue]:
+        return {
+            "hole_dimensional_correction_mm": self.hole_dimensional_correction_mm,
+            "shaft_dimensional_correction_mm": self.shaft_dimensional_correction_mm,
+            "hole_slip_allowance_mm": self.hole_slip_allowance_mm,
+            "shaft_slip_allowance_mm": self.shaft_slip_allowance_mm,
+            "hole_press_allowance_mm": self.hole_press_allowance_mm,
+            "shaft_press_allowance_mm": self.shaft_press_allowance_mm,
+            "scale_x": self.scale_x,
+            "scale_y": self.scale_y,
+            "scale_z": self.scale_z,
+        }
+
+    @property
+    def values(self) -> Mapping[str, CalibrationValue]:
+        return {**self.legacy_values, **self.directional_values}
+
+    @property
     def is_fully_proven(self) -> bool:
-        return all(value.is_proven for value in self.values.values())
+        """Legacy v1.0 proof aggregate retained for compatibility."""
+
+        return all(value.is_proven for value in self.legacy_values.values())
 
     @property
     def unverified_fields(self) -> tuple[str, ...]:
-        return tuple(name for name, value in self.values.items() if not value.is_proven)
+        """Legacy v1.0 unverified fields retained for manifest compatibility."""
+
+        return tuple(
+            name for name, value in self.legacy_values.items() if not value.is_proven
+        )
+
+    @property
+    def is_directional_fit_fully_proven(self) -> bool:
+        return all(value.is_proven for value in self.directional_values.values())
+
+    @property
+    def directional_unverified_fields(self) -> tuple[str, ...]:
+        return tuple(
+            name
+            for name, value in self.directional_values.items()
+            if not value.is_proven
+        )
+
+    def values_for_generator_version(
+        self, generator_version: str
+    ) -> Mapping[str, CalibrationValue]:
+        names = calibration_field_names_for_generator_version(generator_version)
+        return {name: self.values[name] for name in names}
+
+    def is_proven_for_generator_version(self, generator_version: str) -> bool:
+        return all(
+            value.is_proven
+            for value in self.values_for_generator_version(generator_version).values()
+        )
+
+    def unverified_fields_for_generator_version(
+        self, generator_version: str
+    ) -> tuple[str, ...]:
+        return tuple(
+            name
+            for name, value in self.values_for_generator_version(
+                generator_version
+            ).items()
+            if not value.is_proven
+        )
 
     def require_proven_fields(self, field_names: Sequence[str]) -> None:
         """Reject use of unproven corrections selected by a generator."""

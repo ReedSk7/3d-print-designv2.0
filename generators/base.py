@@ -29,6 +29,8 @@ class GeneratorMetadata:
     description: str
     expected_body_count: int = 1
     supported_artifacts: tuple[str, ...] = ("full_part", "fit_coupon")
+    protected_interfaces: tuple[str, ...] = ()
+    fit_coupon_interfaces: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -132,6 +134,47 @@ def diameter_with_calibration(
     return nominal_mm + offset
 
 
+def diameter_with_directional_fit(
+    nominal_mm: Decimal,
+    *,
+    interface: str,
+    fit_class: str,
+    context: GenerationContext,
+) -> Decimal:
+    """Resolve a v1.1 interface diameter with explicit directional semantics.
+
+    Dimensional corrections are signed additions learned for a particular
+    printer/material/nozzle configuration. Fit allowances are non-negative
+    magnitudes: slip enlarges a hole or shrinks a shaft; press fit shrinks a
+    hole or enlarges a shaft. The legacy global ``slip_fit_offset_mm`` and
+    ``press_fit_offset_mm`` values are deliberately not consulted here.
+    """
+
+    if interface not in {"hole", "shaft"}:
+        raise ValueError(f"Unsupported interface kind: {interface}")
+    if fit_class not in {"nominal", "slip", "press"}:
+        raise GeneratorValidationError([f"Unsupported fit class: {fit_class}"])
+
+    correction = context.calibration_offsets_mm.get(
+        f"{interface}_dimensional_correction_mm", Decimal("0")
+    )
+    result = nominal_mm + correction
+    if fit_class == "nominal":
+        return result
+
+    allowance_name = f"{interface}_{fit_class}_allowance_mm"
+    allowance = context.calibration_offsets_mm.get(allowance_name, Decimal("0"))
+    if allowance < 0:
+        raise GeneratorValidationError(
+            [f"{allowance_name} must be a non-negative magnitude."]
+        )
+    direction = Decimal("1") if (
+        (interface == "hole" and fit_class == "slip")
+        or (interface == "shaft" and fit_class == "press")
+    ) else Decimal("-1")
+    return result + direction * allowance
+
+
 def scaled_bounds(
     bounds: tuple[Decimal, Decimal, Decimal], context: GenerationContext
 ) -> tuple[Decimal, Decimal, Decimal]:
@@ -148,6 +191,25 @@ class PartGenerator(ABC):
     metadata: GeneratorMetadata
     parameter_schema: Mapping[str, Any]
     defaults: Mapping[str, Any]
+
+    def applicable_protected_interfaces(
+        self, parameters: Mapping[str, Any]
+    ) -> tuple[str, ...]:
+        """Return protected fit interfaces present for these parameters."""
+
+        return self.metadata.protected_interfaces
+
+    def applicable_coupon_interfaces(
+        self, parameters: Mapping[str, Any]
+    ) -> tuple[str, ...]:
+        """Return fit-coupon interfaces present for these parameters."""
+
+        return self.metadata.fit_coupon_interfaces
+
+    def supports_coupon_interface(
+        self, interface_parameter: str, parameters: Mapping[str, Any]
+    ) -> bool:
+        return interface_parameter in self.applicable_coupon_interfaces(parameters)
 
     @abstractmethod
     def generate(

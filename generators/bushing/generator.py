@@ -49,6 +49,8 @@ class BushingGenerator(PartGenerator):
         version="1.0.0",
         name="Bushing",
         description="Hollow cylindrical bushing with optional edge chamfer and split.",
+        protected_interfaces=("inside_diameter", "outside_diameter"),
+        fit_coupon_interfaces=("inside_diameter",),
     )
     defaults = {"chamfer": Decimal("0"), "fit_class": "nominal", "split": False}
     parameter_schema = {

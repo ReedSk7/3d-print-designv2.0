@@ -29,7 +29,27 @@ class RoundAdapterGenerator(PartGenerator):
         version="1.0.0",
         name="Round Adapter",
         description="Straight or tapered hollow adapter with optional bead and mounting flange.",
+        protected_interfaces=(
+            "end_a.diameter",
+            "end_b.diameter",
+            "mounting_flange.screw_hole_pattern.hole_diameter",
+        ),
+        fit_coupon_interfaces=("end_a.diameter", "end_b.diameter"),
     )
+
+    def applicable_protected_interfaces(
+        self, parameters: Mapping[str, Any]
+    ) -> tuple[str, ...]:
+        interfaces = ["end_a.diameter", "end_b.diameter"]
+        flange = parameters.get("mounting_flange")
+        if isinstance(flange, Mapping) and flange.get("enabled"):
+            pattern = flange.get("screw_hole_pattern")
+            if isinstance(pattern, Mapping) and pattern.get("enabled"):
+                interfaces.append(
+                    "mounting_flange.screw_hole_pattern.hole_diameter"
+                )
+        return tuple(interfaces)
+
     defaults = {
         "transition": "tapered",
         "fit_class": "nominal",

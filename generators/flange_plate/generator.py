@@ -56,7 +56,40 @@ class FlangePlateGenerator(PartGenerator):
         version="1.0.0",
         name="Flange Plate",
         description="Rounded rectangular plate with center opening and mounting holes.",
+        protected_interfaces=(
+            "center_opening.diameter",
+            "center_opening.width",
+            "center_opening.height",
+            "mounting_hole_diameter",
+        ),
+        fit_coupon_interfaces=("mounting_hole_diameter",),
     )
+
+    def applicable_protected_interfaces(
+        self, parameters: Mapping[str, Any]
+    ) -> tuple[str, ...]:
+        interfaces: list[str] = []
+        opening = parameters.get("center_opening")
+        if isinstance(opening, Mapping):
+            if opening.get("type") == "circle":
+                interfaces.append("center_opening.diameter")
+            elif opening.get("type") == "rectangle":
+                interfaces.extend(("center_opening.width", "center_opening.height"))
+        pattern = parameters.get("mounting_hole_pattern")
+        if isinstance(pattern, Mapping) and pattern.get("type") != "none":
+            interfaces.append("mounting_hole_diameter")
+        return tuple(interfaces)
+
+    def applicable_coupon_interfaces(
+        self, parameters: Mapping[str, Any]
+    ) -> tuple[str, ...]:
+        return (
+            ("mounting_hole_diameter",)
+            if "mounting_hole_diameter"
+            in self.applicable_protected_interfaces(parameters)
+            else ()
+        )
+
     defaults = {"hole_finish": {"type": "none"}, "fit_class": "nominal"}
     parameter_schema = {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
