@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0",
+  "project": {
+    "id": "OWNER MUST ENTER A UNIQUE FULL-PART PROJECT ID",
+    "name": "Bambu Lab P2S PETG bushing source",
+    "version": "v01",
+    "intent": "original"
+  },
+  "generator": {
+    "id": "bushing",
+    "version": "1.1.0",
+    "parameters": {
+      "inside_diameter": "OWNER MUST ENTER THE CALIPER-MEASURED PIN DIAMETER",
+      "outside_diameter": "OWNER MUST ENTER THE INTENDED BUSHING OUTSIDE DIAMETER",
+      "length": "OWNER MUST ENTER THE INTENDED FULL BUSHING LENGTH",
+      "chamfer": "OWNER MUST ENTER THE INTENDED CHAMFER",
+      "inside_fit": "OWNER MUST ENTER nominal, slip, or press",
+      "outside_fit": "OWNER MUST ENTER nominal, slip, or press",
+      "split": "OWNER MUST ENTER true or false",
+      "minimum_wall_thickness": "OWNER MUST ENTER THE REQUIRED MINIMUM WALL THICKNESS"
+    }
+  },
+  "input_units": "mm",
+  "printer_profile": "bambu_lab_p2s_owner_local",
+  "material": "PETG",
+  "nozzle_diameter": "OWNER MUST ENTER THE ACTUAL INSTALLED NOZZLE DIAMETER",
+  "fit_profile": "neutral_unverified_starter",
+  "generation_mode": "full_part",
+  "fit_coupon": null,
+  "fit_coupon_evidence": null,
+  "measurement_contract": [
+    {
+      "parameter_name": "inside_diameter",
+      "measured_value": "OWNER MUST ENTER THE CALIPER-MEASURED PIN DIAMETER",
+      "units": "mm",
+      "measurement_source": "OWNER MUST IDENTIFY THE SMOOTH DRILL-BIT SHANK OR GAUGE PIN AND CALIPER",
+      "authority": "authoritative",
+      "confidence_level": "OWNER MUST ENTER low, medium, or high",
+      "tolerance": "OWNER MUST ENTER THE MEASUREMENT TOLERANCE",
+      "protected_interface": true,
+      "verification_notes": "OWNER MUST RECORD THE MEASUREMENT METHOD AND REPEATABILITY"
+    }
+  ],
+  "verification_policy": {
+    "require_authoritative_protected_interfaces": true,
+    "require_proven_calibration_for_full_part": false,
+    "mesh_bounds_tolerance_mm": "OWNER MUST ENTER THE COMPUTATIONAL BOUNDS TOLERANCE",
+    "physical_fit_required_for_verified_claim": true
+  },
+  "workflow_state": "draft",
+  "physical_verification": {
+    "status": "not_confirmed",
+    "confirmed_at": null,
+    "confirmed_by": null,
+    "evidence": [],
+    "notes": "No physical fit test has been recorded."
+  },
+  "timestamps": {
+    "created_at": "OWNER MUST ENTER AN ISO 8601 DATE-TIME",
+    "updated_at": "OWNER MUST ENTER AN ISO 8601 DATE-TIME"
+  },
+  "generated_artifacts": [],
+  "warnings": [
+    "The neutral calibration profile is an unverified starter and supplies no proven correction."
+  ],
+  "unresolved_assumptions": [
+    "OWNER MUST REPLACE THIS ITEM WITH REAL UNRESOLVED ASSUMPTIONS OR AN EMPTY LIST"
+  ]
+}

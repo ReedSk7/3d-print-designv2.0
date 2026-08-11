@@ -1,0 +1,16 @@
+[
+  {
+    "interface_parameter": "inside_diameter",
+    "acceptance_criterion": "OWNER MUST ENTER THE FULL-BUSHING INSIDE-FIT CRITERION",
+    "observed_result": "OWNER MUST ENTER THE OBSERVED FULL-BUSHING RESULT",
+    "passed": "OWNER MUST ENTER true or false",
+    "notes": "OWNER MUST ENTER NOTES OR AN EMPTY STRING"
+  },
+  {
+    "interface_parameter": "outside_diameter",
+    "acceptance_criterion": "OWNER MUST ENTER THE FULL-BUSHING OUTSIDE-FIT CRITERION",
+    "observed_result": "OWNER MUST ENTER THE OBSERVED FULL-BUSHING RESULT",
+    "passed": "OWNER MUST ENTER true or false",
+    "notes": "OWNER MUST ENTER NOTES OR AN EMPTY STRING"
+  }
+]

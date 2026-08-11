@@ -23,9 +23,16 @@ GENERATED_ENDINGS = {
     ".sl1",
     ".stl",
     ".ctb",
+    ".fit-result.json",
+    ".fit-evidence.json",
+    ".physical-fit.json",
+    ".physical-fit-evidence.json",
+    ".evidence.json",
 }
 FIXTURE_ROOT = "tests/fixtures/"
+RESTRICTED_LOCAL_ROOTS = ("owner-validation/local/",)
 MAX_FIXTURE_BYTES = 1024 * 1024
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -126,6 +133,10 @@ def main() -> int:
         errors.append(f"Routine workspace output is tracked: {path}")
 
     for path in tracked:
+        if path.startswith(RESTRICTED_LOCAL_ROOTS):
+            errors.append(f"Owner-local validation input or evidence is tracked: {path}")
+
+    for path in tracked:
         if not is_generated_path(path):
             continue
         if is_allowed_fixture(path, errors):
@@ -135,6 +146,8 @@ def main() -> int:
     for path in staged:
         if path.startswith("workspace/") and path != "workspace/.gitkeep":
             errors.append(f"Routine workspace output is staged: {path}")
+        elif path.startswith(RESTRICTED_LOCAL_ROOTS):
+            errors.append(f"Owner-local validation input or evidence is staged: {path}")
         elif is_generated_path(path):
             if not path.startswith(FIXTURE_ROOT):
                 errors.append(f"Routine generated output is staged: {path}")
@@ -142,6 +155,12 @@ def main() -> int:
     ignore_probes = (
         "workspace/policy-probe/generated.scad",
         "workspace/policy-probe/manifest.json",
+        "owner-validation/local/owner-filled-spec.json",
+        "owner-validation/local/owner-notes.txt",
+        "owner-validation/local/result.fit-evidence.json",
+        "owner-validation/local/result.physical-fit-evidence.json",
+        "owner-validation/local/fit-result.evidence.json",
+        "owner-validation/local/physical-fit.evidence.json",
         "policy-probe/generated.stl",
         "policy-probe/generated.png",
         "policy-probe/generated.3mf",
@@ -149,6 +168,12 @@ def main() -> int:
         "policy-probe/generated.photon",
         "policy-probe/generated.ctb",
         "policy-probe/generation.log",
+        "policy-probe/result.fit-result.json",
+        "policy-probe/result.fit-evidence.json",
+        "policy-probe/result.physical-fit.json",
+        "policy-probe/result.physical-fit-evidence.json",
+        "policy-probe/fit-result.evidence.json",
+        "policy-probe/physical-fit.evidence.json",
     )
     for probe in ignore_probes:
         if not is_ignored(probe):

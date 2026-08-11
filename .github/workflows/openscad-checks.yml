@@ -5,9 +5,11 @@ on:
     branches:
       - main
       - "rebuild/**"
+      - "feature/**"
   pull_request:
     branches:
       - main
+      - "rebuild/**"
 
 permissions:
   contents: read
@@ -65,6 +67,15 @@ jobs:
           python scripts/generate_part.py --spec examples/specs/bushing_example.json
           python scripts/generate_part.py --spec examples/specs/round_adapter_example.json
           python scripts/generate_part.py --spec examples/specs/flange_plate_example.json
+
+      - name: Run generator 1.1.0 fit-coupon vertical slices
+        run: |
+          python scripts/generate_part.py --spec examples/specs/bushing_v110_coupon_example.json
+          python scripts/generate_part.py --spec examples/specs/round_adapter_v110_coupon_example.json
+          python scripts/generate_part.py --spec examples/specs/flange_plate_v110_coupon_example.json
+
+      - name: Run evidence-chain integration tests
+        run: python -m pytest tests/integration -q -k "evidence or status or physical_fit"
 
       - name: Enforce generated-output policy
         run: |

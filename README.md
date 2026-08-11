@@ -75,6 +75,31 @@ Other CLIs:
 & .\.venv\Scripts\python.exe scripts\verify_mesh.py --manifest workspace\flange_plate_example\v01\artifact-manifest.json
 ```
 
+## Owner Fit-evidence Loop
+
+Phase 1.1 keeps generation and human evidence as separate immutable steps:
+
+`measured full-part draft` -> `generated fit coupon` -> `recorded printed coupon result` ->
+`new linked full-part draft` -> `full_part_exported` -> `recorded completed-part result`.
+
+The focused commands are:
+
+- `scripts/create_fit_coupon.py` creates a coupon specification and does not
+  print, test, or imply a pass;
+- `scripts/record_fit_coupon_result.py` records an owner's real coupon outcome
+  against verified manifest/STL/spec hashes;
+- `scripts/create_full_part_from_coupon.py` creates a fresh full-part spec from
+  a valid passed coupon chain without skipping generation gates;
+- `scripts/record_physical_fit.py` records results for every protected interface
+  against an exact exported full-part artifact; and
+- `scripts/inspect_project_status.py` reports the highest defensible state and
+  whether physical-verification wording is allowed.
+
+Owner-filled inputs and evidence remain ignored local files. Start with
+[Owner Fit Validation](docs/OWNER_FIT_VALIDATION.md), which deliberately leaves
+the installed Bambu Lab P2S nozzle, measured pin diameter, and five candidate
+offsets blank for the owner to enter.
+
 ## Project Specifications
 
 `schemas/project-spec-v1.schema.json` is the versioned input contract. A spec
@@ -100,6 +125,18 @@ only when the complete cited evidence package and those identities match.
 The bundled `neutral_unverified_starter` profile applies zero offsets and unit
 scale. Those neutral values are explicitly unverified; they are not claimed as
 proven calibration.
+
+Fit direction is explicit: hole slip allowance enlarges a hole, shaft slip
+allowance reduces a shaft, hole press allowance reduces a hole, and shaft press
+allowance enlarges a shaft. Hole and shaft dimensional corrections are separate
+signed values; a positive correction enlarges the corresponding feature. The
+legacy global slip/press offsets remain compatibility inputs for generator
+version `1.0.0`; version `1.1.0` does not apply them across unrelated interfaces.
+
+Generator version `1.0.0` remains available for existing specifications and
+manifests. Version `1.1.0` adds independent fit controls and interface-specific
+coupon behavior; selecting it is an explicit specification change rather than
+a silent change to legacy geometry.
 
 ## Tests
 

@@ -63,6 +63,9 @@ coupon starts again at `draft` and hash-links the prior passed-coupon evidence.
 
 - Write routine generated SCAD, STL, PNG, 3MF, temporary meshes, logs, and local
   project data under `workspace/<project_id>/<version>/`.
+- Keep owner-filled validation specifications and notes under the ignored
+  `owner-validation/local/` path. Fit-result and physical-fit evidence records
+  are immutable local artifacts and must not be committed.
 - Do not commit routine generated artifacts or ASCII STL.
 - Track versioned source specs, generator code/templates, tests, documentation,
   and small intentional fixtures only.
@@ -89,6 +92,7 @@ Primary commands:
 python scripts/validate_spec.py --spec <spec.json>
 python scripts/generate_part.py --spec <spec.json>
 python scripts/verify_mesh.py --manifest <manifest.json>
+python scripts/inspect_project_status.py --project-version-dir <project/version>
 python -m pytest
 ```
 

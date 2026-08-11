@@ -42,7 +42,10 @@ not add generator-ID conditionals to those layers.
 
 Track specifications, Python/OpenSCAD templates, tests, documentation, and
 small intentional fixtures. Do not commit routine generated SCAD, STL, PNG,
-3MF, temporary meshes, logs, or workspace data. Never add ASCII STL.
+3MF, temporary meshes, logs, workspace data, owner-filled validation inputs,
+or fit/physical evidence records. Never add ASCII STL. The safe placeholder
+source under `owner-validation/templates/` is tracked; completed local copies
+belong under ignored `owner-validation/local/`.
 
 Do not commit customer/private data, paid references, or ambiguously licensed
 photos and meshes. Draft PR #1 is read-only salvage material and must not be

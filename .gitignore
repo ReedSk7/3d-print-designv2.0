@@ -33,6 +33,10 @@ references/paid/*
 /workspace/**
 !/workspace/.gitkeep
 
+# Owner fit-validation inputs. Keep only placeholder templates in Git under
+# owner-validation/templates; filled specifications and notes belong here.
+/owner-validation/local/**
+
 # Slicer temp and export junk
 *.3mf.cache
 *.gcode
@@ -40,6 +44,14 @@ references/paid/*
 *.sl1
 *.photon
 *.ctb
+
+# Evidence exports are ordinary local records. The canonical commands write
+# them under workspace/, while these patterns also protect manual copies.
+*.fit-result.json
+*.fit-evidence.json
+*.physical-fit.json
+*.physical-fit-evidence.json
+*.evidence.json
 
 # Python
 __pycache__/
