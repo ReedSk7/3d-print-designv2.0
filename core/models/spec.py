@@ -82,6 +82,9 @@ class FitCouponRequest:
     interface_parameter: str
     candidate_offsets: tuple[Decimal, ...]
     notes: str
+    source_project_id: str | None = None
+    source_project_version: str | None = None
+    source_spec_sha256: str | None = None
 
     def __post_init__(self) -> None:
         name = self.interface_parameter.strip()
@@ -92,6 +95,31 @@ class FitCouponRequest:
             raise ValueError("fit_coupon requires between 2 and 12 candidate offsets.")
         if len(set(offsets)) != len(offsets):
             raise ValueError("fit_coupon candidate offsets must be unique.")
+        source_binding = (
+            self.source_project_id,
+            self.source_project_version,
+            self.source_spec_sha256,
+        )
+        if any(value is not None for value in source_binding) and not all(
+            value is not None for value in source_binding
+        ):
+            raise ValueError(
+                "Fit-coupon source project ID, version, and specification SHA-256 "
+                "must be supplied together."
+            )
+        if self.source_project_id is not None:
+            for field_name in ("source_project_id", "source_project_version"):
+                value = str(getattr(self, field_name)).strip()
+                if not value:
+                    raise ValueError(f"fit_coupon.{field_name} cannot be empty.")
+                object.__setattr__(self, field_name, value)
+            digest = str(self.source_spec_sha256)
+            if len(digest) != 64 or any(
+                character not in "0123456789abcdef" for character in digest
+            ):
+                raise ValueError(
+                    "fit_coupon.source_spec_sha256 must be a lowercase SHA-256 digest."
+                )
         object.__setattr__(self, "interface_parameter", name)
         object.__setattr__(self, "candidate_offsets", offsets)
 
@@ -104,10 +132,29 @@ class FitCouponRequest:
             interface_parameter=str(document["interface_parameter"]),
             candidate_offsets=tuple(as_decimal(value) for value in offsets),  # type: ignore[arg-type]
             notes=str(document["notes"]),
+            source_project_id=(
+                str(document["source_project_id"])
+                if document.get("source_project_id") is not None
+                else None
+            ),
+            source_project_version=(
+                str(document["source_project_version"])
+                if document.get("source_project_version") is not None
+                else None
+            ),
+            source_spec_sha256=(
+                str(document["source_spec_sha256"])
+                if document.get("source_spec_sha256") is not None
+                else None
+            ),
         )
 
     def candidate_offsets_mm(self, input_units: LengthUnit | str) -> tuple[Decimal, ...]:
         return tuple(to_mm(value, input_units) for value in self.candidate_offsets)
+
+    @property
+    def has_source_binding(self) -> bool:
+        return self.source_project_id is not None
 
 
 @dataclass(frozen=True, slots=True)
@@ -129,6 +176,14 @@ class FitCouponEvidence:
     measured_result: str
     passed: bool
     notes: str
+    coupon_result_evidence_path: str | None = None
+    coupon_result_evidence_sha256: str | None = None
+    coupon_result_evidence_size_bytes: int | None = None
+    coupon_spec_sha256: str | None = None
+    source_project_id: str | None = None
+    source_project_version: str | None = None
+    source_spec_sha256: str | None = None
+    calibration_profile_sha256: str | None = None
 
     def __post_init__(self) -> None:
         required_text = (
@@ -153,6 +208,77 @@ class FitCouponEvidence:
             ):
                 raise ValueError(
                     "Fit-coupon evidence requires lowercase SHA-256 manifest and artifact digests."
+                )
+        result_binding = (
+            self.coupon_result_evidence_path,
+            self.coupon_result_evidence_sha256,
+            self.coupon_result_evidence_size_bytes,
+            self.coupon_spec_sha256,
+        )
+        if any(value is not None for value in result_binding) and not all(
+            value is not None for value in result_binding
+        ):
+            raise ValueError(
+                "Fit-coupon result provenance fields must be supplied together."
+            )
+        if self.coupon_result_evidence_path is not None:
+            path = self.coupon_result_evidence_path.replace("\\", "/")
+            parts = path.split("/")
+            if not path or path.startswith("/") or ".." in parts or ":" in parts[0]:
+                raise ValueError(
+                    "Fit-coupon result evidence path must be workspace-relative."
+                )
+            object.__setattr__(self, "coupon_result_evidence_path", path)
+            for digest_name in (
+                "coupon_result_evidence_sha256",
+                "coupon_spec_sha256",
+            ):
+                digest = str(getattr(self, digest_name))
+                if len(digest) != 64 or any(
+                    character not in "0123456789abcdef" for character in digest
+                ):
+                    raise ValueError(
+                        "Fit-coupon result provenance requires lowercase SHA-256 digests."
+                    )
+            if (
+                isinstance(self.coupon_result_evidence_size_bytes, bool)
+                or self.coupon_result_evidence_size_bytes is None
+                or self.coupon_result_evidence_size_bytes < 1
+            ):
+                raise ValueError(
+                    "Fit-coupon result evidence size must be a positive integer."
+                )
+        source_binding = (
+            self.source_project_id,
+            self.source_project_version,
+            self.source_spec_sha256,
+        )
+        if any(value is not None for value in source_binding) and not all(
+            value is not None for value in source_binding
+        ):
+            raise ValueError(
+                "Fit-coupon originating-source fields must be supplied together."
+            )
+        if self.source_project_id is not None:
+            for field_name in ("source_project_id", "source_project_version"):
+                value = str(getattr(self, field_name)).strip()
+                if not value:
+                    raise ValueError(f"Fit-coupon evidence {field_name} cannot be empty.")
+                object.__setattr__(self, field_name, value)
+            digest = str(self.source_spec_sha256)
+            if len(digest) != 64 or any(
+                character not in "0123456789abcdef" for character in digest
+            ):
+                raise ValueError(
+                    "Fit-coupon evidence source_spec_sha256 must be a lowercase SHA-256 digest."
+                )
+        if self.calibration_profile_sha256 is not None:
+            digest = str(self.calibration_profile_sha256)
+            if len(digest) != 64 or any(
+                character not in "0123456789abcdef" for character in digest
+            ):
+                raise ValueError(
+                    "Fit-coupon evidence calibration_profile_sha256 must be a lowercase SHA-256 digest."
                 )
         object.__setattr__(self, "candidate_offset_mm", as_decimal(self.candidate_offset_mm))
         nozzle = as_decimal(self.nozzle_diameter_mm)
@@ -184,14 +310,54 @@ class FitCouponEvidence:
             nozzle_diameter_mm=as_decimal(document["nozzle_diameter_mm"]),  # type: ignore[arg-type]
             calibration_profile_id=str(document["calibration_profile_id"]),
             calibration_profile_version=str(document["calibration_profile_version"]),
+            calibration_profile_sha256=(
+                str(document["calibration_profile_sha256"])
+                if document.get("calibration_profile_sha256") is not None
+                else None
+            ),
             acceptance_criterion=str(document["acceptance_criterion"]),
             measured_result=str(document["measured_result"]),
             passed=document["passed"] is True,
             notes=str(document["notes"]),
+            coupon_result_evidence_path=(
+                str(document["coupon_result_evidence_path"])
+                if document.get("coupon_result_evidence_path") is not None
+                else None
+            ),
+            coupon_result_evidence_sha256=(
+                str(document["coupon_result_evidence_sha256"])
+                if document.get("coupon_result_evidence_sha256") is not None
+                else None
+            ),
+            coupon_result_evidence_size_bytes=(
+                int(document["coupon_result_evidence_size_bytes"])
+                if document.get("coupon_result_evidence_size_bytes") is not None
+                else None
+            ),
+            coupon_spec_sha256=(
+                str(document["coupon_spec_sha256"])
+                if document.get("coupon_spec_sha256") is not None
+                else None
+            ),
+            source_project_id=(
+                str(document["source_project_id"])
+                if document.get("source_project_id") is not None
+                else None
+            ),
+            source_project_version=(
+                str(document["source_project_version"])
+                if document.get("source_project_version") is not None
+                else None
+            ),
+            source_spec_sha256=(
+                str(document["source_spec_sha256"])
+                if document.get("source_spec_sha256") is not None
+                else None
+            ),
         )
 
     def to_dict(self) -> dict[str, object]:
-        return {
+        document: dict[str, object] = {
             "coupon_project_id": self.coupon_project_id,
             "coupon_project_version": self.coupon_project_version,
             "coupon_manifest_sha256": self.coupon_manifest_sha256,
@@ -210,6 +376,28 @@ class FitCouponEvidence:
             "passed": self.passed,
             "notes": self.notes,
         }
+        if self.calibration_profile_sha256 is not None:
+            document["calibration_profile_sha256"] = self.calibration_profile_sha256
+        if self.coupon_result_evidence_path is not None:
+            document.update(
+                {
+                    "coupon_result_evidence_path": self.coupon_result_evidence_path,
+                    "coupon_result_evidence_sha256": self.coupon_result_evidence_sha256,
+                    "coupon_result_evidence_size_bytes": (
+                        self.coupon_result_evidence_size_bytes
+                    ),
+                    "coupon_spec_sha256": self.coupon_spec_sha256,
+                }
+            )
+        if self.source_project_id is not None:
+            document.update(
+                {
+                    "source_project_id": self.source_project_id,
+                    "source_project_version": self.source_project_version,
+                    "source_spec_sha256": self.source_spec_sha256,
+                }
+            )
+        return document
 
 
 @dataclass(frozen=True, slots=True)

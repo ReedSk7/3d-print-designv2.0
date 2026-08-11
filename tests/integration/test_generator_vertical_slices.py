@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytest
 
+import core.workflow.pipeline as pipeline
 from core.models.artifacts import sha256_file
 from core.validation.specification import SpecificationError
 from core.workflow.pipeline import generate_project
@@ -20,6 +21,38 @@ def is_binary_stl(path: Path) -> bool:
         return False
     triangle_count = struct.unpack("<I", data[80:84])[0]
     return len(data) == 84 + triangle_count * 50
+
+
+@pytest.mark.integration
+def test_generation_snapshots_the_exact_bytes_that_were_validated(
+    examples_dir: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    document = json.loads(
+        (examples_dir / "bushing_example.json").read_text(encoding="utf-8")
+    )
+    document["project"]["id"] = "single_read_spec_fixture"
+    source = tmp_path / "single_read_source.json"
+    source.write_text(json.dumps(document, indent=2), encoding="utf-8")
+    validated_bytes = source.read_bytes()
+    original_prepare = pipeline.prepare_generation
+
+    def prepare_then_mutate(spec: object, *, workspace_root: Path | None = None):
+        prepared = original_prepare(spec, workspace_root=workspace_root)  # type: ignore[arg-type]
+        changed = json.loads(source.read_text(encoding="utf-8"))
+        changed["generator"]["parameters"]["inside_diameter"] = 24
+        source.write_text(json.dumps(changed, indent=2), encoding="utf-8")
+        return prepared
+
+    monkeypatch.setattr(pipeline, "prepare_generation", prepare_then_mutate)
+    result = pipeline.generate_project(source, workspace_root=tmp_path / "workspace")
+
+    snapshot = result.output_directory / "spec.snapshot.json"
+    assert snapshot.read_bytes() == validated_bytes
+    assert json.loads(source.read_text(encoding="utf-8"))["generator"]["parameters"][
+        "inside_diameter"
+    ] == 24
+    manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
+    assert manifest["checks"]["normalized_parameters_mm"]["inside_diameter"] == "20"
 
 
 @pytest.mark.integration

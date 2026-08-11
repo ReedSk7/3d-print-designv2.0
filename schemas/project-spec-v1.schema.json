@@ -160,6 +160,11 @@
     "fit_coupon": {
       "type": "object",
       "additionalProperties": false,
+      "dependentRequired": {
+        "source_project_id": ["source_project_version", "source_spec_sha256"],
+        "source_project_version": ["source_project_id", "source_spec_sha256"],
+        "source_spec_sha256": ["source_project_id", "source_project_version"]
+      },
       "required": ["interface_parameter", "candidate_offsets", "notes"],
       "properties": {
         "interface_parameter": {
@@ -173,12 +178,49 @@
           "uniqueItems": true,
           "items": { "type": "number" }
         },
-        "notes": { "type": "string" }
+        "notes": { "type": "string" },
+        "source_project_id": { "$ref": "#/$defs/identifier" },
+        "source_project_version": { "type": "string", "pattern": "^v[0-9]{2,}$" },
+        "source_spec_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
       }
     },
     "fit_coupon_evidence": {
       "type": "object",
       "additionalProperties": false,
+      "dependentRequired": {
+        "coupon_result_evidence_path": [
+          "coupon_result_evidence_sha256",
+          "coupon_result_evidence_size_bytes",
+          "coupon_spec_sha256"
+        ],
+        "coupon_result_evidence_sha256": [
+          "coupon_result_evidence_path",
+          "coupon_result_evidence_size_bytes",
+          "coupon_spec_sha256"
+        ],
+        "coupon_result_evidence_size_bytes": [
+          "coupon_result_evidence_path",
+          "coupon_result_evidence_sha256",
+          "coupon_spec_sha256"
+        ],
+        "coupon_spec_sha256": [
+          "coupon_result_evidence_path",
+          "coupon_result_evidence_sha256",
+          "coupon_result_evidence_size_bytes"
+        ],
+        "source_project_id": [
+          "source_project_version",
+          "source_spec_sha256"
+        ],
+        "source_project_version": [
+          "source_project_id",
+          "source_spec_sha256"
+        ],
+        "source_spec_sha256": [
+          "source_project_id",
+          "source_project_version"
+        ]
+      },
       "required": [
         "coupon_project_id",
         "coupon_project_version",
@@ -203,6 +245,23 @@
         "coupon_project_version": { "type": "string", "pattern": "^v[0-9]{2,}$" },
         "coupon_manifest_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
         "coupon_artifact_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "coupon_result_evidence_path": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?![A-Za-z]:)(?!\\.\\.(?:/|$))(?!.*?/\\.\\.(?:/|$)).+"
+        },
+        "coupon_result_evidence_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "coupon_result_evidence_size_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "coupon_spec_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "source_project_id": { "$ref": "#/$defs/identifier" },
+        "source_project_version": { "type": "string", "pattern": "^v[0-9]{2,}$" },
+        "source_spec_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
         "interface_parameter": {
           "type": "string",
           "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)*$"
@@ -217,6 +276,10 @@
         "calibration_profile_version": {
           "type": "string",
           "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+        },
+        "calibration_profile_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
         },
         "acceptance_criterion": { "type": "string", "minLength": 1 },
         "measured_result": { "type": "string", "minLength": 1 },

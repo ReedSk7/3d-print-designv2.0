@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://reedsk7.github.io/parametric-part-workbench/schemas/fit-result-evidence-v1.schema.json",
+  "title": "Immutable fit-coupon result evidence v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "evidence_kind",
+    "created_at",
+    "coupon",
+    "bindings",
+    "configuration",
+    "result",
+    "defensible_workflow_state",
+    "complete_part_physical_fit_confirmed"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "evidence_kind": { "const": "fit_coupon_result" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "coupon": {
+      "type": "object",
+      "additionalProperties": false,
+      "dependentRequired": {
+        "source_project_id": ["source_project_version", "source_spec_sha256"],
+        "source_project_version": ["source_project_id", "source_spec_sha256"],
+        "source_spec_sha256": ["source_project_id", "source_project_version"]
+      },
+      "required": [
+        "project_id",
+        "project_version",
+        "generator",
+        "generation_mode",
+        "generation_workflow_state"
+      ],
+      "properties": {
+        "project_id": { "$ref": "#/$defs/nonempty" },
+        "project_version": { "$ref": "#/$defs/nonempty" },
+        "generator": { "$ref": "#/$defs/generator" },
+        "generation_mode": { "const": "fit_coupon" },
+        "generation_workflow_state": { "const": "fit_coupon_generated" },
+        "source_project_id": { "$ref": "#/$defs/nonempty" },
+        "source_project_version": { "$ref": "#/$defs/nonempty" },
+        "source_spec_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["manifest", "stl", "specification_snapshot"],
+      "properties": {
+        "manifest": { "$ref": "#/$defs/file_binding" },
+        "stl": { "$ref": "#/$defs/file_binding" },
+        "specification_snapshot": { "$ref": "#/$defs/file_binding" }
+      }
+    },
+    "configuration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "interface_parameter",
+        "candidate_offsets_mm",
+        "selected_candidate_offset_mm",
+        "printer_profile",
+        "material",
+        "nozzle_diameter_mm",
+        "calibration_profile"
+      ],
+      "properties": {
+        "interface_parameter": { "$ref": "#/$defs/nonempty" },
+        "candidate_offsets_mm": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/decimal" }
+        },
+        "selected_candidate_offset_mm": { "$ref": "#/$defs/decimal" },
+        "printer_profile": { "$ref": "#/$defs/nonempty" },
+        "material": { "$ref": "#/$defs/nonempty" },
+        "nozzle_diameter_mm": { "$ref": "#/$defs/positive_decimal" },
+        "calibration_profile": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "version"],
+          "properties": {
+            "id": { "$ref": "#/$defs/nonempty" },
+            "version": { "$ref": "#/$defs/nonempty" },
+            "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+          }
+        }
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tested_by",
+        "tested_at",
+        "acceptance_criterion",
+        "observed_result",
+        "passed",
+        "notes"
+      ],
+      "properties": {
+        "tested_by": { "$ref": "#/$defs/nonempty" },
+        "tested_at": { "type": "string", "format": "date-time" },
+        "acceptance_criterion": { "$ref": "#/$defs/nonempty" },
+        "observed_result": { "$ref": "#/$defs/nonempty" },
+        "passed": { "type": "boolean" },
+        "notes": { "type": "string" }
+      }
+    },
+    "defensible_workflow_state": {
+      "enum": ["fit_coupon_generated", "fit_coupon_passed"]
+    },
+    "complete_part_physical_fit_confirmed": { "const": false }
+  },
+  "$defs": {
+    "nonempty": { "type": "string", "minLength": 1 },
+    "decimal": {
+      "oneOf": [
+        { "type": "number" },
+        { "type": "string", "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$" }
+      ]
+    },
+    "positive_decimal": {
+      "oneOf": [
+        { "type": "number", "exclusiveMinimum": 0 },
+        { "type": "string", "pattern": "^(?:0\\.[0-9]*[1-9][0-9]*|[1-9][0-9]*(?:\\.[0-9]+)?)$" }
+      ]
+    },
+    "generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version"],
+      "properties": {
+        "id": { "$ref": "#/$defs/nonempty" },
+        "version": { "$ref": "#/$defs/nonempty" }
+      }
+    },
+    "file_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "size_bytes"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?![A-Za-z]:)(?!\\.\\.(?:/|$))(?!.*?/\\.\\.(?:/|$)).+"
+        },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "size_bytes": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}
