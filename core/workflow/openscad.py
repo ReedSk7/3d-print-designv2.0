@@ -72,6 +72,8 @@ def find_openscad() -> Path:
         candidate = Path(configured).expanduser()
         if candidate.is_file():
             return candidate.resolve()
+        # An explicit selection must never silently select a different version.
+        raise OpenSCADNotFound((f"OPENSCAD_PATH={configured} (not a file)",))
     for name in EXECUTABLE_NAMES:
         located = shutil.which(name)
         if located:
@@ -84,20 +86,28 @@ def find_openscad() -> Path:
 
 def openscad_version(executable: Path | None = None) -> str:
     program = executable or find_openscad()
-    completed = subprocess.run(
-        [str(program), "--version"],
-        shell=False,
-        text=True,
-        capture_output=True,
-        timeout=30,
-        check=False,
-    )
+    completed = run_openscad_command([str(program), "--version"], timeout_seconds=30)
     output = "\n".join(part.strip() for part in (completed.stdout, completed.stderr) if part.strip())
     if completed.returncode != 0 or not output:
         raise OpenSCADExecutionError(
             f"Could not obtain OpenSCAD version (exit {completed.returncode}): {output}"
         )
     return output.splitlines()[0]
+
+
+def run_openscad_command(command: list[str] | tuple[str, ...], *, timeout_seconds: int = 180):
+    """Run without a shell; normalize launch and timeout failures for every caller."""
+    if timeout_seconds <= 0:
+        raise ValueError("OpenSCAD timeout must be positive.")
+    try:
+        return subprocess.run(command, shell=False, text=True, capture_output=True,
+                              timeout=timeout_seconds, check=False)
+    except subprocess.TimeoutExpired as exc:
+        raise OpenSCADExecutionError(
+            f"OpenSCAD timed out after {timeout_seconds} seconds."
+        ) from exc
+    except OSError as exc:
+        raise OpenSCADExecutionError(f"Could not launch OpenSCAD: {exc}") from exc
 
 
 def compile_binary_stl(
@@ -133,19 +143,10 @@ def compile_binary_stl(
     )
     started = time.monotonic()
     try:
-        completed = subprocess.run(
-            command,
-            shell=False,
-            text=True,
-            capture_output=True,
-            timeout=timeout_seconds,
-            check=False,
-        )
-    except subprocess.TimeoutExpired as exc:
+        completed = run_openscad_command(command, timeout_seconds=timeout_seconds)
+    except OpenSCADExecutionError:
         temporary.unlink(missing_ok=True)
-        raise OpenSCADExecutionError(
-            f"OpenSCAD timed out after {timeout_seconds} seconds for {source}."
-        ) from exc
+        raise
     duration = time.monotonic() - started
     diagnostics = f"{completed.stdout}\n{completed.stderr}"
     if completed.returncode != 0 or ERROR_DIAGNOSTIC.search(diagnostics):
@@ -158,7 +159,12 @@ def compile_binary_stl(
         raise OpenSCADExecutionError(
             "OpenSCAD returned success but did not create a non-empty STL."
         )
-    temporary.replace(output)
+    # Linking publishes all completed bytes exclusively, even if another writer
+    # created the target while OpenSCAD ran. Fail closed on unsupported filesystems.
+    try:
+        os.link(temporary, output)
+    finally:
+        temporary.unlink(missing_ok=True)
     return OpenSCADCompileResult(
         executable=executable,
         version=version,

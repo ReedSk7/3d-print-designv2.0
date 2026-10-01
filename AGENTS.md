@@ -3,15 +3,21 @@
 This file is authoritative for work in this repository. Supporting skills,
 templates, scripts, and legacy notes must not override it.
 
-## Mission and Phase 1 Scope
+## Mission and Supported Scope
 
 Build Parametric Part Workbench v3 as a reliable, local-first system for
 deterministic, dimension-driven OpenSCAD generators.
 
-Phase 1 supports `bushing`, `round_adapter`, and `flange_plate` through the
+The current generator contract supports `bushing`, `round_adapter`, and `flange_plate` through the
 Python CLI. Do not add freeform LLM geometry, general photo-to-3D, arbitrary CAD
 automation, the React dashboard, customer/quote/payment features, cloud login,
 marketplaces, deployment, or a customer portal.
+
+Project modernization may improve setup, verification, reproducible CAD renders,
+and a separate slicer handoff without creating an owner model or print job.
+Future original-design families and measured reconstruction need explicit scope,
+a versioned deterministic generator and tests; Phase 1's family limit is a
+roadmap boundary, while measurement/privacy/physical-fit rules endure.
 
 ## Modeling Contract
 
@@ -86,20 +92,31 @@ coupon starts again at `draft` and hash-links the prior passed-coupon evidence.
 6. Report exact commands, results, reached states, and remaining physical/manual
    work.
 
+Use the existing `openscad-3d-print-agent` skill and its focused references for
+setup, dimension-driven CAD, visual review, and artifact/Bambu handoff. Check for
+`AGENTS.override.md` and nearer instructions before each task. One independent
+read-only reviewer is useful for difficult changes; no orchestration app is needed.
+Project Codex preferences are in `.codex/config.toml`; confirm active settings in
+a fresh trusted session. Never change global auth/providers or loosen permissions.
+
 Primary commands:
 
 ```powershell
+python scripts/check_environment.py
 python scripts/validate_spec.py --spec <spec.json>
 python scripts/generate_part.py --spec <spec.json>
 python scripts/verify_mesh.py --manifest <manifest.json>
 python scripts/inspect_project_status.py --project-version-dir <project/version>
+python scripts/export_preview.py --manifest <artifact-manifest.json>
+python scripts/prepare_bambu_handoff.py --manifest <artifact-manifest.json>
 python -m pytest
 ```
 
 ## Git and Legacy Boundaries
 
-- The rebuild branch starts from verified `main`; PR #1 is read-only salvage
-  material and must not be merged or copied wholesale.
+- PR #2 supplies the V3 foundation; PR #3 adds the owner fit-evidence loop. The
+  modernization branch starts at verified PR #3, not old main. Recheck ancestry
+  and refs before continuing. PR #1 remains read-only salvage material.
 - Do not normalize every legacy project in Phase 1. Follow
   `docs/rebuild/MIGRATION_MAP.md` and salvage individual files only with a
   documented reason.

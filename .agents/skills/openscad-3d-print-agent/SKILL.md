@@ -1,6 +1,6 @@
 ---
 name: openscad-3d-print-agent
-description: Deterministic Parametric Part Workbench v3 specification, generation, fit-coupon, and computational verification workflow.
+description: Deterministic Parametric Part Workbench v3 setup, dimension-driven CAD, visual review, fit-evidence, and Bambu handoff workflow.
 ---
 
 # Parametric Part Workbench v3 Helper
@@ -8,7 +8,17 @@ description: Deterministic Parametric Part Workbench v3 specification, generatio
 Read and follow root `AGENTS.md` first. This helper does not override the root
 rules or authorize legacy project workflows.
 
-## Required Workflow
+## Choose the relevant procedure
+
+- Environment/configuration/dependencies: read [setup](references/setup.md).
+- Dimensions/specification/generator selection: use the workflow below.
+- CAD images and critical features: read [visual review](references/visual-review.md).
+- Hashes, fit evidence and slicer transfer: read [artifact handoff](references/artifact-handoff.md).
+
+Do not load every procedure for a simple task. No duplicate personal installation
+is needed; this skill stays versioned with the repository.
+
+## Dimension-driven CAD
 
 1. Identify the supported generator: `bushing`, `round_adapter`, or
    `flange_plate`.
@@ -38,5 +48,7 @@ python -m pytest
 ```
 
 Do not route new work through `new_project.py`, `next_version.py`, legacy
-templates, preview requirements, or legacy file-presence checks. Those remain
-historical compatibility tools only.
+templates or file-presence checks. For version-bound previews use
+`export_preview.py --manifest`; its single-input mode is only a legacy export.
+Keep generator 1.0.0 and 1.1.0 contracts intact. New families require separate
+scope and tests, not arbitrary geometry generated from an unbounded prompt.

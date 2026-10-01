@@ -562,6 +562,15 @@ def _verify_generation_manifest(
     )
 
 
+def verify_generation_manifest(manifest_path: str | Path, *, expected_manifest_sha256: str | None = None) -> VerifiedGeneration:
+    """Verify immutable source, mesh, spec and profile bindings without recording evidence.
+
+    This checks integrity and historical computational records; callers re-run
+    mesh checks separately. It never establishes a physical result.
+    """
+    return _verify_generation_manifest(manifest_path, expected_manifest_sha256=expected_manifest_sha256)
+
+
 def _plain(value: object) -> object:
     if isinstance(value, Mapping):
         return {str(key): _plain(item) for key, item in value.items()}

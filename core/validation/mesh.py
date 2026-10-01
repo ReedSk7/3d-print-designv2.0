@@ -96,6 +96,16 @@ def inspect_mesh(
 ) -> MeshReport:
     """Inspect a mesh and return every computational failure found."""
 
+    if expected_extents_mm is not None:
+        if len(expected_extents_mm) != 3 or any(
+            not value.is_finite() or value <= 0 for value in expected_extents_mm
+        ):
+            raise ValueError("Expected bounds must contain exactly three finite positive axes.")
+        if bounds_tolerance_mm is None or not bounds_tolerance_mm.is_finite() or bounds_tolerance_mm < 0:
+            raise ValueError("Bounds tolerance must be finite and nonnegative.")
+    if isinstance(expected_body_count, bool) or not isinstance(expected_body_count, int) or expected_body_count < 1:
+        raise ValueError("Expected body count must be a positive integer.")
+
     try:
         import numpy as np
         import trimesh

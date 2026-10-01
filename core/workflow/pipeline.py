@@ -38,6 +38,7 @@ from generators.registry import get_generator
 
 from .openscad import OpenSCADCompileResult, compile_binary_stl
 from .states import WorkflowState, WorkflowStateMachine
+from .publication import publish_bundle
 
 
 @dataclass(frozen=True, slots=True)
@@ -148,6 +149,8 @@ def _manifest_artifact(
     artifacts = document.get("artifacts")
     if not isinstance(artifacts, list):
         raise SpecificationError("Coupon artifact manifest has no artifact list.")
+    matches = []
+    seen = set()
     for item in artifacts:
         if not isinstance(item, Mapping):
             continue
@@ -155,8 +158,13 @@ def _manifest_artifact(
             record = ArtifactRecord.from_dict(item)
         except (KeyError, TypeError, ValueError) as exc:
             raise SpecificationError(f"Coupon artifact record is invalid: {exc}") from exc
+        if record.role in seen:
+            raise SpecificationError(f"Coupon artifact manifest repeats role {record.role.value}.")
+        seen.add(record.role)
         if record.role in roles:
-            return record
+            matches.append(record)
+    if len(matches) == 1:
+        return matches[0]
     expected = ", ".join(sorted(role.value for role in roles))
     raise SpecificationError(f"Coupon artifact manifest is missing role: {expected}.")
 
@@ -363,6 +371,14 @@ def _verify_fit_coupon_evidence(
         raise SpecificationError(
             "Fit-coupon evidence calibration profile content does not match the loaded profile."
         )
+
+    scad_record = _manifest_artifact(manifest_document, {ArtifactRole.FIT_COUPON_SCAD})
+    try:
+        coupon_scad_path, _ = read_and_verify_artifact(scad_record, workspace_root=root)
+    except ValueError as exc:
+        raise SpecificationError(f"Referenced fit-coupon SCAD failed integrity checks: {exc}") from exc
+    if coupon_scad_path.parent != coupon_directory:
+        raise SpecificationError("Referenced fit-coupon SCAD is not in the cited coupon version directory.")
 
     stl_record = _manifest_artifact(
         manifest_document, {ArtifactRole.FIT_COUPON_STL}
@@ -1054,7 +1070,7 @@ def generate_project(
             raise FileExistsError(
                 f"Refusing to overwrite existing project version workspace: {version_directory}"
             )
-        staging_directory.replace(version_directory)
+        publish_bundle(staging_directory, version_directory, manifest_name="artifact-manifest.json")
 
     final_report = replace(dimension_report, path=stl_path)
     return PipelineResult(

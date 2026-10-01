@@ -27,21 +27,18 @@ may advance a version to `physical_fit_confirmed`.
 
 See [docs/rebuild/VERIFICATION_MODEL.md](docs/rebuild/VERIFICATION_MODEL.md).
 
-## Prerequisites
+## Setup and daily commands
 
-- Python 3.13 or newer supported by the pinned dependencies
-- OpenSCAD available on `PATH`, through `OPENSCAD_PATH`, or in the standard
-  Windows installation directory
+Start with [Quick Start](docs/QUICK_START.md) for safe laptop checkout, Windows
+virtual-environment setup, project Codex settings, VS Code tasks, version-bound
+previews and manual Bambu Studio handoff. See [Upgrade Report](docs/UPGRADE_2026-09-30.md)
+for the tested environment and remaining limitations.
 
-OpenSCAD is mandatory. Missing OpenSCAD is a failure, not a skipped warning.
-
-Windows setup:
-
-```powershell
-py -3 -m venv .venv
-& .\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
-& 'C:\Program Files\OpenSCAD\openscad.com' --version
-```
+- Python 3.12 or 3.13 with `requirements-lock.txt` in the project `.venv`.
+- OpenSCAD is mandatory for generation/integration. Optional Bambu and graphics
+  capabilities are reported separately by `scripts/check_environment.py`.
+- The current printer is Bambu Lab P2S; installed nozzle, filament, plate and AMS
+  remain owner-confirmed details, not defaults inferred from example specs.
 
 ## Generate a Part
 
