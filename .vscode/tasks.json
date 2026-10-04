@@ -1,0 +1,164 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Workbench: environment check",
+      "type": "process",
+      "command": "${workspaceFolder}/.venv/bin/python",
+      "windows": {
+        "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe"
+      },
+      "args": [
+        "${workspaceFolder}/scripts/check_environment.py"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Workbench: tests",
+      "type": "process",
+      "command": "${workspaceFolder}/.venv/bin/python",
+      "windows": {
+        "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe"
+      },
+      "args": [
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Workbench: validate specification",
+      "type": "process",
+      "command": "${workspaceFolder}/.venv/bin/python",
+      "windows": {
+        "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe"
+      },
+      "args": [
+        "${workspaceFolder}/scripts/validate_spec.py",
+        "--spec",
+        "${input:spec}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Workbench: generate specification",
+      "type": "process",
+      "command": "${workspaceFolder}/.venv/bin/python",
+      "windows": {
+        "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe"
+      },
+      "args": [
+        "${workspaceFolder}/scripts/generate_part.py",
+        "--spec",
+        "${input:spec}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Workbench: verify mesh and hashes",
+      "type": "process",
+      "command": "${workspaceFolder}/.venv/bin/python",
+      "windows": {
+        "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe"
+      },
+      "args": [
+        "${workspaceFolder}/scripts/verify_mesh.py",
+        "--manifest",
+        "${input:manifest}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Workbench: generate previews",
+      "type": "process",
+      "command": "${workspaceFolder}/.venv/bin/python",
+      "windows": {
+        "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe"
+      },
+      "args": [
+        "${workspaceFolder}/scripts/export_preview.py",
+        "--manifest",
+        "${input:manifest}",
+        "--revision",
+        "${input:revision}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Workbench: prepare Bambu handoff",
+      "type": "process",
+      "command": "${workspaceFolder}/.venv/bin/python",
+      "windows": {
+        "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe"
+      },
+      "args": [
+        "${workspaceFolder}/scripts/prepare_bambu_handoff.py",
+        "--manifest",
+        "${input:manifest}",
+        "--revision",
+        "${input:revision}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Workbench: output policy audit",
+      "type": "process",
+      "command": "${workspaceFolder}/.venv/bin/python",
+      "windows": {
+        "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe"
+      },
+      "args": [
+        "${workspaceFolder}/scripts/check_output_policy.py"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "spec",
+      "type": "promptString",
+      "description": "Versioned specification path (relative to repository or absolute)",
+      "default": "examples/specs/bushing_example.json"
+    },
+    {
+      "id": "manifest",
+      "type": "promptString",
+      "description": "Exact generated artifact-manifest.json path (relative to repository or absolute)"
+    },
+    {
+      "id": "revision",
+      "type": "promptString",
+      "description": "New immutable preview/handoff revision",
+      "default": "r01"
+    }
+  ]
+}

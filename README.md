@@ -1,82 +1,166 @@
-# Reconstruction-First OpenSCAD Repo
+Print Workshop is integrated locally. Open `Open Print Workshop.cmd` in this folder. See [Workshop guide](docs/PRINT_WORKSHOP.md), [acceptance evidence](docs/PRINT_WORKSHOP_ACCEPTANCE.md), and [transition state](docs/CANONICAL_TRANSITION.md).
 
-This is a reconstruction-first OpenSCAD 3D printing workspace for replacement parts, functional parts, mesh cleanup and remodel, and original product design when the job is truly greenfield.
+# Parametric Part Workbench v3
 
-OpenSCAD is the editable source of truth. STL is an export artifact, not the design authority. Root `AGENTS.md` is authoritative for agent behavior in this repo.
+The approved local Print Workshop extension is documented in
+`docs/PRINT_WORKSHOP.md` and `docs/PRINT_WORKSHOP_SPEC.md`. The built app and canonical project environment are ready; open
+`Open Print Workshop.cmd`. Integration is committed on a local branch. The draft GitHub PR stack remains unmerged.
 
-## Codex OpenSCAD Agent Workflow
+Parametric Part Workbench v3 is a local-first command-line system for creating
+common functional 3D-printable parts from explicit dimensions. Phase 1 uses
+deterministic Python generators that emit OpenSCAD; it does not use freeform AI
+geometry, photos, or autonomous arbitrary-CAD generation.
 
-The value of this repo is a disciplined pipeline:
+Supported generator IDs:
 
-request -> classify task mode -> bootstrap project -> record references -> protect interfaces -> generate clean OpenSCAD -> validate -> export STL -> render previews -> check outputs -> record notes and manifests -> create the next version when needed.
+- `bushing`
+- `round_adapter`
+- `flange_plate`
 
-Use root scripts for bootstrap, validation, STL export, preview export, output verification, and versioning. Skill files are workflow helpers. If a skill conflicts with root `AGENTS.md`, follow root `AGENTS.md`.
+## Verification Promise
 
-## Task Modes
+The workbench keeps different kinds of evidence separate:
 
-Agents must choose exactly one task mode before modeling:
+`specification valid` -> `SCAD compiled` -> `mesh valid` ->
+`dimensions reviewed`, followed by either a coupon result or a full-part
+export. A passed coupon is linked into a new full-part version; it is not a
+shortcut around that version's computational checks.
 
-- `original_product_design`: truly new parts.
-- `reference_based_reconstruction`: known parts from measurements, photos, part numbers, product links, reference STL/CAD, or other references.
-- `mesh_cleanup_and_remodel`: rough STL, GLB, OBJ, scan output, AI mesh, or photo-to-3D output that must be rebuilt as clean OpenSCAD.
+A successful CLI run ends at `full_part_exported` (or
+`fit_coupon_generated`). It means deterministic computational checks passed.
+It does **not** mean the part physically fits. Only a recorded real-world test
+may advance a version to `physical_fit_confirmed`.
 
-Reconstruction defaults to one corrected model unless the user asks for variants. Concept scoring is not required for reconstruction jobs.
+See [docs/rebuild/VERIFICATION_MODEL.md](docs/rebuild/VERIFICATION_MODEL.md).
 
-## Quick Start
+## Setup and daily commands
+
+Start with [Quick Start](docs/QUICK_START.md) for safe laptop checkout, Windows
+virtual-environment setup, project Codex settings, VS Code tasks, version-bound
+previews and manual Bambu Studio handoff. See [Upgrade Report](docs/UPGRADE_2026-09-30.md)
+for the tested environment and remaining limitations.
+
+- Python 3.12 or 3.13 with `requirements-lock.txt` in the project `.venv`.
+- OpenSCAD is mandatory for generation/integration. Optional Bambu and graphics
+  capabilities are reported separately by `scripts/check_environment.py`.
+- The current printer is Bambu Lab P2S; installed nozzle, filament, plate and AMS
+  remain owner-confirmed details, not defaults inferred from example specs.
+
+## Generate a Part
 
 ```powershell
-# Create a project
-py -3 scripts\new_project.py --name "simple wall bracket example" --task-mode original_product_design --printer "Bambu Lab P2S" --material PETG
-
-# Validate SCAD
-py -3 scripts\validate_scad.py projects\simple_wall_bracket_example\source\simple_wall_bracket_example_v01.scad
-
-# Export STL
-py -3 scripts\export_stl.py --input projects\simple_wall_bracket_example\source\simple_wall_bracket_example_v01.scad --output projects\simple_wall_bracket_example\exports\simple_wall_bracket_example_v01.stl
-
-# Export previews
-py -3 scripts\export_preview.py --input projects\simple_wall_bracket_example\source\simple_wall_bracket_example_v01.scad --output projects\simple_wall_bracket_example\previews\simple_wall_bracket_example_v01_iso.png --view iso
-py -3 scripts\export_preview.py --input projects\simple_wall_bracket_example\source\simple_wall_bracket_example_v01.scad --output projects\simple_wall_bracket_example\previews\simple_wall_bracket_example_v01_front.png --view front
-py -3 scripts\export_preview.py --input projects\simple_wall_bracket_example\source\simple_wall_bracket_example_v01.scad --output projects\simple_wall_bracket_example\previews\simple_wall_bracket_example_v01_side.png --view side
-
-# Check outputs
-py -3 scripts\check_project_outputs.py --project projects\simple_wall_bracket_example --task-mode original_product_design --version v01
-
-# Create next version
-py -3 scripts\next_version.py --project projects\simple_wall_bracket_example --copy-scad
+& .\.venv\Scripts\python.exe scripts\generate_part.py --spec examples\specs\bushing_example.json
 ```
 
-## References
+Equivalent cross-platform command after activating the environment:
 
-- `references/measured/`: caliper notes, sketches, dimension tables, marked-up photos.
-- `references/public/`: redistributable or openly usable references.
-- `references/paid/`: purchased or license-restricted references. Keep these local-only by default unless redistribution is clearly allowed.
+```text
+python scripts/generate_part.py --spec examples/specs/bushing_example.json
+```
 
-## Minimum Deliverables
+The command validates the specification, converts dimensions to millimeters,
+resolves the generator by ID/version, writes versioned SCAD, compiles a binary
+STL with OpenSCAD, runs mesh QA, compares actual and expected bounds, and writes
+an artifact manifest.
 
-Completed reconstruction jobs require:
+Routine outputs are local and ignored:
 
-- `source/<project_stem>_vNN.scad`
-- `exports/<project_stem>_vNN.stl`
-- `notes/<project_stem>_vNN_notes.md`
-- `notes/<project_stem>_vNN_manifest.md`
-- `notes/<project_stem>_vNN_reference_comparison_log.md`
-- `notes/<project_stem>_vNN_review_report.md`
-- `previews/<project_stem>_vNN_iso.png`
-- `previews/<project_stem>_vNN_front.png`
-- `previews/<project_stem>_vNN_side.png`
+```text
+workspace/<project_id>/<version>/
+```
 
-Completed original design jobs require source, STL, notes, manifest, and at least one preview image.
+The workflow refuses to overwrite an existing project version.
 
-Missing outputs must be reported as `NOT VERIFIED`. Do not claim STL export or preview render success unless the files exist and were generated.
+Other CLIs:
 
-## Project Structure
+```powershell
+& .\.venv\Scripts\python.exe scripts\validate_spec.py --spec examples\specs\flange_plate_example.json
+& .\.venv\Scripts\python.exe scripts\verify_mesh.py --manifest workspace\flange_plate_example\v01\artifact-manifest.json
+```
 
-Each project lives under `projects/<project_stem>/`:
+## Owner Fit-evidence Loop
 
-- `source/`: editable `.scad` files
-- `exports/`: generated STL artifacts
-- `notes/`: notes, manifests, review reports, and comparison records
-- `previews/`: render views used for review
+Phase 1.1 keeps generation and human evidence as separate immutable steps:
 
-Use `projects/_template/` or `scripts/new_project.py` when beginning a new job.
+`measured full-part draft` -> `generated fit coupon` -> `recorded printed coupon result` ->
+`new linked full-part draft` -> `full_part_exported` -> `recorded completed-part result`.
+
+The focused commands are:
+
+- `scripts/create_fit_coupon.py` creates a coupon specification and does not
+  print, test, or imply a pass;
+- `scripts/record_fit_coupon_result.py` records an owner's real coupon outcome
+  against verified manifest/STL/spec hashes;
+- `scripts/create_full_part_from_coupon.py` creates a fresh full-part spec from
+  a valid passed coupon chain without skipping generation gates;
+- `scripts/record_physical_fit.py` records results for every protected interface
+  against an exact exported full-part artifact; and
+- `scripts/inspect_project_status.py` reports the highest defensible state and
+  whether physical-verification wording is allowed.
+
+Owner-filled inputs and evidence remain ignored local files. Start with
+[Owner Fit Validation](docs/OWNER_FIT_VALIDATION.md), which deliberately leaves
+the installed Bambu Lab P2S nozzle, measured pin diameter, and five candidate
+offsets blank for the owner to enter.
+
+## Project Specifications
+
+`schemas/project-spec-v1.schema.json` is the versioned input contract. A spec
+records project/generator identity, units, printer/material/nozzle selection,
+generator parameters, a calibration/fit profile, Measurement Contract entries,
+workflow and physical-fit states, timestamps, warnings, assumptions, and
+artifact records.
+
+All internal calculations use millimeters. Inch input uses the exact
+`25.4 mm/in` definition and is not silently rounded for geometry.
+
+Replacement-part full generation is blocked until every generator-declared
+protected interface has a matching authoritative Measurement Contract entry.
+If the nominal interface is known but print clearance is uncertain, request a
+small candidate-based fit coupon instead of the full part.
+
+A passed coupon is recorded as structured `fit_coupon_evidence` containing the
+coupon manifest and STL SHA-256 digests, selected candidate offset, acceptance
+result, tester, and exact printer/material/nozzle/profile. A later full-part
+specification may link that evidence; the generator applies the selected offset
+only when the complete cited evidence package and those identities match.
+
+The bundled `neutral_unverified_starter` profile applies zero offsets and unit
+scale. Those neutral values are explicitly unverified; they are not claimed as
+proven calibration.
+
+Fit direction is explicit: hole slip allowance enlarges a hole, shaft slip
+allowance reduces a shaft, hole press allowance reduces a hole, and shaft press
+allowance enlarges a shaft. Hole and shaft dimensional corrections are separate
+signed values; a positive correction enlarges the corresponding feature. The
+legacy global slip/press offsets remain compatibility inputs for generator
+version `1.0.0`; version `1.1.0` does not apply them across unrelated interfaces.
+
+Generator version `1.0.0` remains available for existing specifications and
+manifests. Version `1.1.0` adds independent fit controls and interface-specific
+coupon behavior; selecting it is an explicit specification change rather than
+a silent change to legacy geometry.
+
+## Tests
+
+```powershell
+& .\.venv\Scripts\python.exe -m pytest tests\unit -q
+& .\.venv\Scripts\python.exe -m pytest tests\integration -q
+& .\.venv\Scripts\python.exe -m pytest -q
+& .\.venv\Scripts\python.exe scripts\check_output_policy.py
+```
+
+Integration tests invoke real OpenSCAD for all three generators and fail if it
+is unavailable.
+
+## Architecture and Migration
+
+- [Audit](docs/rebuild/AUDIT.md)
+- [Target architecture](docs/rebuild/TARGET_ARCHITECTURE.md)
+- [Migration map](docs/rebuild/MIGRATION_MAP.md)
+- [Verification model](docs/rebuild/VERIFICATION_MODEL.md)
+
+The legacy `projects/`, `templates/`, and reconstruction documents remain
+historical evidence only. Phase 1 does not normalize those projects or import
+the dashboard, generated-output collection, or reference-photo collection from
+draft PR #1.

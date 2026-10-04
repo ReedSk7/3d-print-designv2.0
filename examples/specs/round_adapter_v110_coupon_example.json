@@ -1,0 +1,74 @@
+{
+  "$schema": "../../schemas/project-spec-v1.schema.json",
+  "schema_version": "1.0",
+  "project": {
+    "id": "round_adapter_v110_coupon_example",
+    "name": "Round Adapter 1.1 Mounting-Hole Coupon Example",
+    "version": "v01",
+    "intent": "original"
+  },
+  "generator": {
+    "id": "round_adapter",
+    "version": "1.1.0",
+    "parameters": {
+      "end_a": {"diameter_type": "inside", "diameter": 50},
+      "end_b": {"diameter_type": "outside", "diameter": 40},
+      "length": 60,
+      "wall_thickness": 3,
+      "transition": "tapered",
+      "end_a_fit": "slip",
+      "end_b_fit": "nominal",
+      "mounting_hole_fit": "slip",
+      "hose_retaining_bead": {"enabled": true, "height": 1.5, "width": 4},
+      "mounting_flange": {
+        "enabled": true,
+        "outer_diameter": 80,
+        "thickness": 4,
+        "screw_hole_pattern": {
+          "enabled": true,
+          "count": 4,
+          "bolt_circle_diameter": 65,
+          "hole_diameter": 4.5
+        }
+      }
+    }
+  },
+  "input_units": "mm",
+  "printer_profile": "generic_fdm",
+  "material": "PETG",
+  "nozzle_diameter": 0.4,
+  "fit_profile": "neutral_unverified_starter",
+  "generation_mode": "fit_coupon",
+  "fit_coupon": {
+    "interface_parameter": "mounting_flange.screw_hole_pattern.hole_diameter",
+    "candidate_offsets": [-0.15, 0, 0.15],
+    "notes": "Synthetic example offsets only; numbered labels map to exact offsets in the manifest."
+  },
+  "fit_coupon_evidence": null,
+  "measurement_contract": [],
+  "verification_policy": {
+    "require_authoritative_protected_interfaces": true,
+    "require_proven_calibration_for_full_part": false,
+    "mesh_bounds_tolerance_mm": 0.05,
+    "physical_fit_required_for_verified_claim": true
+  },
+  "workflow_state": "draft",
+  "physical_verification": {
+    "status": "not_confirmed",
+    "confirmed_at": null,
+    "confirmed_by": null,
+    "evidence": [],
+    "notes": "No coupon has been printed or tested."
+  },
+  "timestamps": {
+    "created_at": "2026-08-10T00:00:00Z",
+    "updated_at": "2026-08-10T00:00:00Z"
+  },
+  "generated_artifacts": [],
+  "warnings": [
+    "The neutral calibration profile and candidate offsets are unverified starters."
+  ],
+  "unresolved_assumptions": [
+    "All dimensions and candidate offsets are illustrative synthetic values."
+  ]
+}

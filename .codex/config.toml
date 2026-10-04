@@ -1,0 +1,5 @@
+# Project execution safeguards. Model and reasoning are chosen in the Codex client.
+# No repository model/effort default; existing user and session settings apply.
+# Confirm active settings in the client; this file does not switch a live session.
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"

@@ -1,0 +1,91 @@
+{
+  "schema_version": "1.0",
+  "profile_id": "neutral_unverified_starter",
+  "version": "1.0.0",
+  "printer_profile": "*",
+  "material": "*",
+  "nozzle_diameter_mm": null,
+  "corrections": {
+    "hole_offset_mm": {
+      "value": 0,
+      "status": "unverified_starter",
+      "evidence": [],
+      "notes": "Neutral zero offset. This is not a proven printer correction."
+    },
+    "shaft_offset_mm": {
+      "value": 0,
+      "status": "unverified_starter",
+      "evidence": [],
+      "notes": "Neutral zero offset. This is not a proven printer correction."
+    },
+    "press_fit_offset_mm": {
+      "value": 0,
+      "status": "unverified_starter",
+      "evidence": [],
+      "notes": "Neutral zero offset. Generate a fit coupon before relying on a press fit."
+    },
+    "slip_fit_offset_mm": {
+      "value": 0,
+      "status": "unverified_starter",
+      "evidence": [],
+      "notes": "Neutral zero offset. Generate a fit coupon before relying on a slip fit."
+    },
+    "hole_dimensional_correction_mm": {
+      "value": 0,
+      "status": "unverified_starter",
+      "evidence": [],
+      "notes": "Neutral signed hole correction. This is not a proven printer correction."
+    },
+    "shaft_dimensional_correction_mm": {
+      "value": 0,
+      "status": "unverified_starter",
+      "evidence": [],
+      "notes": "Neutral signed shaft correction. This is not a proven printer correction."
+    },
+    "hole_slip_allowance_mm": {
+      "value": 0,
+      "status": "unverified_starter",
+      "evidence": [],
+      "notes": "Neutral non-negative allowance. A positive value enlarges a slip-fit hole."
+    },
+    "shaft_slip_allowance_mm": {
+      "value": 0,
+      "status": "unverified_starter",
+      "evidence": [],
+      "notes": "Neutral non-negative allowance. A positive value shrinks a slip-fit shaft."
+    },
+    "hole_press_allowance_mm": {
+      "value": 0,
+      "status": "unverified_starter",
+      "evidence": [],
+      "notes": "Neutral non-negative allowance. A positive value shrinks a press-fit hole."
+    },
+    "shaft_press_allowance_mm": {
+      "value": 0,
+      "status": "unverified_starter",
+      "evidence": [],
+      "notes": "Neutral non-negative allowance. A positive value enlarges a press-fit shaft."
+    }
+  },
+  "scale_corrections": {
+    "x": {
+      "value": 1,
+      "status": "unverified_starter",
+      "evidence": [],
+      "notes": "Neutral unit scale. This is not a measured scale correction."
+    },
+    "y": {
+      "value": 1,
+      "status": "unverified_starter",
+      "evidence": [],
+      "notes": "Neutral unit scale. This is not a measured scale correction."
+    },
+    "z": {
+      "value": 1,
+      "status": "unverified_starter",
+      "evidence": [],
+      "notes": "Neutral unit scale. This is not a measured scale correction."
+    }
+  },
+  "notes": "Unverified neutral starter only. It must never be represented as proven calibration."
+}

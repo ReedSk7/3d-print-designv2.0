@@ -1,4 +1,4 @@
-"""Static and optional OpenSCAD validation for a .scad file."""
+"""Legacy structural validation with a mandatory-by-default OpenSCAD check."""
 
 from __future__ import annotations
 
@@ -23,7 +23,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--no-openscad",
         action="store_true",
-        help="Skip optional OpenSCAD compile check.",
+        help=(
+            "Run structural checks only. This cannot establish the scad_compiled "
+            "workflow state."
+        ),
     )
     return parser.parse_args()
 
@@ -176,7 +179,7 @@ def main() -> int:
     input_path = Path(args.input)
 
     if not input_path.is_file():
-        print("FAIL")
+        print("SCAD CHECK FAILED")
         print(f"SCAD file not found: {input_path}")
         return 1
 
@@ -188,14 +191,17 @@ def main() -> int:
         try:
             errors.extend(openscad_compile_check(input_path))
         except OpenSCADNotFound:
-            warnings.append("OpenSCAD not found; skipped compile check.")
+            errors.append("OpenSCAD not found; compile check is required.")
 
-    print("PASS" if not errors else "FAIL")
+    print("SCAD CHECK PASSED" if not errors else "SCAD CHECK FAILED")
     print(f"SCAD checked: {input_path}")
     for warning in warnings:
         print(f"WARNING: {warning}")
     for error in errors:
         print(f"ERROR: {error}")
+    if args.no_openscad and not errors:
+        print("NOTICE: Structural checks only; workflow state scad_compiled was not reached.")
+    print("Physical fit: NOT CONFIRMED")
 
     return 0 if not errors else 1
 

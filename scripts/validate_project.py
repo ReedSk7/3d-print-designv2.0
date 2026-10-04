@@ -1,6 +1,7 @@
-"""Compatibility wrapper for check_project_outputs.py.
+"""Legacy-only compatibility wrapper for check_project_outputs.py.
 
-Use scripts/check_project_outputs.py for new automation.
+New automation must use validate_spec.py and generate_part.py. This wrapper
+checks only the historical projects/ layout and cannot confirm physical fit.
 """
 
 from __future__ import annotations
@@ -12,7 +13,9 @@ from check_project_outputs import main as check_main
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Compatibility wrapper.")
+    parser = argparse.ArgumentParser(
+        description="Legacy projects/ file-presence compatibility wrapper."
+    )
     parser.add_argument("project_dir")
     parser.add_argument("--version", default="v01")
     parser.add_argument(
@@ -25,6 +28,11 @@ def main() -> int:
         ),
     )
     args = parser.parse_args()
+
+    print(
+        "NOTICE: legacy file-presence check only; use validate_spec.py or "
+        "generate_part.py for Parametric Part Workbench v3."
+    )
 
     import sys
 
