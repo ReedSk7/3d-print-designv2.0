@@ -130,10 +130,15 @@ def make_server(root: Path,port=8765,*,instance_id=None):
                             if jobs[identifier]['status']=='cancel_requested': store.update(identifier,status='cancelled',error='Cancelled. Inspect project status before retrying.'); return
                         result=json.loads(result_path.read_text()) if result_path.exists() else {'error':'Worker stopped without a result. Inspect local worker log.'}
                         with lock:
-                            if code or 'error' in result: store.update(identifier,status='failed',error=result.get('error','Worker failed.'))
+                            if jobs[identifier]['status']=='cancel_requested':
+                                store.update(identifier,status='cancelled',error='Cancelled. Inspect project status before retrying.')
+                            elif code or 'error' in result: store.update(identifier,status='failed',error=result.get('error','Worker failed.'))
                             else: store.update(identifier,status='complete',result=result['result'])
                     except Exception as exc:
-                        with lock: store.update(identifier,status='failed',error=str(exc))
+                        with lock:
+                            if jobs[identifier]['status']=='cancel_requested':
+                                store.update(identifier,status='cancelled',error='Cancelled. Inspect project status before retrying.')
+                            else: store.update(identifier,status='failed',error=str(exc))
                     finally:
                         if containment: containment.close()
                         with lock: processes.pop(identifier,None)
