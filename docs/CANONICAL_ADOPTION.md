@@ -49,7 +49,7 @@ Blender is not a normal-operation or canonical-adoption gate.
 Local verification on 2026-10-14 (Python 3.12.14, locked dependencies,
 OpenSCAD 2021.01):
 
-- Unit suite: 219 passed; one Windows process-containment test skipped on Linux.
+- Unit suite: 221 passed; one Windows process-containment test skipped on Linux.
 - Full portable integration suite: 51 passed; three Windows worker tests
   deliberately excluded here and required in Windows CI.
 - Actual OpenSCAD previews generated under an authenticated Xvfb display.
@@ -62,6 +62,14 @@ OpenSCAD 2021.01):
 - Browser execution in this local environment is blocked by its Unix-socket
   restriction. The production UI smoke must pass on GitHub's browser runner;
   a local browser pass is not claimed.
+
+The first hosted run passed both portable Python jobs and exposed two further
+issues: multiple Windows npm installations were combined into one command
+path, and the synthetic browser fixture held a buffered stdin lock during
+shutdown. Both were repaired without relaxing the checks. The latter has a
+regression that reproduced the actual abort before the fix; the Windows setup
+is exercised with duplicate executable names on PATH. Use the latest PR check
+results, not the initial failed run, for hosted acceptance.
 
 Tests and browser fixtures use small synthetic designs only; synthetic
 evidence does not establish real physical fit. Hosted Windows and browser

@@ -143,10 +143,10 @@ jobs:
           "OPENSCAD_PATH=$env:OPENSCAD_PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           & $env:OPENSCAD_PATH --version
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Run the actual one-time setup from a path with spaces
+      - name: Run actual setup with duplicate PATH entries from a path with spaces
         shell: pwsh
         run: |
-          & .\scripts\setup.ps1 -PythonExecutable (Get-Command python).Source
+          & .\tests\windows\setup_with_duplicate_path.ps1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Launch through the cmd wrapper and stop the exact bridge
         shell: pwsh

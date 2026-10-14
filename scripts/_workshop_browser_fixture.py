@@ -70,7 +70,11 @@ def main() -> None:
     server = make_server(root, port=0, instance_id="synthetic-browser-smoke")
     # EOF from the parent and a separate lifetime bound both stop the bridge.
     def stop_on_eof() -> None:
-        sys.stdin.buffer.read()
+        # HTTP Stop may exit while the parent still holds stdin open. A daemon
+        # must not retain BufferedReader's lock during interpreter shutdown.
+        # Read the raw pipe instead, preserving EOF cleanup without that lock.
+        while os.read(sys.stdin.fileno(), 4096):
+            pass
         server.shutdown()
 
     threading.Thread(target=stop_on_eof, daemon=True).start()

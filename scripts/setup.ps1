@@ -25,6 +25,15 @@ function Invoke-CheckedNative {
     }
 }
 
+function Resolve-Application {
+    param([string]$Name)
+    # Multiple installations can match. Preserve PATH precedence and pass one
+    # executable path, never an array that PowerShell joins into a command name.
+    $Command = Get-Command -Name $Name -CommandType Application -ErrorAction Stop |
+        Select-Object -First 1
+    return $Command.Source
+}
+
 if (-not (Test-Path -LiteralPath $LockPath -PathType Leaf)) {
     throw "Missing dependency lock: $LockPath"
 }
@@ -35,7 +44,7 @@ if (-not (Get-Command -Name 'node.exe' -CommandType Application -ErrorAction Sil
     -not (Get-Command -Name 'npm.cmd' -CommandType Application -ErrorAction SilentlyContinue)) {
     throw 'Node.js and npm are required to build the local app. Install a supported Node.js LTS release, reopen PowerShell 7, then run scripts/setup.ps1 again. Setup does not install global tools.'
 }
-$Npm = (Get-Command -Name 'npm.cmd' -CommandType Application -ErrorAction Stop).Source
+$Npm = Resolve-Application -Name 'npm.cmd'
 
 if (Test-Path -LiteralPath $VenvPath) {
     if (-not (Test-Path -LiteralPath (Join-Path $VenvPath 'pyvenv.cfg') -PathType Leaf) -or
@@ -45,9 +54,9 @@ if (Test-Path -LiteralPath $VenvPath) {
 } else {
     $LauncherArgs = @()
     if ($PythonExecutable) {
-        $Launcher = (Get-Command -Name $PythonExecutable -CommandType Application -ErrorAction Stop).Source
+        $Launcher = Resolve-Application -Name $PythonExecutable
     } else {
-        $Launcher = (Get-Command -Name 'py' -CommandType Application -ErrorAction Stop).Source
+        $Launcher = Resolve-Application -Name 'py'
         $LauncherArgs = @("-$PythonVersion")
     }
     $VersionProbe = 'import sys; print(sys.executable); print(sys.version); sys.exit(0 if sys.version_info[:2] in ((3,12),(3,13)) else 1)'
