@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import json
 import struct
 import subprocess
 from pathlib import Path
@@ -43,19 +44,93 @@ LEGACY_ARTIFACTS = {
     'projects/simple_wall_bracket_example/previews/simple_wall_bracket_example_v01_side.png': '6bce2bf07685a9c655358cdb055dbef88ef945e4f1be1a7f221761edb205c0b4',
 }
 
+def byte_record(content: bytes) -> dict:
+    return {"sha256": hashlib.sha256(content).hexdigest(), "size_bytes": len(content)}
+
+
+def inspect_legacy_preservation() -> tuple[set[str], list[str]]:
+    """Check all six paths, including removed ones, against immutable Git history.
+
+    The original Windows hashes are pinned above. Only the two named ASCII STL
+    files permit LF and its exact CRLF expansion; files are never normalized.
+    The JSON baseline records both representations for review, but cannot expand
+    the fixed allowlist, select another source commit, or bless changed blobs.
+    """
+    preserved: set[str] = set()
+    errors: list[str] = []
+    if run_git("merge-base", "--is-ancestor", LEGACY_COMMIT, "HEAD").returncode:
+        return preserved, [
+            "Historical preservation requires the original source ancestor "
+            f"{LEGACY_COMMIT}. Fetch full history (CI checkout fetch-depth: 0; "
+            "for a shallow clone, git fetch --unshallow) and verify branch ancestry."
+        ]
+    try:
+        manifest = json.loads((ROOT / "docs/legacy-artifact-preservation.json").read_text(encoding="utf-8"))
+        records = manifest["files"]
+        paths = [item["path"] for item in records]
+        if manifest["source_commit"] != LEGACY_COMMIT:
+            raise ValueError("source_commit differs from the pinned original commit")
+        if len(paths) != len(LEGACY_ARTIFACTS) or set(paths) != set(LEGACY_ARTIFACTS):
+            raise ValueError("files must contain exactly the six pinned historical paths")
+        baseline = {item["path"]: item for item in records}
+    except (OSError, ValueError, TypeError, KeyError) as exc:
+        return preserved, [f"Historical preservation baseline is invalid: {exc}"]
+
+    for path, windows_sha256 in LEGACY_ARTIFACTS.items():
+        try:
+            original = run_git("show", f"{LEGACY_COMMIT}:{path}")
+            tree = run_git("ls-tree", "-z", LEGACY_COMMIT, "--", path)
+            if original.returncode or tree.returncode or not tree.stdout:
+                raise ValueError("original Git blob is unavailable")
+            metadata, tree_path = tree.stdout.rstrip(b"\0").split(b"\t", 1)
+            mode, kind, blob = metadata.decode("ascii").split()
+            if mode != "100644" or kind != "blob" or tree_path.decode() != path:
+                raise ValueError("original is not the expected regular Git file")
+            content = original.stdout
+            if path.endswith(".stl"):
+                if b"\r" in content or b"\n" not in content:
+                    raise ValueError("original ASCII STL is not the pinned LF representation")
+                representations = {"lf": content, "crlf": content.replace(b"\n", b"\r\n")}
+                windows_bytes = representations["crlf"]
+            else:
+                representations = {"exact": content}
+                windows_bytes = content
+            if hashlib.sha256(windows_bytes).hexdigest() != windows_sha256:
+                raise ValueError("original blob differs from the pinned historical bytes")
+            expected = {
+                "path": path,
+                "git_blob": blob,
+                "git": byte_record(content),
+                "working_tree": {name: byte_record(data) for name, data in representations.items()},
+            }
+            if baseline[path] != expected:
+                raise ValueError("recorded baseline does not match the original Git blob/representations")
+            index = run_git("ls-files", "--stage", "-z", "--", path)
+            expected_index = f"{mode} {blob} 0\t{path}\0".encode()
+            if index.returncode or index.stdout != expected_index:
+                raise ValueError("index entry is missing, unresolved, or differs from the original Git blob")
+            indexed = run_git("show", f":{path}")
+            if indexed.returncode or indexed.stdout != content:
+                raise ValueError("index bytes differ from the original Git blob")
+            artifact = ROOT / path
+            for entry in (artifact, *artifact.parents):
+                if entry == ROOT:
+                    break
+                if entry.is_symlink() or getattr(entry, "is_junction", lambda: False)():
+                    raise ValueError("checkout path uses a symlink or junction")
+            if artifact.read_bytes() not in representations.values():
+                raise ValueError("checkout bytes are not an exact allowed representation")
+            preserved.add(path)
+        except (OSError, ValueError) as exc:
+            errors.append(f"Historical artifact is not preserved: {path}: {exc}")
+    return preserved, errors
+
+
 def is_preserved_historical_artifact(relative_path: str) -> bool:
-    """Only preexisting exact bytes with retained original ancestry qualify."""
     if relative_path not in LEGACY_ARTIFACTS:
         return False
-    if run_git('merge-base','--is-ancestor',LEGACY_COMMIT,'HEAD').returncode:
-        return False
-    original=run_git('show',LEGACY_COMMIT+':'+relative_path)
-    try:
-        # Preserve exact preintegration working-tree bytes. Git may store ASCII
-        # STL with LF while the original Windows checkout uses CRLF.
-        return original.returncode==0 and hashlib.sha256((ROOT/relative_path).read_bytes()).hexdigest()==LEGACY_ARTIFACTS[relative_path]
-    except OSError:
-        return False
+    preserved, _ = inspect_legacy_preservation()
+    return relative_path in preserved
 
 
 def parse_args() -> argparse.Namespace:
@@ -150,6 +225,9 @@ def main() -> int:
         print(f"Could not inspect Git state: {exc}")
         return 2
 
+    preserved, preservation_errors = inspect_legacy_preservation()
+    errors.extend(preservation_errors)
+
     workspace_tracked = [
         path for path in tracked if path.startswith("workspace/") and path != "workspace/.gitkeep"
     ]
@@ -165,7 +243,7 @@ def main() -> int:
             continue
         if is_allowed_fixture(path, errors):
             continue
-        if is_preserved_historical_artifact(path):
+        if path in preserved:
             continue
         errors.append(f"Routine generated output is tracked: {path}")
 
@@ -175,7 +253,7 @@ def main() -> int:
         elif path.startswith(RESTRICTED_LOCAL_ROOTS):
             errors.append(f"Owner-local validation input or evidence is staged: {path}")
         elif is_generated_path(path):
-            if not path.startswith(FIXTURE_ROOT):
+            if not path.startswith(FIXTURE_ROOT) and path not in preserved:
                 errors.append(f"Routine generated output is staged: {path}")
 
     ignore_probes = (
@@ -220,7 +298,7 @@ def main() -> int:
     print("PASS" if not errors else "FAIL")
     tracked_fixtures = sum(path.startswith(FIXTURE_ROOT) for path in tracked)
     print(f"Tracked generated-output exceptions: {tracked_fixtures} intentional fixtures")
-    print(f"Unchanged preexisting historical artifacts retained: {sum(is_preserved_historical_artifact(path) for path in tracked if path in LEGACY_ARTIFACTS)}")
+    print(f"Unchanged preexisting historical artifacts retained: {len(preserved)} / {len(LEGACY_ARTIFACTS)}")
     print(f"Workspace artifacts inspected: {len(workspace_artifacts)}")
     for error in errors:
         print(f"ERROR: {error}")

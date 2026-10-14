@@ -1,36 +1,98 @@
 {
   "source_commit": "47ea856f60a010239352fe965ba19c050c991c4c",
-  "meaning": "Already-tracked historical artifacts retained byte-for-byte during approved consolidation; no new generated-output exception.",
+  "meaning": "The six original Git blobs and index entries must remain identical. Only the two named ASCII STL files allow the exact original LF bytes or their exact Windows CRLF expansion; PNGs require exact original bytes. No new generated-output exception.",
   "files": [
     {
       "path": "projects/agent_smoke_test_hex_bit_holder/exports/agent_smoke_test_hex_bit_holder_v01.stl",
-      "sha256": "25ed32bd3564238515b981f7c3d74ea83f7b19b26a4cd8376994cf3899da336a",
-      "size_bytes": 684245
+      "git_blob": "6f5665ad8ce2d179e9975b6fd36a2cab3bdac26c",
+      "git": {
+        "sha256": "b0835b8c38a1b688e4a710a9ce2eb2327311c61cb2dbd44e9f89fcee11c48ca1",
+        "size_bytes": 656551
+      },
+      "working_tree": {
+        "lf": {
+          "sha256": "b0835b8c38a1b688e4a710a9ce2eb2327311c61cb2dbd44e9f89fcee11c48ca1",
+          "size_bytes": 656551
+        },
+        "crlf": {
+          "sha256": "25ed32bd3564238515b981f7c3d74ea83f7b19b26a4cd8376994cf3899da336a",
+          "size_bytes": 684245
+        }
+      }
     },
     {
       "path": "projects/agent_smoke_test_hex_bit_holder/previews/agent_smoke_test_hex_bit_holder_v01_iso.png",
-      "sha256": "3ff89717e86a73aa632dc5ccf76c21a3048804b27e9d35dd46ce69e45cb83e02",
-      "size_bytes": 24845
+      "git_blob": "5bb6fa1c56746a3c0af586cd84be9e3a9d395c98",
+      "git": {
+        "sha256": "3ff89717e86a73aa632dc5ccf76c21a3048804b27e9d35dd46ce69e45cb83e02",
+        "size_bytes": 24845
+      },
+      "working_tree": {
+        "exact": {
+          "sha256": "3ff89717e86a73aa632dc5ccf76c21a3048804b27e9d35dd46ce69e45cb83e02",
+          "size_bytes": 24845
+        }
+      }
     },
     {
       "path": "projects/simple_wall_bracket_example/exports/simple_wall_bracket_example_v01.stl",
-      "sha256": "6fd1e81293f17f87170e9eae5ef44ce39014d4b0e62f81b2846d4b1346fb5af0",
-      "size_bytes": 396918
+      "git_blob": "daf5fe4ac863bde4317d40988fbd2b0110f6fb10",
+      "git": {
+        "sha256": "8c434e5d422c49c6b48dcdcb687853dba50ee8ae6af5ebd739d538bf1816a575",
+        "size_bytes": 380256
+      },
+      "working_tree": {
+        "lf": {
+          "sha256": "8c434e5d422c49c6b48dcdcb687853dba50ee8ae6af5ebd739d538bf1816a575",
+          "size_bytes": 380256
+        },
+        "crlf": {
+          "sha256": "6fd1e81293f17f87170e9eae5ef44ce39014d4b0e62f81b2846d4b1346fb5af0",
+          "size_bytes": 396918
+        }
+      }
     },
     {
       "path": "projects/simple_wall_bracket_example/previews/simple_wall_bracket_example_v01_front.png",
-      "sha256": "11c92689930f3c683071fad78fb633ef15bc73d931601bd669af7af054f6c39c",
-      "size_bytes": 6835
+      "git_blob": "829921f34f51db9aec2245dfc1ca1facb02b896b",
+      "git": {
+        "sha256": "11c92689930f3c683071fad78fb633ef15bc73d931601bd669af7af054f6c39c",
+        "size_bytes": 6835
+      },
+      "working_tree": {
+        "exact": {
+          "sha256": "11c92689930f3c683071fad78fb633ef15bc73d931601bd669af7af054f6c39c",
+          "size_bytes": 6835
+        }
+      }
     },
     {
       "path": "projects/simple_wall_bracket_example/previews/simple_wall_bracket_example_v01_iso.png",
-      "sha256": "5a630b92d5f688a0fa311f0004738d681cf950c85a218dd82218b8db3cc0ab42",
-      "size_bytes": 22127
+      "git_blob": "deb84292656df59666832d79bdcd89f6d1757208",
+      "git": {
+        "sha256": "5a630b92d5f688a0fa311f0004738d681cf950c85a218dd82218b8db3cc0ab42",
+        "size_bytes": 22127
+      },
+      "working_tree": {
+        "exact": {
+          "sha256": "5a630b92d5f688a0fa311f0004738d681cf950c85a218dd82218b8db3cc0ab42",
+          "size_bytes": 22127
+        }
+      }
     },
     {
       "path": "projects/simple_wall_bracket_example/previews/simple_wall_bracket_example_v01_side.png",
-      "sha256": "6bce2bf07685a9c655358cdb055dbef88ef945e4f1be1a7f221761edb205c0b4",
-      "size_bytes": 5885
+      "git_blob": "747e92a675e4d15cda568181ac901f1580315c58",
+      "git": {
+        "sha256": "6bce2bf07685a9c655358cdb055dbef88ef945e4f1be1a7f221761edb205c0b4",
+        "size_bytes": 5885
+      },
+      "working_tree": {
+        "exact": {
+          "sha256": "6bce2bf07685a9c655358cdb055dbef88ef945e4f1be1a7f221761edb205c0b4",
+          "size_bytes": 5885
+        }
+      }
     }
   ]
 }

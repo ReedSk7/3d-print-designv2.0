@@ -59,7 +59,7 @@ def test_optional_blender_no_overwrite_and_source_tamper(generated,monkeypatch):
     source.write_text(source.read_text()+'\n// changed')
     with pytest.raises(ValueError): workshop.action('blender',{**result,'revision':'r02'})
 
-@pytest.mark.skipif(os.name!='nt',reason='Windows bridge ownership')
+@pytest.mark.windows_worker
 def test_bridge_termination_during_generation_cannot_publish_after_restart(tmp_path):
     # Real bridge/worker startup. Publication before termination is legitimate;
     # publication after restarted ownership is acquired must never occur.

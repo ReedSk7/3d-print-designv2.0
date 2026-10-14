@@ -1,14 +1,16 @@
 # Print Workshop
 
-Installed in Reed's canonical `3d-print-designV2.0` folder. Open `Open Print Workshop.cmd` to launch with its project environment. The integration is committed on a local branch; the original Git metadata, projects, linked worktrees and backups are preserved.
+Use Reed's existing canonical `3d-print-designV2.0` folder after preservation and acceptance. The current consolidation candidate and outstanding Windows checks are recorded in `CANONICAL_ADOPTION.md`; a remote source change does not establish the current local installation state.
 
-Build the local interface with `cd app; npm ci; npm run build`. Start from the repository root:
+Reed describes the desired design/change; Codex retrieves existing context, selects tools, implements the revision, checks it, reviews actual previews and prepares the manual P2S handoff. Ask Reed for missing physical measurements or real fit observations when needed. Blender is a Codex-selected optional scripted inspection tool, not a requirement for Reed to learn or for the project to function.
+
+One-time setup in the selected checkout: `pwsh -NoProfile -File .\scripts\setup.ps1`. This installs the project Python lock and builds the local interface. For frontend-only updates use `npm --prefix app run build`. Start from the repository root:
 
 ```powershell
 .\scripts\start_workshop.ps1
 ```
 
-The launcher checks Python, pinned dependency versions/compatibility, OpenSCAD and built assets before opening the local browser app on 127.0.0.1:8765. Use Stop workshop after jobs finish. If the port is occupied, select another `-Port`. Startup logs live under ignored `owner-validation/local/workshop/`. There is no printer connection.
+The Windows launcher checks Python, pinned dependencies, OpenSCAD and the hashes/completeness of the current built interface before opening the local browser app on 127.0.0.1:8765. It installs nothing. Use Stop workshop after jobs finish. If the port is occupied, select another `-Port`. Startup logs live under ignored `owner-validation/local/workshop/`. There is no printer connection.
 
 New designs start from clearly illustrative examples. Change the project name/ID, version, dimensions, actual printer/material/nozzle and authoritative measurements before using a replacement design. The full-specification editor exposes the existing Measurement Contract without inventing values. Saved versions are immutable; actions always use saved specifications. Protected dimension/pattern changes need explicit acceptance.
 

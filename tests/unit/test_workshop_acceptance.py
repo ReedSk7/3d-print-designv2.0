@@ -13,7 +13,7 @@ def test_workspace_lock_excludes_second_bridge(tmp_path):
     finally: first.close()
     second=WorkspaceLock(tmp_path/'bridge.lock'); second.close()
 
-@pytest.mark.skipif(os.name!='nt',reason='Windows process containment')
+@pytest.mark.windows_worker
 def test_bridge_job_close_kills_worker_and_descendant(tmp_path):
     from core.workshop.ownership import WorkerContainment
     owner=WorkerContainment()

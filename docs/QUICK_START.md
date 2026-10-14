@@ -1,10 +1,13 @@
 # Current workspace quick start
 
-## Bring the upgrade home safely
+## Select the current consolidation candidate safely
 
-This upgrade is stacked on PR #3 (which is stacked on PR #2). It does not change
-main. A normal pull of main will not select it. Your laptop's ignored files and
-unpushed work were unavailable during this remote task.
+The integrated checkpoint `ee7c481` already contains PRs #2–#4 and the original
+local project history. The current consolidation candidate is
+`feature/print-workshop-canonical-20261014`, descended from
+`local/print-workshop-integrated-20261004`. Do not merge the older PR stack.
+Until the consolidation PR is accepted, pulling main does not select the
+candidate. See `docs/CANONICAL_ADOPTION.md` for the current evidence and gates.
 
 In the existing repository, inspect before switching anything:
 
@@ -14,38 +17,63 @@ git remote -v
 git worktree list
 git branch -vv
 git log --all --not --remotes --oneline
+git ls-files --others --exclude-standard
 git ls-files --others --ignored --exclude-standard
 # Confirm origin is ReedSk7/3d-print-designv2.0; keep private filenames local.
 git fetch origin
-git worktree add ..\3d-print-astra-upgrade -b local/astra-upgrade origin/upgrade/astra-workspace-20260930
-cd ..\3d-print-astra-upgrade
 ```
 
-This leaves the old worktree and local owner evidence untouched. If the local
-branch/folder already exists, inspect it instead of overwriting it. Review newer
-local commits before applying them. Ignored owner data is NOT copied to the new
-worktree: keep its existing location and plan any selective migration separately.
-Do not stash, clean, reset, merge old PRs, or replace local data automatically.
+Before changing the canonical checkout, verify recoverable backups of its
+tracked edits, untracked/ignored owner files and linked worktrees. A Git bundle
+alone excludes ignored data and submodule contents. Inspect any existing
+candidate worktree before creating another one. If none exists, use a separate
+temporary acceptance worktree so the working project remains intact:
+
+```powershell
+git worktree add ..\print-workshop-acceptance -b local/print-workshop-acceptance origin/feature/print-workshop-canonical-20261014
+cd ..\print-workshop-acceptance
+```
+
+Ignored owner data is not copied to a new worktree. Keep it at its current
+location; any necessary test copy must be explicit and hash-checked. Do not
+stash, clean, reset, or replace local data automatically. After acceptance,
+reconcile the existing canonical folder without changing its identifiers;
+worktree retirement is a separate reviewed cleanup.
 
 ## Set up and check
 
-Use an installed Python 3.12 or 3.13. The baseline was tested with 3.12.14;
-CI checks both versions. No activation or execution-policy bypass is needed.
+Use Windows, PowerShell 7 (`pwsh`), installed Python 3.12 or 3.13, a Node version
+supported by the app lockfile, npm, Git and OpenSCAD. The setup command prepares
+only this checkout's Python dependencies and frontend. It does not install CAD
+tools or configure the printer. No activation or execution-policy bypass is needed.
 
 ```powershell
-.\scripts\setup.ps1 -PythonVersion 3.12
+pwsh -NoProfile -File .\scripts\setup.ps1 -PythonVersion 3.12
 & .\.venv\Scripts\python.exe scripts\check_environment.py
 & .\.venv\Scripts\python.exe -m pytest -q
 & .\.venv\Scripts\python.exe scripts\check_output_policy.py
 ```
 
 If PowerShell policy blocks the script, follow your machine's normal policy or
-run its two dependency steps directly; do not weaken policy:
+run the project dependency and build steps directly; do not weaken policy:
 
 ```powershell
 py -3.12 -m venv .venv
 & .\.venv\Scripts\python.exe -m pip --isolated --require-virtualenv install -r requirements-lock.txt
+npm --prefix app ci
+npm --prefix app run build
 ```
+
+For daily use, double-click `Open Print Workshop.cmd`. The launcher installs
+nothing and checks the exact current app source/build hashes before starting.
+After frontend changes, rebuild with `npm --prefix app run build`. Use
+`Open Print Workshop.cmd -Port 8766` for a different free port. Stop the workshop
+through its app after active jobs finish. A different port is a different
+browser storage origin, so keep independently retained evidence hashes.
+
+The browser worker requires Windows process containment. The Python generator
+CLI remains portable; on headless Linux run preview/integration checks under
+`xvfb-run -a` with OpenSCAD available.
 
 Existing `.venv` is checked and reused by setup, never removed. For dependency
 rollback preserve that directory first or use a new worktree. OpenSCAD, Bambu

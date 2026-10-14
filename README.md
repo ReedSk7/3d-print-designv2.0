@@ -1,10 +1,20 @@
-Print Workshop is integrated locally. Open `Open Print Workshop.cmd` in this folder. See [Workshop guide](docs/PRINT_WORKSHOP.md), [acceptance evidence](docs/PRINT_WORKSHOP_ACCEPTANCE.md), and [transition state](docs/CANONICAL_TRANSITION.md).
-
 # Parametric Part Workbench v3
 
-The approved local Print Workshop extension is documented in
-`docs/PRINT_WORKSHOP.md` and `docs/PRINT_WORKSHOP_SPEC.md`. The built app and canonical project environment are ready; open
-`Open Print Workshop.cmd`. Integration is committed on a local branch. The draft GitHub PR stack remains unmerged.
+Print Workshop is the local Windows interface for this existing project.
+You describe the design or change; Codex handles modeling, tool choice,
+validation and the manual Bambu P2S handoff. OpenSCAD is the geometry foundation;
+scripted Blender inspection is optional and chosen by Codex when useful.
+
+Start with [Quick Start](docs/QUICK_START.md). In a preserved candidate checkout,
+run `pwsh -NoProfile -File .\scripts\setup.ps1` once to prepare the project Python
+environment and build the interface. Then open `Open Print Workshop.cmd` for
+daily use. Launching checks the current build and installs nothing.
+
+See [Workshop guide](docs/PRINT_WORKSHOP.md) and
+[current consolidation status](docs/CANONICAL_ADOPTION.md). The October 4
+[acceptance evidence](docs/PRINT_WORKSHOP_ACCEPTANCE.md) and
+[transition record](docs/CANONICAL_TRANSITION.md) remain historical records;
+they do not establish the state of a new clone or the current Windows PC.
 
 Parametric Part Workbench v3 is a local-first command-line system for creating
 common functional 3D-printable parts from explicit dimensions. Phase 1 uses

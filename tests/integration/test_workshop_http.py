@@ -4,6 +4,7 @@ import time
 import urllib.request
 import urllib.error
 from pathlib import Path
+import pytest
 from core.workshop.server import make_server
 
 def test_readiness_is_bound_to_launch_instance(tmp_path):
@@ -14,6 +15,7 @@ def test_readiness_is_bound_to_launch_instance(tmp_path):
         assert session['instance_id']=='test-launch'
     finally: server.shutdown(); server.server_close(); server.executor.shutdown(); thread.join()
 
+@pytest.mark.windows_worker
 def test_http_generate_job_produces_real_artifacts(tmp_path):
     server=make_server(tmp_path,0); thread=threading.Thread(target=server.serve_forever,daemon=True); thread.start()
     base=f'http://127.0.0.1:{server.server_port}'
@@ -36,6 +38,7 @@ def test_http_generate_job_produces_real_artifacts(tmp_path):
         assert history[0]['status']=='complete'
     finally: server.shutdown(); server.server_close(); server.executor.shutdown(); thread.join()
 
+@pytest.mark.windows_worker
 def test_cancelled_job_is_not_reported_complete(tmp_path):
     server=make_server(tmp_path,0); thread=threading.Thread(target=server.serve_forever,daemon=True); thread.start()
     base=f'http://127.0.0.1:{server.server_port}'
@@ -46,6 +49,12 @@ def test_cancelled_job_is_not_reported_complete(tmp_path):
         document=json.loads((Path(__file__).parents[2]/'examples/specs/bushing_example.json').read_text())
         saved=post('/api/specs',{'document':document})
         job=post('/api/actions',{'action':'generate','payload':saved})
+        deadline=time.monotonic()+15
+        while time.monotonic()<deadline:
+            result=json.load(urllib.request.urlopen(base+'/api/jobs/'+job['job_id']))
+            if result['status']!='queued': break
+            time.sleep(.01)
+        assert result['status']=='running',result
         post('/api/cancel',job)
         deadline=time.monotonic()+20
         while time.monotonic()<deadline:

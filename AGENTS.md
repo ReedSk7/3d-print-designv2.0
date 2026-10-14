@@ -15,6 +15,30 @@ automatic mesh repair, online asset downloads, hosted app, or physical-fit
 claims without valid actual evidence. Canonical transition and worktree cleanup
 remain separate from implementation and require verified preservation.
 
+## Reed and Codex working agreement
+
+Reed describes the desired design or change; Codex owns the modeling approach,
+tool selection, implementation, computational checks, and artifact handoff.
+Retrieve existing project context, dimensions and decisions before asking Reed
+to repeat them. Ask only for missing measurements, material design choices, or
+real-world observations that cannot be established from available evidence.
+Preserve existing project identifiers and create explicit new versions.
+
+Use OpenSCAD for dimension-critical mechanical geometry. Codex may choose
+optional scripted Blender inspection when it provides a concrete benefit;
+verify the actual executable and output before relying on it. Reed does not
+need to select, learn, or test Blender. Missing Blender is not a consolidation
+or normal-operation gate. Do not install/downgrade it automatically or add
+geometry-changing mesh workflows under the inspection allowance.
+
+For routine creation: inspect the existing project, record the requested
+change and authoritative measurements, implement the smallest suitable
+version, compile and check it, inspect actual previews, and prepare the manual
+Bambu P2S handoff. Report remaining measured-fit uncertainty clearly. Existing
+arbitrary SCAD projects remain available for deliberate source edits; the three
+registered generators describe automated generation scope, not a reason to
+discard a legacy design or silently recreate it as another project.
+
 ## Mission and Supported Scope
 
 Build Parametric Part Workbench v3 as a reliable, local-first system for
@@ -131,9 +155,10 @@ python -m pytest
 
 ## Git and Legacy Boundaries
 
-- PR #2 supplies the V3 foundation; PR #3 adds the owner fit-evidence loop. The
-  modernization branch starts at verified PR #3, not old main. Recheck ancestry
-  and refs before continuing. PR #1 remains read-only salvage material.
+- The integrated checkpoint ee7c481 includes PR #2, #3 and #4 and the original
+  local project history. Continue from its reviewed descendants; recheck live
+  refs rather than merging the older stack again. PR #1 remains unique,
+  read-only salvage material until individual sources are inventoried.
 - Do not normalize every legacy project in Phase 1. Follow
   `docs/rebuild/MIGRATION_MAP.md` and salvage individual files only with a
   documented reason.
