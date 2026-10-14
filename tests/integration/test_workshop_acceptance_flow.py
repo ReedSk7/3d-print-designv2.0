@@ -1,4 +1,4 @@
-"""Actual OpenSCAD fixtures; optional Blender subprocess is simulated explicitly."""
+"""Actual OpenSCAD fixtures; optional Blender runtime is simulated explicitly."""
 import hashlib
 import json
 import os
@@ -34,12 +34,15 @@ def test_optional_blender_scale_failure_never_publishes(generated,monkeypatch):
     import core.workshop.blender as blender
     workshop,result=generated
     monkeypatch.setattr(blender,'probe_blender',lambda:{'compatible':True,'path':'simulated','version':'5.2.2'})
-    def fake_run(command,**kwargs):
-        request=json.loads(Path(command[-1]).read_text())
+    def fake_run(path,request,*,operation,**kwargs):
+        assert operation=='inspection'
         Path(request['scene']).write_bytes(b'simulated scene')
         Path(request['report']).write_text(json.dumps({'scale_verified':False}))
-        return subprocess.CompletedProcess(command,0,'','')
-    monkeypatch.setattr(blender.subprocess,'run',fake_run)
+        return {'protocol':1,'request_id':'synthetic-test-boundary','operation':operation,
+                'job_name':'synthetic-invocation','pid':os.getpid(),'runtime_version':[5,2,2],
+                'runtime_path':'synthetic-runtime','status':'success',
+                'outputs':{name:hashlib.sha256(Path(output).read_bytes()).hexdigest() for name,output in request['outputs'].items()}}
+    monkeypatch.setattr(blender,'_run_blender',fake_run)
     with pytest.raises(ValueError,match='scale'): workshop.action('blender',{**result,'revision':'r01'})
     assert not (workshop.workspace/'bushing_example/v01/blender/r01').exists()
 
@@ -47,12 +50,17 @@ def test_optional_blender_no_overwrite_and_source_tamper(generated,monkeypatch):
     import core.workshop.blender as blender
     workshop,result=generated
     monkeypatch.setattr(blender,'probe_blender',lambda:{'compatible':True,'path':'simulated','version':'5.2.2'})
-    def fake_run(command,**kwargs):
-        request=json.loads(Path(command[-1]).read_text())
+    def fake_run(path,request,*,operation,**kwargs):
+        assert operation=='inspection'
         Path(request['scene']).write_bytes(b'simulated scene')
-        Path(request['report']).write_text(json.dumps({'scale_verified':True,'actual_extents_mm':request['expected_extents_mm']}))
-        return subprocess.CompletedProcess(command,0,'','')
-    monkeypatch.setattr(blender.subprocess,'run',fake_run)
+        Path(request['report']).write_text(json.dumps({'scale_verified':True,
+            'actual_extents_mm':request['expected_extents_mm'],
+            'expected_extents_mm':request['expected_extents_mm'],'meters_per_stl_unit':.001}))
+        return {'protocol':1,'request_id':'synthetic-test-boundary','operation':operation,
+                'job_name':'synthetic-invocation','pid':os.getpid(),'runtime_version':[5,2,2],
+                'runtime_path':'synthetic-runtime','status':'success',
+                'outputs':{name:hashlib.sha256(Path(output).read_bytes()).hexdigest() for name,output in request['outputs'].items()}}
+    monkeypatch.setattr(blender,'_run_blender',fake_run)
     workshop.action('blender',{**result,'revision':'r01'})
     with pytest.raises(FileExistsError): workshop.action('blender',{**result,'revision':'r01'})
     source=next((workshop.workspace/'bushing_example/v01').glob('*.scad'))
