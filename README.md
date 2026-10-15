@@ -5,13 +5,14 @@ You describe the design or change; Codex handles modeling, tool choice,
 validation and the manual Bambu P2S handoff. OpenSCAD is the geometry foundation;
 scripted Blender inspection is optional and chosen by Codex when useful.
 
-Start with [Quick Start](docs/QUICK_START.md). In a preserved candidate checkout,
+Start with [Quick Start](docs/QUICK_START.md). In a fresh preserved checkout,
 run `pwsh -NoProfile -File .\scripts\setup.ps1` once to prepare the project Python
 environment and build the interface. Then open `Open Print Workshop.cmd` for
 daily use. Launching checks the current build and installs nothing.
 
 See [Workshop guide](docs/PRINT_WORKSHOP.md) and
-[current consolidation status](docs/CANONICAL_ADOPTION.md). The October 4
+[Windows adoption and remaining manual check](docs/WINDOWS_ADOPTION_2026-10-14.md).
+Use the existing canonical folder for future designs. The October 4
 [acceptance evidence](docs/PRINT_WORKSHOP_ACCEPTANCE.md) and
 [transition record](docs/CANONICAL_TRANSITION.md) remain historical records;
 they do not establish the state of a new clone or the current Windows PC.

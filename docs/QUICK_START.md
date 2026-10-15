@@ -1,15 +1,17 @@
 # Current workspace quick start
 
-## Select the current consolidation candidate safely
+## Daily canonical workspace
 
-The integrated checkpoint `ee7c481` already contains PRs #2–#4 and the original
-local project history. The current consolidation candidate is
-`feature/print-workshop-canonical-20261014`, descended from
-`local/print-workshop-integrated-20261004`. Do not merge the older PR stack.
-Until the consolidation PR is accepted, pulling main does not select the
-candidate. See `docs/CANONICAL_ADOPTION.md` for the current evidence and gates.
+Use `C:\Users\reeds\Documents\Codex\3d-print-designV2.0` for future design work.
+After PR #5's normal merge, `main` contains the original project history, PRs
+#2–#4 and the reconciled local work. Do not merge that older stack separately.
+Acceptance worktrees and backups remain preserved; they are not additional
+master workspaces. See [Windows adoption](WINDOWS_ADOPTION_2026-10-14.md) and
+the owner-local adoption record for exact final refs, backup paths and pending
+manual Bambu acceptance.
 
-In the existing repository, inspect before switching anything:
+Double-click `Open Print Workshop.cmd` in this folder. Before a later code
+update, inspect and preserve any new work:
 
 ```powershell
 git status --short --branch
@@ -26,12 +28,13 @@ git fetch origin
 Before changing the canonical checkout, verify recoverable backups of its
 tracked edits, untracked/ignored owner files and linked worktrees. A Git bundle
 alone excludes ignored data and submodule contents. Inspect any existing
-candidate worktree before creating another one. If none exists, use a separate
-temporary acceptance worktree so the working project remains intact:
+acceptance worktree before creating another one. Test future updates in a
+separate worktree so the working project remains intact. Select a unique branch
+and path rather than reusing the preserved acceptance checkout, for example:
 
 ```powershell
-git worktree add ..\print-workshop-acceptance -b local/print-workshop-acceptance origin/feature/print-workshop-canonical-20261014
-cd ..\print-workshop-acceptance
+git worktree add ..\print-workshop-next-acceptance -b local/print-workshop-next-acceptance origin/main
+cd ..\print-workshop-next-acceptance
 ```
 
 Ignored owner data is not copied to a new worktree. Keep it at its current

@@ -1,6 +1,6 @@
 # Print Workshop
 
-Use Reed's existing canonical `3d-print-designV2.0` folder after preservation and acceptance. The current consolidation candidate and outstanding Windows checks are recorded in `CANONICAL_ADOPTION.md`; a remote source change does not establish the current local installation state.
+Use Reed's canonical `3d-print-designV2.0` folder for future designs. Open `Open Print Workshop.cmd` to launch with its project environment. PR #5 consolidates the integration and newer local work onto main with their histories intact. The original Git metadata, projects, linked worktrees and backups remain preserved. See [Windows adoption](WINDOWS_ADOPTION_2026-10-14.md) and the owner-local adoption record for final refs and the pending manual Bambu check.
 
 Reed describes the desired design/change; Codex retrieves existing context, selects tools, implements the revision, checks it, reviews actual previews and prepares the manual P2S handoff. Ask Reed for missing physical measurements or real fit observations when needed. Blender is a Codex-selected optional scripted inspection tool, not a requirement for Reed to learn or for the project to function.
 
