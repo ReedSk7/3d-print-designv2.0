@@ -48,7 +48,7 @@ def main() -> int:
         return 1
 
     command_args = [
-        "--export-format=asciistl",
+        "--export-format=binstl",
         *extra_defines,
         "-o",
         str(output_path),
@@ -75,8 +75,9 @@ def main() -> int:
             print(result.stderr.rstrip())
         return 1
 
-    print("PASS")
+    print("STL EXPORT COMPLETE")
     print(f"STL exported: {output_path}")
+    print("Physical fit: NOT CONFIRMED")
     return 0
 
 

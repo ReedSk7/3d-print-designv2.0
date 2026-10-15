@@ -1,0 +1,12 @@
+{
+  "interface_parameter": "inside_diameter",
+  "candidate_offsets_mm": [
+    "OWNER MUST ENTER CANDIDATE OFFSET 1",
+    "OWNER MUST ENTER CANDIDATE OFFSET 2",
+    "OWNER MUST ENTER CANDIDATE OFFSET 3",
+    "OWNER MUST ENTER CANDIDATE OFFSET 4",
+    "OWNER MUST ENTER CANDIDATE OFFSET 5"
+  ],
+  "coupon_project_id": "OWNER MUST ENTER A UNIQUE COUPON PROJECT ID",
+  "coupon_project_version": "v01"
+}

@@ -1,5 +1,9 @@
 # Reference Reconstruction Workflow
 
+> Legacy pre-v3 workflow. For v3 replacement work, the typed Measurement
+> Contract and release gate in `docs/rebuild/VERIFICATION_MODEL.md` are
+> authoritative.
+
 Use `reference_based_reconstruction` when the job is about recreating, repairing, replacing, or refining a known part. Use `mesh_cleanup_and_remodel` when a rough mesh exists but should be rebuilt as clean OpenSCAD.
 
 Default output is one corrected model unless the user explicitly asks for multiple variants.

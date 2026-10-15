@@ -1,35 +1,239 @@
-name: OpenSCAD Repo Checks
+name: Parametric Part Workbench CI
 
 on:
   push:
     branches:
       - main
+      - "rebuild/**"
+      - "feature/**"
+      - "upgrade/**"
   pull_request:
     branches:
       - main
+      - "rebuild/**"
+      - "feature/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ppw-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   repo-checks:
-    name: Validate OpenSCAD workflow
-    runs-on: ubuntu-latest
+    name: Validate deterministic generators
+    strategy:
+      matrix:
+        python: ["3.12", "3.13"]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONUNBUFFERED: "1"
+      QT_QPA_PLATFORM: xcb
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7.0.0
         with:
-          python-version: "3.x"
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+            requirements-lock.txt
+
+      - name: Install OpenSCAD
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends openscad xvfb xauth
+          command -v openscad
+          openscad --version
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install -r requirements-lock.txt
+          python -m pip check
 
       - name: Python syntax check
         run: |
-          python -m py_compile scripts/*.py
+          python -m compileall -q core generators scripts tests
 
-      - name: Validate example SCAD
-        run: |
-          python scripts/validate_scad.py projects/simple_wall_bracket_example/source/simple_wall_bracket_example_v01.scad
+      - name: Run unit tests
+        run: python -m pytest tests/unit -m "not windows_worker" -q
 
-      - name: Check example project outputs
+      - name: Run generator integration tests
+        run: xvfb-run -a python -m pytest tests/integration -m "not windows_worker" -q
+
+      - name: Run documented CLI vertical slices
         run: |
-          python scripts/check_project_outputs.py --project projects/simple_wall_bracket_example --task-mode original_product_design --version v01
+          python scripts/generate_part.py --spec examples/specs/bushing_example.json
+          python scripts/generate_part.py --spec examples/specs/round_adapter_example.json
+          python scripts/generate_part.py --spec examples/specs/flange_plate_example.json
+
+      - name: Run generator 1.1.0 fit-coupon vertical slices
+        run: |
+          python scripts/generate_part.py --spec examples/specs/bushing_v110_coupon_example.json
+          python scripts/generate_part.py --spec examples/specs/round_adapter_v110_coupon_example.json
+          python scripts/generate_part.py --spec examples/specs/flange_plate_v110_coupon_example.json
+
+      - name: Render and recheck actual OpenSCAD views
+        run: |
+          xvfb-run -a python scripts/export_preview.py --manifest workspace/bushing_example/v01/artifact-manifest.json
+          python scripts/verify_preview.py --preview-manifest workspace/bushing_example/v01/previews/r01/preview-manifest.json
+
+      - name: Retain synthetic CAD views for visual review
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: synthetic-cad-views-python-${{ matrix.python }}
+          path: workspace/bushing_example/v01/previews/r01/
+          retention-days: 7
+          if-no-files-found: error
+
+      - name: Prepare manual Bambu import handoff
+        run: python scripts/prepare_bambu_handoff.py --manifest workspace/bushing_example/v01/artifact-manifest.json
+
+      - name: Enforce generated-output policy
+        run: |
+          python scripts/check_output_policy.py --require-workspace-artifacts
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+  windows-worker-checks:
+    name: Windows setup, worker ownership and actual OpenSCAD jobs
+    runs-on: windows-2025
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: workshop checkout
+    env:
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          path: workshop checkout
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.14.0"
+      - name: Install pinned portable OpenSCAD from the official release
+        shell: pwsh
+        run: |
+          $archive = Join-Path $env:RUNNER_TEMP 'OpenSCAD-2021.01-x86-64.zip'
+          Invoke-WebRequest 'https://files.openscad.org/OpenSCAD-2021.01-x86-64.zip' -OutFile $archive
+          # Published https://files.openscad.org/OpenSCAD-2021.01-x86-64.zip.sha256
+          $expected = 'fb0caabf5bbc89f8f2f80c10b79ae64d697aaff6efd58b2756f5d6270edb7ba7'
+          if ((Get-FileHash $archive -Algorithm SHA256).Hash.ToLowerInvariant() -ne $expected) {
+            throw 'OpenSCAD release checksum mismatch'
+          }
+          $destination = Join-Path $env:RUNNER_TEMP 'openscad'
+          Expand-Archive $archive -DestinationPath $destination
+          $programs = @(Get-ChildItem $destination -Recurse -Filter openscad.com)
+          if ($programs.Count -ne 1) { throw 'Expected one OpenSCAD console executable' }
+          $env:OPENSCAD_PATH = $programs[0].FullName
+          "OPENSCAD_PATH=$env:OPENSCAD_PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          & $env:OPENSCAD_PATH --version
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Run actual setup with duplicate PATH entries from a path with spaces
+        shell: pwsh
+        run: |
+          & .\tests\windows\setup_with_duplicate_path.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Launch through the cmd wrapper and stop the exact bridge
+        shell: pwsh
+        timeout-minutes: 2
+        run: |
+          $bridgePid = $null
+          try {
+            & '.\Open Print Workshop.cmd' -NoBrowser -Port 18765
+            if ($LASTEXITCODE -ne 0) { throw "Launcher failed with exit $LASTEXITCODE" }
+            $base = 'http://127.0.0.1:18765'
+            $session = Invoke-RestMethod "$base/api/session" -TimeoutSec 5
+            if (-not $session.token -or -not $session.instance_id -or $session.pid -le 0) {
+              throw 'Launcher did not expose the expected bound session'
+            }
+            $bridgePid = [int]$session.pid
+            $stopped = Invoke-RestMethod "$base/api/stop" -Method Post -ContentType 'application/json' -Body '{}' -Headers @{'X-Workshop-Token'=$session.token} -TimeoutSec 5
+            if (-not $stopped.stopping) { throw 'Bridge did not acknowledge shutdown' }
+            for ($attempt = 0; $attempt -lt 50; $attempt++) {
+              if (-not (Get-Process -Id $bridgePid -ErrorAction SilentlyContinue)) { break }
+              Start-Sleep -Milliseconds 200
+            }
+            if (Get-Process -Id $bridgePid -ErrorAction SilentlyContinue) { throw 'Bridge did not exit within 10 seconds' }
+            $stillServing = $false
+            try {
+              $null = Invoke-RestMethod "$base/api/session" -TimeoutSec 1
+              $stillServing = $true
+            } catch { }
+            if ($stillServing) { throw 'Workshop listener remained after shutdown' }
+          } finally {
+            if ($bridgePid -and (Get-Process -Id $bridgePid -ErrorAction SilentlyContinue)) {
+              Stop-Process -Id $bridgePid -Force
+            }
+          }
+      - name: Unit regressions including actual Windows process containment
+        shell: pwsh
+        run: |
+          & .\.venv\Scripts\python.exe -m pytest tests/unit -q
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Actual HTTP generation, running cancellation and bridge termination
+        shell: pwsh
+        run: |
+          & .\.venv\Scripts\python.exe -m pytest tests/integration -m windows_worker -q
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify original Git blobs and Windows checkout representations
+        shell: pwsh
+        run: |
+          & .\.venv\Scripts\python.exe scripts/check_output_policy.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git diff --exit-code
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git diff --cached --exit-code
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (git status --porcelain --untracked-files=all) { throw 'CI left unexpected repository changes' }
+
+  browser-checks:
+    name: Locked production UI and synthetic browser workflow
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.14.0"
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - name: Install locked bridge dependencies
+        run: |
+          python -m pip install -r requirements-lock.txt
+          python -m pip check
+      - name: Build the app from its lockfile
+        working-directory: app
+        run: |
+          npm ci
+          npm run build
+      - name: Install the lockfile-pinned Chromium runtime
+        working-directory: app
+        run: node node_modules/playwright/cli.js install --with-deps chromium
+      - name: Exercise production UI against a disposable synthetic bridge
+        run: node scripts/smoke_workshop_browser.mjs --python python
+      - name: Enforce preservation and clean checkout
+        run: |
+          python scripts/check_output_policy.py
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=all)"

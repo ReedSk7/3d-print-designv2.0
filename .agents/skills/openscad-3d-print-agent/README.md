@@ -1,7 +1,9 @@
-# OpenSCAD Reconstruction Agent Skill
+# Parametric Part Workbench v3 Skill
 
-Thin repo-local helper for this workspace.
+Thin repository-local helper for deterministic v1 specifications, supported
+generators, fit coupons, OpenSCAD-backed computational checks, and truthful
+workflow states.
 
-Root `AGENTS.md` remains authoritative. This folder should not duplicate root scripts, templates, standards, or example projects.
-
-Use this skill for OpenSCAD reconstruction, replacement-part remodeling, project bootstrap, validation, STL export, preview rendering, printability review, and artifact verification.
+Root `AGENTS.md` is authoritative. See `SKILL.md` for the v3 commands. Use the focused references for setup, CAD visual review and
+artifact/Bambu handoff. Legacy project bootstrap and file-presence workflows
+remain historical compatibility tools.

@@ -1,0 +1,17 @@
+# Validated in the isolated Python 3.12 environment on 2026-09-30.
+# Core versions match requirements.txt; test versions match requirements-dev.txt.
+# Install this file directly. System CAD tools and Codex are deliberately separate.
+attrs==26.1.0
+colorama==0.4.6 ; sys_platform == 'win32'
+iniconfig==2.3.0
+jsonschema==4.26.0
+jsonschema-specifications==2025.9.1
+networkx==3.6.1
+numpy==2.4.4
+packaging==26.3
+pluggy==1.6.0
+pytest==8.3.4
+referencing==0.37.0
+rpds-py==2026.6.3
+trimesh==4.11.5
+typing_extensions==4.16.0
