@@ -17,7 +17,7 @@ $process=Start-Process -FilePath $PythonPath -ArgumentList @('-B',('"'+$serverSc
 $ready=$false
 for ($attempt=0;$attempt -lt 40;$attempt++) {
     if ($process.HasExited) { throw ('Workshop startup failed. Read '+(Join-Path $localDirectory 'startup-error.log')) }
-    try { $session=Invoke-RestMethod -Uri "http://127.0.0.1:$Port/api/session"; if ($session.instance_id -eq $instanceId) { $ready=$true; break } } catch { }
+    try { $session=Invoke-RestMethod -Uri "http://127.0.0.1:$Port/api/session" -TimeoutSec 1; if ($session.instance_id -eq $instanceId) { $ready=$true; break } } catch { }
     Start-Sleep -Milliseconds 250
 }
 if (-not $ready) { Stop-Process -Id $process.Id; throw 'Workshop readiness timed out. Check startup logs.' }

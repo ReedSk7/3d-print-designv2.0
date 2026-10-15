@@ -3,6 +3,11 @@
 Updated 2026-10-14. This status supplements the dated October 4 acceptance and
 transition documents; it does not replace their historical evidence.
 
+The subsequent [Windows laptop acceptance](WINDOWS_ADOPTION_2026-10-14.md)
+supersedes the offline-laptop status below. It records reconciliation of newer
+local work, actual laptop checks and the explicitly pending manual Bambu check.
+Final checkout and preservation evidence remain owner-local.
+
 ## Intended daily workflow
 
 Reed describes the desired part or change. Codex inspects the existing project,

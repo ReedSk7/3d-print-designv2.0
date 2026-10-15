@@ -29,11 +29,15 @@ let bridge;
 let browser;
 let bridgeOutput = '';
 let cleanupPromise;
+let releaseBlenderProbe;
+let removeBlenderRoute;
 
 const delay = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
 async function cleanup() {
   if (cleanupPromise) return cleanupPromise;
   cleanupPromise = (async () => {
+    releaseBlenderProbe?.();
+    if (removeBlenderRoute) await removeBlenderRoute().catch(() => {});
     if (browser) await Promise.race([browser.close().catch(() => {}), delay(3000)]);
     if (bridge?.pid && bridge.exitCode === null && bridge.signalCode === null) {
       bridge.stdin.end();
@@ -113,11 +117,23 @@ async function exercise() {
   page.on('response', response => {
     if (response.status() >= 400) errors.push(`HTTP ${response.status()}: ${response.url()}`);
   });
-  await page.goto(url, {waitUntil: 'networkidle'});
+  // Optional discovery must not gate the real catalog, templates, jobs or saving.
+  const blenderGate = new Promise(resolveProbe => { releaseBlenderProbe = resolveProbe; });
+  let blenderProbeStarted = false;
+  await page.route(`${url}/api/blender`, async route => {
+    blenderProbeStarted = true;
+    await blenderGate;
+    await route.continue();
+  });
+  removeBlenderRoute = () => page.unrouteAll({behavior: 'wait'});
+  await page.goto(url, {waitUntil: 'domcontentloaded'});
   await page.getByRole('heading', {name: 'Print Workshop', exact: true}).waitFor();
   await page.getByRole('button', {name: /Synthetic browser saved design/}).waitFor();
   const cards = page.locator('.project-list > button');
   assert.equal(await cards.count(), 4, 'Valid, corrupt, and both differing legacy records must remain visible.');
+  assert.equal(blenderProbeStarted, true, 'The slow optional discovery fixture was not exercised.');
+  await page.getByRole('button', {name: 'New design', exact: true}).click();
+  assert.equal(await page.getByLabel('Project ID', {exact: true}).inputValue(), 'my_bushing');
 
   // A damaged catalog record must be actionable without becoming an editable spec.
   await cards.filter({hasText: 'synthetic browser corrupt'}).click();
@@ -164,11 +180,29 @@ async function exercise() {
   assert.equal(revision.project.version, 'v02');
   assert.equal(revision.physical_verification.status, 'not_confirmed');
 
+  const initialJobs = page.waitForResponse(response => response.url() === `${url}/api/jobs`);
+  await page.getByRole('button', {name: 'Refresh job history'}).click();
+  assert.equal((await initialJobs).status(), 200);
+  const blenderResponse = page.waitForResponse(response => response.url() === `${url}/api/blender`);
+  releaseBlenderProbe();
+  assert.equal((await blenderResponse).status(), 200);
+  await removeBlenderRoute();
+  removeBlenderRoute = undefined;
+
+  // A failed optional probe must stay in its panel rather than block core loading.
+  await page.route(`${url}/api/blender`, route => route.fulfill({
+    status: 200, contentType: 'application/json', body: '{',
+  }), {times: 1});
+
   // Reload proves the real bridge persisted the selected specification and context.
   await page.reload({waitUntil: 'networkidle'});
+  assert.equal(await page.getByRole('status').count(), 0, 'Optional discovery failure replaced the core workflow status.');
   const revisionCard = page.getByRole('button', {name: /Synthetic browser saved design/}).filter({hasText: 'v02'});
   await revisionCard.click();
   assert.equal(await page.getByLabel('Exact part or target').inputValue(), 'Synthetic browser revision; no physical test performed.');
+  const blenderPanel = page.locator('details').filter({has: page.getByText('Optional Blender inspection', {exact: true})});
+  await blenderPanel.locator('summary').click();
+  await blenderPanel.getByText(/Optional Blender check unavailable:/).waitFor();
   await page.getByLabel('Part family').selectOption('round_adapter');
   await page.getByRole('button', {name: 'New design', exact: true}).click();
   assert.equal(await page.getByLabel('Project ID', {exact: true}).inputValue(), 'my_round_adapter');
@@ -215,5 +249,5 @@ try {
   finally { clearTimeout(hardDeadline); }
 }
 if (process.exitCode !== 1) {
-  console.log('PASS: synthetic built-UI catalog, diagnostics, source navigation, immutable save, reload, and shutdown; no browser errors. No generation or physical-fit evidence.');
+  console.log('PASS: synthetic built-UI catalog, diagnostics, source navigation, immutable save, reload, jobs, optional Blender delay/failure isolation, and shutdown; no browser errors. No generation or physical-fit evidence.');
 }
